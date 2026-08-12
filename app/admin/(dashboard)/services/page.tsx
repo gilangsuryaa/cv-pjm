@@ -1,5 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
 import DeleteServiceButton from './delete-service-button'
 
 export default async function ServicesPage() {
@@ -13,81 +13,122 @@ export default async function ServicesPage() {
   if (error) {
     return (
       <div>
-        <h1>Layanan</h1>
-        <p>Gagal mengambil data layanan.</p>
-        <p>{error.message}</p>
+        <h1 className="text-2xl font-semibold">
+          Layanan
+        </h1>
+
+        <p className="mt-2 text-red-600">
+          {error.message}
+        </p>
       </div>
     )
   }
 
   return (
     <div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '24px',
-        }}
-      >
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1>Layanan</h1>
-          <p>Kelola layanan yang ditampilkan di website.</p>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Layanan
+          </h1>
+
+          <p className="mt-1 text-sm text-gray-600">
+            Kelola layanan perusahaan.
+          </p>
         </div>
 
-        <Link href="/admin/services/create">
-          <button>+ Tambah Layanan</button>
+        <Link
+          href="/admin/services/create"
+          className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+        >
+          + Tambah Layanan
         </Link>
       </div>
 
-      {services.length === 0 ? (
-        <p>Belum ada layanan.</p>
-      ) : (
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-          }}
-        >
-          <thead>
+      {/* Table */}
+      <div className="overflow-hidden rounded-lg border bg-white">
+        <table className="w-full text-sm">
+          <thead className="border-b bg-gray-50">
             <tr>
-              <th align="left">Nama</th>
-              <th align="left">Slug</th>
-              <th align="left">Harga</th>
-              <th align="left">Status</th>
-              <th align="left">Aksi</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Nama
+              </th>
+
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Slug
+              </th>
+
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Harga
+              </th>
+
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Status
+              </th>
+
+              <th className="px-6 py-3 text-right font-medium text-gray-600">
+                Aksi
+              </th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="divide-y">
             {services.map((service) => (
               <tr key={service.id}>
-                <td>{service.name}</td>
+                <td className="px-6 py-4 text-gray-900">
+                  {service.name}
+                </td>
 
-                <td>{service.slug}</td>
+                <td className="px-6 py-4 text-gray-900">
+                  {service.slug}
+                </td>
 
-                <td>
+                <td className="px-6 py-4 text-gray-900">
                   {service.price
-                    ? `Rp ${Number(service.price).toLocaleString('id-ID')}`
+                    ? `Rp ${Number(
+                        service.price
+                      ).toLocaleString('id-ID')}`
                     : '-'}
                 </td>
 
-                <td>
-                  {service.status ? 'Aktif' : 'Nonaktif'}
+                <td className="px-6 py-4 text-gray-900">
+                  <span
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                      service.status
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {service.status
+                      ? 'Aktif'
+                      : 'Nonaktif'}
+                  </span>
                 </td>
 
-                <td>
-                    <Link href={`/admin/services/${service.id}/edit`}>
-                        Edit
-                    </Link>{' '}
-                    
-                    <DeleteServiceButton id={service.id} />
+                <td className="px-6 py-4 text-right">
+                  <Link
+                    href={`/admin/services/${service.id}/edit`}
+                    className="mr-3 text-sm font-medium text-blue-700 hover:text-blue-900 hover:underline"
+                  >
+                    Edit
+                  </Link>
+
+                  <DeleteServiceButton
+                    id={service.id}
+                  />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      )}
+
+        {services.length === 0 && (
+          <div className="p-8 text-center text-sm text-gray-500">
+            Belum ada layanan.
+          </div>
+        )}
+      </div>
     </div>
   )
 }

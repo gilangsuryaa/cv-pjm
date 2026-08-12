@@ -34,12 +34,18 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside>
-      <div>
-        <h2>Admin Panel</h2>
+    <aside className="fixed left-0 top-0 h-screen w-64 border-r border-gray-200 bg-white text-gray-900">
+      <div className="border-b px-6 py-5">
+        <h2 className="text-lg font-semibold">
+          Admin Panel
+        </h2>
+
+        <p className="text-sm text-gray-500">
+          Company Dashboard
+        </p>
       </div>
 
-      <nav>
+      <nav className="space-y-1 p-4">
         {menuItems.map((item) => {
           const isActive = pathname === item.href
 
@@ -47,12 +53,11 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              style={{
-                display: 'block',
-                padding: '10px',
-                marginBottom: '5px',
-                background: isActive ? '#eee' : 'transparent',
-              }}
+              className={`block rounded-md px-4 py-2 text-sm font-medium transition ${
+                isActive
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+              }`}
             >
               {item.label}
             </Link>

@@ -4,13 +4,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-interface DeleteServiceButtonProps {
+interface DeleteProductButtonProps {
   id: number
 }
 
-export default function DeleteServiceButton({
+export default function DeleteProductButton({
   id,
-}: DeleteServiceButtonProps) {
+}: DeleteProductButtonProps) {
   const router = useRouter()
   const supabase = createClient()
 
@@ -18,7 +18,7 @@ export default function DeleteServiceButton({
 
   async function handleDelete() {
     const confirmed = window.confirm(
-      'Yakin ingin menghapus layanan ini?'
+      'Yakin ingin menghapus produk ini?'
     )
 
     if (!confirmed) return
@@ -26,7 +26,7 @@ export default function DeleteServiceButton({
     setLoading(true)
 
     const { error } = await supabase
-      .from('services')
+      .from('products')
       .delete()
       .eq('id', id)
 
@@ -37,13 +37,14 @@ export default function DeleteServiceButton({
     }
 
     router.refresh()
+    setLoading(false)
   }
 
   return (
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="text-sm font-medium text-red-700 hover:text-red-900 hover:underline"
+      className="ml-3 text-sm font-medium text-red-700 hover:text-red-900 hover:underline disabled:opacity-50"
     >
       {loading ? 'Menghapus...' : 'Hapus'}
     </button>
