@@ -1,6 +1,22 @@
+"use client";
+
 import Image from "next/image";
+import { MessageCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  const isHome = pathname === "/";
+  const isAbout = pathname === "/about";
+
+  const whatsappMessage =
+    "Halo CV Prima Jaya Mandiri, Saya Mau Konsultasi";
+
+  const whatsappUrl = `https://wa.me/6281949532643?text=${encodeURIComponent(
+    whatsappMessage
+  )}`;
+
   return (
     <nav className="h-[57px] border-b border-[#e5cfc8] bg-white">
       <div className="mx-auto flex h-full max-w-[1200px] items-center justify-between px-8">
@@ -15,44 +31,77 @@ export default function Navbar() {
             className="object-contain"
           />
         </a>
+
         {/* Navigation */}
         <div className="flex items-center gap-[22px] text-[10px] font-medium">
+
+          {/* Home */}
           <a
             href="/"
-            className="border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+            className={
+              isHome
+                ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+                : "text-[#222] hover:text-[#d91e05]"
+            }
           >
             Home
           </a>
 
-          <a href="about" className="text-[#222] hover:text-[#d91e05]">
+          {/* About Us */}
+          <a
+            href="/about"
+            className={
+              isAbout
+                ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+                : "text-[#222] hover:text-[#d91e05]"
+            }
+          >
             About Us
           </a>
 
-          <a href="#services" className="text-[#222] hover:text-[#d91e05]">
+          {/* Services */}
+          <a
+            href="/#services"
+            className="text-[#222] hover:text-[#d91e05]"
+          >
             Services
           </a>
 
-          <a href="#products" className="text-[#222] hover:text-[#d91e05]">
+          {/* Products */}
+          <a
+            href="/#products"
+            className="text-[#222] hover:text-[#d91e05]"
+          >
             Products
           </a>
 
-          <a href="#portfolio" className="text-[#222] hover:text-[#d91e05]">
+          {/* Portfolio */}
+          <a
+            href="/#portfolio"
+            className="text-[#222] hover:text-[#d91e05]"
+          >
             Portfolio
           </a>
 
-          <a href="#contact" className="text-[#222] hover:text-[#d91e05]">
+          {/* Contact */}
+          <a
+            href="/#contact"
+            className="text-[#222] hover:text-[#d91e05]"
+          >
             Contact
           </a>
+
         </div>
 
         {/* WhatsApp */}
         <a
-          href="https://wa.me/6281234567890"
+          href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white"
+          className="flex items-center gap-1.5 bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white transition hover:bg-[#b91803]"
         >
-          💬 WhatsApp CTA
+          <MessageCircle size={12} />
+          WhatsApp CTA
         </a>
 
       </div>

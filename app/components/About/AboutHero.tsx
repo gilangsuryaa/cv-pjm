@@ -3,7 +3,7 @@ export default function AboutHero() {
     <section
       className="relative flex h-[340px] items-center justify-center bg-cover bg-center"
       style={{
-        backgroundImage: "url('/images/about-hero.jpg')",
+        backgroundImage: "url('/images/dummy about.jpg')",
       }}
     >
       {/* Overlay */}

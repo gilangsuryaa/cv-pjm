@@ -113,9 +113,9 @@ export default function Footer() {
                 />
 
                 <p>
-                  Jl. Contoh Alamat No. 123,
+                  Jl. Pakuwon Dusun Karangtangsi RT.08/RW.03, Losari Kidul, Kec.Losari Kab.Cirebon
                   <br />
-                  Jakarta, Indonesia
+                  Provinsi Jawa Barat Kode Pos   45192
                 </p>
               </div>
 
@@ -124,7 +124,15 @@ export default function Footer() {
                 <Phone size={13} />
 
                 <p>
-                  +62 812 3456 7890
+                  (0231) 831597
+                </p>
+              </div>
+              {/* WhatsApp */}
+              <div className="flex items-center gap-2">
+                <Phone size={13} />
+
+                <p>
+                  +62 819-4953-2643
                 </p>
               </div>
 
