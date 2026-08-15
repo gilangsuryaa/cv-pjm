@@ -1,4 +1,4 @@
-import { MessageSquare } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 export default function CTA() {
   return (
     <section className="bg-[#E9E9E9] py-14">
@@ -13,13 +13,15 @@ export default function CTA() {
         </p>
 
         <a
-        href="#contact"
-        className="mt-7 inline-flex min-w-[240px] items-center justify-center gap-2 bg-[#D91E05] px-8 py-3 text-[11px] font-semibold text-white transition hover:bg-[#b91803]"
+          href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-7 inline-flex min-w-[240px] items-center justify-center gap-2 bg-[#D91E05] px-8 py-3 text-[11px] font-semibold text-white transition hover:bg-[#b91803]"
         >
-        <MessageSquare size={14} />
-        Konsultasikan Sekarang
+          <FaWhatsapp size={14} />
+          Konsultasikan Sekarang
         </a>
-      </div>
+              </div>
     </section>
   );
 }

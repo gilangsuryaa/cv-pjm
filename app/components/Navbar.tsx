@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { MessageCircle } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -61,8 +61,12 @@ export default function Navbar() {
 
           {/* Services */}
           <a
-            href="/#services"
-            className="text-[#222] hover:text-[#d91e05]"
+            href="/services"
+            className={
+              pathname === "/services"
+                ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+                : "text-[#222] hover:text-[#d91e05]"
+            }
           >
             Services
           </a>
@@ -93,16 +97,16 @@ export default function Navbar() {
 
         </div>
 
-        {/* WhatsApp */}
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1.5 bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white transition hover:bg-[#b91803]"
-        >
-          <MessageCircle size={12} />
-          WhatsApp CTA
-        </a>
+       {/* WhatsApp */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white transition hover:bg-[#b91803]"
+          >
+            <FaWhatsapp size={13} />
+            WhatsApp CTA
+          </a>
 
       </div>
     </nav>

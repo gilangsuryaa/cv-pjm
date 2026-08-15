@@ -2,7 +2,6 @@ export default function Pricing() {
   const packages = [
     {
       title: "AC Service",
-      price: "Mulai dari Rp150.000",
       description: "Perawatan dan pengecekan AC.",
       features: [
         "Cleaning AC",
@@ -12,7 +11,6 @@ export default function Pricing() {
     },
     {
       title: "AC Installation",
-      price: "Mulai dari Rp350.000",
       description: "Instalasi AC profesional.",
       features: [
         "Instalasi unit AC",
@@ -22,7 +20,6 @@ export default function Pricing() {
     },
     {
       title: "Electrical",
-      price: "Hubungi Kami",
       description: "Solusi kebutuhan kelistrikan.",
       features: [
         "Instalasi listrik",
@@ -56,10 +53,6 @@ export default function Pricing() {
                 {pkg.title}
               </h3>
 
-              <p className="mt-4 text-[18px] font-bold text-[#D91E05]">
-                {pkg.price}
-              </p>
-
               <p className="mt-2 text-[11px] leading-5 text-[#666]">
                 {pkg.description}
               </p>
@@ -78,12 +71,12 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              <a
-                href="#contact"
-                className="mt-7 block border border-[#D91E05] px-4 py-3 text-center text-[10px] font-semibold text-[#D91E05] transition hover:bg-[#D91E05] hover:text-white"
-              >
-                Konsultasi
-              </a>
+             <a
+              href="/contact"
+              className="mt-7 block border border-[#D91E05] px-4 py-3 text-center text-[10px] font-semibold text-[#D91E05] transition hover:bg-[#D91E05] hover:text-white"
+            >
+              Konsultasi
+            </a>
             </div>
           ))}
         </div>

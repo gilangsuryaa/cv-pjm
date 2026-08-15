@@ -1,11 +1,9 @@
 import { MapPin, Phone, Mail } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer
-      id="contact"
-      className="border-t border-[#e5cfc8] bg-white"
-    >
+    <footer className="border-t border-[#e5cfc8] bg-white">
       <div className="mx-auto max-w-[1200px] px-8 py-10">
 
         {/* Footer Content */}
@@ -13,9 +11,12 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h3 className="text-[11px] font-bold text-[#0788D1]">
-              PJM
-            </h3>
+            <a
+              href="/"
+              className="text-[11px] font-bold text-[#0788D1] hover:text-[#D91E05]"
+            >
+              CV. Prima Jaya Mandiri
+            </a>
 
             <p className="mt-4 max-w-[220px] text-[10px] leading-5 text-[#666]">
               Solusi terpercaya untuk kebutuhan AC, Listrik, dan Elektronik.
@@ -30,33 +31,35 @@ export default function Footer() {
             </h3>
 
             <div className="mt-4 flex flex-col gap-2 text-[10px] text-[#666]">
+
               <a
-                href="#services"
+                href="/services"
                 className="hover:text-[#D91E05]"
               >
                 Service AC
               </a>
 
               <a
-                href="#services"
+                href="/services"
                 className="hover:text-[#D91E05]"
               >
                 Instalasi Listrik
               </a>
 
               <a
-                href="#services"
+                href="/services"
                 className="hover:text-[#D91E05]"
               >
                 Perbaikan Elektronik
               </a>
 
               <a
-                href="#services"
+                href="/services"
                 className="hover:text-[#D91E05]"
               >
                 Kontrak Maintenance
               </a>
+
             </div>
           </div>
 
@@ -67,33 +70,35 @@ export default function Footer() {
             </h3>
 
             <div className="mt-4 flex flex-col gap-2 text-[10px] text-[#666]">
+
               <a
-                href="#about"
+                href="/about"
                 className="hover:text-[#D91E05]"
               >
                 Tentang Kami
               </a>
 
               <a
-                href="#portfolio"
+                href="/#portfolio"
                 className="hover:text-[#D91E05]"
               >
                 Portfolio
               </a>
 
               <a
-                href="#"
+                href="/contact"
                 className="hover:text-[#D91E05]"
               >
                 Karir
               </a>
 
               <a
-                href="#contact"
+                href="/contact"
                 className="hover:text-[#D91E05]"
               >
                 Hubungi Kami
               </a>
+
             </div>
           </div>
 
@@ -106,44 +111,62 @@ export default function Footer() {
             <div className="mt-4 flex flex-col gap-3 text-[10px] leading-5 text-[#666]">
 
               {/* Address */}
-              <div className="flex gap-2">
+              <a
+                href="https://www.google.com/maps/place/6%C2%B050'46.7%22S+108%C2%B048'35.2%22E/@-6.8457873,108.8089594,19z/data=!4m4!3m3!8m2!3d-6.8463066!4d108.8097641?hl=id"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-2 hover:text-[#D91E05]"
+              >
                 <MapPin
                   size={13}
                   className="mt-0.5 shrink-0"
                 />
 
                 <p>
-                  Jl. Pakuwon Dusun Karangtangsi RT.08/RW.03, Losari Kidul, Kec.Losari Kab.Cirebon
+                  Jl. Pakuwon No. 50, Dusun Karangtangsi RT. 08/RW. 03,
+                  Desa Losari Kidul, Kecamatan Losari,
                   <br />
-                  Provinsi Jawa Barat Kode Pos   45192
+                  Kabupaten Cirebon, Provinsi Jawa Barat, Kode Pos 45192
                 </p>
-              </div>
+              </a>
 
               {/* Phone */}
-              <div className="flex items-center gap-2">
+              <a
+                href="tel:0231831597"
+                className="flex items-center gap-2 hover:text-[#D91E05]"
+              >
                 <Phone size={13} />
 
                 <p>
                   (0231) 831597
                 </p>
-              </div>
+              </a>
+
               {/* WhatsApp */}
-              <div className="flex items-center gap-2">
-                <Phone size={13} />
+              <a
+                href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-[#D91E05]"
+              >
+                <FaWhatsapp size={15} />
 
                 <p>
                   +62 819-4953-2643
                 </p>
-              </div>
+              </a>
 
               {/* Email */}
-              <div className="flex items-center gap-2">
+              <a
+                href="mailto:primajayamandiricv123@gmail.com"
+                className="flex items-center gap-2 hover:text-[#D91E05]"
+              >
                 <Mail size={13} />
 
                 <p>
-                  info@pjm-teknik.com
+                  primajayamandiricv123@gmail.com
                 </p>
-              </div>
+              </a>
 
             </div>
           </div>
@@ -158,19 +181,21 @@ export default function Footer() {
           </p>
 
           <div className="flex gap-5">
+
             <a
-              href="#"
+              href="/privacy-policy"
               className="hover:text-[#D91E05]"
             >
               Privacy Policy
             </a>
 
             <a
-              href="#"
+              href="/terms"
               className="hover:text-[#D91E05]"
             >
               Terms of Service
             </a>
+
           </div>
 
         </div>
