@@ -71,7 +71,7 @@ export default function EditPortfolioPage() {
     }
 
     getData()
-  }, [id])
+  }, [id, supabase])
 
   async function handleSubmit(
     e: FormEvent<HTMLFormElement>
