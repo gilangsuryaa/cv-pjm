@@ -4,73 +4,47 @@ import { FormEvent, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
-type Service = {
-  id: number
-  name: string
-}
-
-export default function EditPortfolioPage() {
+export default function EditTestimonialPage() {
   const params = useParams()
   const router = useRouter()
   const supabase = createClient()
 
   const id = params.id as string
 
-  const [services, setServices] = useState<Service[]>([])
-
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [serviceId, setServiceId] = useState('')
+  const [customerName, setCustomerName] = useState('')
+  const [customerLocation, setCustomerLocation] = useState('')
+  const [rating, setRating] = useState('5')
+  const [message, setMessage] = useState('')
+  const [status, setStatus] = useState(true)
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    async function getData() {
-      const [
-        portfolioResult,
-        servicesResult,
-      ] = await Promise.all([
-        supabase
-          .from('portfolios')
-          .select('*')
-          .eq('id', id)
-          .single(),
+    async function getTestimonial() {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('*')
+        .eq('id', id)
+        .single()
 
-        supabase
-          .from('services')
-          .select('id, name')
-          .eq('status', true)
-          .order('name'),
-      ])
-
-      if (portfolioResult.error) {
-        setError(portfolioResult.error.message)
+      if (error) {
+        setError(error.message)
         setLoading(false)
         return
       }
 
-      if (servicesResult.error) {
-        setError(servicesResult.error.message)
-        setLoading(false)
-        return
-      }
-
-      const portfolio = portfolioResult.data
-
-      setTitle(portfolio.title ?? '')
-      setDescription(portfolio.description ?? '')
-      setServiceId(
-        portfolio.service_id?.toString() ?? ''
-      )
-
-      setServices(servicesResult.data ?? [])
+      setCustomerName(data.customer_name ?? '')
+      setCustomerLocation(data.customer_location ?? '')
+      setRating(data.rating?.toString() ?? '5')
+      setMessage(data.message ?? '')
+      setStatus(data.status ?? true)
 
       setLoading(false)
     }
 
-    getData()
+    getTestimonial()
   }, [id, supabase])
 
   async function handleSubmit(
@@ -78,20 +52,17 @@ export default function EditPortfolioPage() {
   ) {
     e.preventDefault()
 
-    if (!serviceId) {
-      setError('Pilih service terlebih dahulu.')
-      return
-    }
-
     setSaving(true)
     setError('')
 
     const { error } = await supabase
-      .from('portfolios')
+      .from('testimonials')
       .update({
-        title,
-        description: description || null,
-        service_id: Number(serviceId),
+        customer_name: customerName,
+        customer_location: customerLocation || null,
+        rating: Number(rating),
+        message,
+        status,
       })
       .eq('id', id)
 
@@ -101,7 +72,7 @@ export default function EditPortfolioPage() {
       return
     }
 
-    router.push('/admin/portfolios')
+    router.push('/admin/testimonials')
     router.refresh()
   }
 
@@ -117,11 +88,11 @@ export default function EditPortfolioPage() {
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">
-          Edit Portfolio
+          Edit Testimonial
         </h1>
 
         <p className="mt-1 text-sm text-gray-600">
-          Ubah informasi portfolio.
+          Ubah informasi testimonial pelanggan.
         </p>
       </div>
 
@@ -129,67 +100,95 @@ export default function EditPortfolioPage() {
         onSubmit={handleSubmit}
         className="max-w-2xl space-y-5 rounded-lg border border-gray-200 bg-white p-6"
       >
-        {/* Title */}
+        {/* Customer Name */}
         <div>
           <label className="text-sm font-medium text-gray-700">
-            Judul
+            Nama Customer
           </label>
 
           <input
             type="text"
-            value={title}
+            value={customerName}
             onChange={(e) =>
-              setTitle(e.target.value)
+              setCustomerName(e.target.value)
             }
             required
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
         </div>
 
-        {/* Service */}
+        {/* Location */}
         <div>
           <label className="text-sm font-medium text-gray-700">
-            Service
+            Lokasi
+          </label>
+
+          <input
+            type="text"
+            value={customerLocation}
+            onChange={(e) =>
+              setCustomerLocation(e.target.value)
+            }
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+          />
+        </div>
+
+        {/* Rating */}
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Rating
           </label>
 
           <select
-            value={serviceId}
+            value={rating}
             onChange={(e) =>
-              setServiceId(e.target.value)
+              setRating(e.target.value)
             }
-            required
             className="mt-1 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900"
           >
-            <option value="">
-              Pilih service
-            </option>
-
-            {services.map((service) => (
-              <option
-                key={service.id}
-                value={service.id}
-              >
-                {service.name}
-              </option>
-            ))}
+            <option value="5">★★★★★ — 5</option>
+            <option value="4">★★★★☆ — 4</option>
+            <option value="3">★★★☆☆ — 3</option>
+            <option value="2">★★☆☆☆ — 2</option>
+            <option value="1">★☆☆☆☆ — 1</option>
           </select>
         </div>
 
-        {/* Description */}
+        {/* Message */}
         <div>
           <label className="text-sm font-medium text-gray-700">
-            Deskripsi
+            Pesan
           </label>
 
           <textarea
-            value={description}
+            value={message}
             onChange={(e) =>
-              setDescription(e.target.value)
+              setMessage(e.target.value)
             }
             rows={5}
-            placeholder="Deskripsi pekerjaan..."
+            required
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        {/* Status */}
+        <div className="flex items-center gap-3">
+          <input
+            id="status"
+            type="checkbox"
+            checked={status}
+            onChange={(e) =>
+              setStatus(e.target.checked)
+            }
+            className="h-4 w-4 rounded border-gray-300"
+          />
+
+          <label
+            htmlFor="status"
+            className="text-sm font-medium text-gray-700"
+          >
+            Aktifkan testimonial
+          </label>
         </div>
 
         {/* Error */}
