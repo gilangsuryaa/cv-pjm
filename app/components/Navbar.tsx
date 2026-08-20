@@ -73,7 +73,7 @@ export default function Navbar() {
 
           {/* Products */}
           <a
-            href="/#products"
+            href="/products"
             className="text-[#222] hover:text-[#d91e05]"
           >
             Products
@@ -89,7 +89,7 @@ export default function Navbar() {
 
           {/* Contact */}
           <a
-            href="/#contact"
+            href="/contact"
             className="text-[#222] hover:text-[#d91e05]"
           >
             Contact
