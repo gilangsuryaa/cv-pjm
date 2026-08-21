@@ -15,7 +15,6 @@ export default function ChatWidget() {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll ke pesan paling bawah setiap ada pesan baru
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -65,13 +64,59 @@ export default function ChatWidget() {
     }
   };
 
+  // Helper untuk merender Tautan Markdown [Teks](URL) agar rapi & tidak meluap (overflow)
+  const renderFormattedContent = (content: string, isUser: boolean) => {
+    const lines = content.split('\n');
+    const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+    return lines.map((line, lineIdx) => {
+      const parts = [];
+      let lastIndex = 0;
+      let match;
+
+      while ((match = markdownLinkRegex.exec(line)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push(line.substring(lastIndex, match.index));
+        }
+
+        const label = match[1];
+        const url = match[2];
+        parts.push(
+          <a
+            key={match.index}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`font-semibold underline transition-colors ${
+              isUser ? 'text-white hover:text-blue-100' : 'text-blue-600 hover:text-blue-800'
+            }`}
+          >
+            {label}
+          </a>
+        );
+
+        lastIndex = markdownLinkRegex.lastIndex;
+      }
+
+      if (lastIndex < line.length) {
+        parts.push(line.substring(lastIndex));
+      }
+
+      return (
+        <span key={lineIdx} className="block min-h-[1.25rem]">
+          {parts.length > 0 ? parts : line}
+        </span>
+      );
+    });
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
-      {/* JENDELA POPUP CHATBOT */}
+      {/* POPUP CHATBOT */}
       {isOpen && (
         <div className="mb-4 flex h-[520px] w-[350px] sm:w-[380px] flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl transition-all duration-300">
           
-          {/* Header Popup */}
+          {/* Header */}
           <div className="flex items-center justify-between rounded-t-2xl bg-blue-600 px-4 py-3 text-white shadow-sm">
             <div className="flex items-center gap-3">
               <div className="relative flex h-3 w-3">
@@ -94,7 +139,7 @@ export default function ChatWidget() {
             </button>
           </div>
 
-          {/* Area Pesan Chat */}
+          {/* Area Pesan */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 space-y-2">
@@ -116,13 +161,16 @@ export default function ChatWidget() {
                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed whitespace-pre-line ${
+                  className={`max-w-[82%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm leading-relaxed ${
                     msg.role === 'user'
                       ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
                       : 'bg-white text-gray-800 border border-gray-200 shadow-sm rounded-bl-none'
                   }`}
                 >
-                  {msg.content}
+                  {/* Container Penjaga Layat & Overflow */}
+                  <div className="break-words [overflow-wrap:anywhere] max-w-full overflow-hidden">
+                    {renderFormattedContent(msg.content, msg.role === 'user')}
+                  </div>
                 </div>
               </div>
             ))}
@@ -141,7 +189,7 @@ export default function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Form Input Chat (Dengan Warna Teks Jelas) */}
+          {/* Form Input Chat */}
           <div className="p-3 border-t bg-white rounded-b-2xl">
             <form onSubmit={handleSendMessage} className="flex gap-2">
               <input
@@ -163,7 +211,7 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* TOMBOL BULAT MELAYANG (FLOATING BUTTON TOGGLE) */}
+      {/* Floating Button Toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-xl transition-all duration-300 hover:bg-blue-700 hover:scale-110 active:scale-95 focus:outline-none"

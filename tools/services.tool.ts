@@ -1,16 +1,16 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/supabase';
 
 export const servicesToolDefinition = {
   type: 'function' as const,
   function: {
     name: 'get_services',
-    description: 'Mencari daftar produk AC, layanan cuci/pasang, dan harga resmi dari tabel services Supabase.',
+    description: 'Mengambil daftar layanan, jasa servis AC, instalasi, atau perbaikan dari database.',
     parameters: {
       type: 'object',
       properties: {
-        searchQuery: {
+        category: {
           type: 'string',
-          description: 'Kata kunci produk/layanan (contoh: "Daikin", "Sharp", "Cuci AC", "0.5 PK")',
+          description: 'Kategori layanan jika ada (misal: cuci ac, pasang ac, perbaikan, listrik).',
         },
       },
       required: [],
@@ -18,26 +18,34 @@ export const servicesToolDefinition = {
   },
 };
 
-export async function handleGetServices(args: { searchQuery?: string }) {
-  let query = supabase.from('services').select('*');
+export async function handleGetServices(args?: { category?: string }) {
+  try {
+    let query = supabase.from('services').select('*');
 
-  // Jika pengguna memberikan kata kunci pencarian
-  if (args.searchQuery) {
-    query = query.ilike('name', `%${args.searchQuery}%`);
-  }
+    if (args?.category) {
+      query = query.ilike('category', `%${args.category}%`);
+    }
 
-  const { data, error } = await query;
-  if (error) return { success: false, error: error.message };
+    const { data, error } = await query;
 
-  // Jika pencarian spesifik tidak ketemu, ambilkan 5 produk teratas sebagai fallback
-  if (!data || data.length === 0) {
-    const { data: allServices } = await supabase.from('services').select('*').limit(5);
+    if (error) {
+      console.error('❌ Error Supabase (get_services):', error.message);
+      return { success: false, services: [], error: error.message };
+    }
+
+    if (!data || data.length === 0) {
+      return {
+        success: true,
+        services: [],
+        message: 'Layanan tidak ditemukan di database. Arahkan pengguna menghubungi CS via WhatsApp.',
+      };
+    }
+
     return {
       success: true,
-      message: `Produk dengan kata kunci '${args.searchQuery}' tidak ditemukan. Berikut beberapa pilihan yang tersedia:`,
-      services: allServices || [],
+      services: data,
     };
+  } catch (err: any) {
+    return { success: false, services: [], error: err?.message || 'Error internal' };
   }
-
-  return { success: true, services: data };
 }
