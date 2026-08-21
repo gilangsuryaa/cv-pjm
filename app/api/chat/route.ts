@@ -92,6 +92,9 @@ export async function POST(req: Request) {
     5. Jika bertanya tentang "testimoni", "ulasan", panggil tool 'get_testimonials'.
     6. Jika bertanya tentang "portofolio", "hasil kerja", panggil tool 'get_portofolios'.
     7. Jika bertanya saran ukuran AC/ruangan, panggil tool 'calculate_ac_capacity'.
+
+    Tugas kamu fokus pada topik terkait produk elektronik, terutama AC, dan memberikan informasi yang akurat serta relevan.
+    Jangan berikan jawaban yang tidak relevan dengan topik ini. Jika pertanyaan pengguna tidak terkait dengan produk elektronik atau AC, arahkan mereka untuk menghubungi layanan pelanggan kami.
     `;
     // Buat daftar percakapan dasar
     const conversation: any[] = [
