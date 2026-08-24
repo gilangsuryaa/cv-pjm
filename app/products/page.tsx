@@ -226,10 +226,10 @@ export default function ProductsPage() {
                       href={getWhatsappUrl(product.name)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-4 flex items-center justify-center gap-2 border border-[#d91e05] py-2.5 text-[14px] font-semibold text-[#a00000] transition hover:bg-[#d91e05] hover:text-white"
+                      className="mt-4 flex h-11 items-center justify-center gap-2 border border-[#d91e05] bg-white py-4 text-[14px] font-semibold text-[#a00000] transition hover:bg-[#d91e05] hover:text-white"
                     >
-                      <FaWhatsapp size={17} />
-                      Tanyakan via WhatsApp
+                      <FaWhatsapp size={20} />
+                      <span>Tanyakan via WhatsApp</span>
                     </a>
                   </div>
                 </div>
