@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
+import { GoogleGenAI, Type } from '@google/genai';
 
 import { servicesToolDefinition, handleGetServices } from '@/tools/services.tool';
 import { siteSettingsToolDefinition, handleGetSiteSettings } from '@/tools/siteSettings.tool';
@@ -9,19 +9,10 @@ import { productsToolDefinition, handleGetProducts } from '@/tools/products.tool
 import { portofoliosToolDefinition, handleGetPortofolios } from '@/tools/portofolios.tool';
 import { testimonialsToolDefinition, handleGetTestimonials } from '@/tools/testimonials.tool';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY || '',
+// Inisialisasi Google Gen AI Client
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY || '',
 });
-
-const tools = [
-  servicesToolDefinition,
-  siteSettingsToolDefinition,
-  faqsToolDefinition,
-  acCalculatorToolDefinition,
-  productsToolDefinition,
-  portofoliosToolDefinition,
-  testimonialsToolDefinition,
-];
 
 async function executeTool(name: string, args: any) {
   try {
@@ -49,12 +40,33 @@ async function executeTool(name: string, args: any) {
   }
 }
 
+// Konversi Tool Definitions ke format Function Declarations yang dikenali SDK Gemini
+const functionDeclarations = [
+  servicesToolDefinition,
+  siteSettingsToolDefinition,
+  faqsToolDefinition,
+  acCalculatorToolDefinition,
+  productsToolDefinition,
+  portofoliosToolDefinition,
+  testimonialsToolDefinition,
+].map((tool: any) => {
+  // Jika definisi tool Anda sudah berformat OpenAPI / JSON Schema bawaan
+  if (tool.function) {
+    return {
+      name: tool.function.name,
+      description: tool.function.description,
+      parameters: tool.function.parameters,
+    };
+  }
+  return tool;
+});
+
 export async function POST(req: Request) {
   try {
-    if (!process.env.GROQ_API_KEY) {
-      console.error('❌ GROQ_API_KEY belum diset di .env.local');
+    if (!process.env.GEMINI_API_KEY) {
+      console.error('❌ GEMINI_API_KEY belum diset di .env.local');
       return NextResponse.json(
-        { error: 'GROQ_API_KEY tidak terdeteksi.' },
+        { error: 'GEMINI_API_KEY tidak terdeteksi.' },
         { status: 500 }
       );
     }
@@ -62,27 +74,27 @@ export async function POST(req: Request) {
     const body = await req.json();
     const inputMessages = body.messages || [];
 
-    const systemPrompt = `
+    const systemInstruction = `
     Anda adalah CS Virtual toko elektronik bernama CV PRIMA JAYA MANDIRI, perusahaan yang bergerak di bidang penjualan dan layanan elektronik khususnya AC.
     Sapa pelanggan yang berkunjung ke toko virtual ini dengan ramah dan informatif. Tanyakan kebutuhan mereka terkait produk elektronik, terutama AC, dan berikan rekomendasi yang sesuai.
 
     ATURAN DOKUMEN & LINK:
     1. Ketika memberikan link Google Maps, SELALU gunakan format ringkas: 
-      📍 **Lokasi:** [Buka di Google Maps](https://www.google.com/maps?q=-6.8463066,108.8097641&z=17&hl=id)
-      DILARANG menempelkan URL panjang tanpa penutup format Markdown.
+       📍 **Lokasi:** [Buka di Google Maps](https://www.google.com/maps?q=-6.8463066,108.8097641&z=17&hl=id)
+       DILARANG menempelkan URL panjang tanpa penutup format Markdown.
 
     ATURAN UTAMA LINDUNGI DATA DATABASE:
     1. HANYA GUNAKAN DATA DATABASE: Anda HANYA BOLEH memberikan informasi harga, produk, atau layanan berdasarkan data dari tool database Supabase.
     2. JIKA DATA TIDAK ADA DI DATABASE:
-      Halo! Mohon maaf, untuk saat ini rincian biaya [nama layanan/produk] belum tercantum di dalam katalog kami.
-      
-      Karena kebutuhan [nama layanan/produk] setiap bangunan berbeda-beda (tergantung luas area, titik stopkontak, dan jalur kabel), kami sarankan untuk berkonsultasi langsung dengan tim teknis kami.
-      
-      Hubungi kami untuk penawaran & estimasi harga gratis:
-      📲 WhatsApp CS: 0817 263 597
-      📞 Telepon: 0231 831 597
-      
-      Tim kami siap membantu menghitung estimasi biaya sesuai kebutuhan lokasi Anda!
+       Halo! Mohon maaf, untuk saat ini rincian biaya [nama layanan/produk] belum tercantum di dalam katalog kami.
+       
+       Karena kebutuhan [nama layanan/produk] setiap bangunan berbeda-beda (tergantung luas area, titik stopkontak, dan jalur kabel), kami sarankan untuk berkonsultasi langsung dengan tim teknis kami.
+       
+       Hubungi kami untuk penawaran & estimasi harga gratis:
+       📲 WhatsApp CS: 0817 263 597
+       📞 Telepon: 0231 831 597
+       
+       Tim kami siap membantu menghitung estimasi biaya sesuai kebutuhan lokasi Anda!
 
     PEMANGGILAN TOOL:
     1. Jika bertanya tentang "layanan", "instalasi", "cuci AC", "pasang AC", "servis", panggil tool 'get_services'.
@@ -96,67 +108,69 @@ export async function POST(req: Request) {
     Tugas kamu fokus pada topik terkait produk elektronik, terutama AC, dan memberikan informasi yang akurat serta relevan.
     Jangan berikan jawaban yang tidak relevan dengan topik ini. Jika pertanyaan pengguna tidak terkait dengan produk elektronik atau AC, arahkan mereka untuk menghubungi layanan pelanggan kami.
     `;
-    // Buat daftar percakapan dasar
-    const conversation: any[] = [
-      { role: 'system', content: systemPrompt },
-      ...inputMessages,
-    ];
 
-    // Response awal dari Groq
-    const response = await groq.chat.completions.create({
-      model: 'openai/gpt-oss-20b',
-      messages: conversation,
-      tools: tools as any,
-      tool_choice: 'auto',
+    // Konversi riwayat obrolan dari format OpenAI/Groq (user, assistant, tool) ke format Gemini Contents (user, model)
+    const contents: any[] = inputMessages.map((msg: any) => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content || '' }],
+    }));
+
+    // Pemanggilan awal ke Gemini
+    const initialResponse = await ai.models.generateContent({
+      model: 'gemini-3.1-flash-lite',
+      contents,
+      config: {
+        systemInstruction,
+        tools: [{ functionDeclarations }],
+      },
     });
 
-    const responseMessage = response.choices[0]?.message;
+    // Cek apakah Gemini meminta pemanggilan function/tool
+    const functionCalls = initialResponse.functionCalls;
 
-    // Jika AI memilih menggunakan Tool Call
-    if (responseMessage?.tool_calls && responseMessage.tool_calls.length > 0) {
-      // Masukkan respon assistant beserta spesifikasi tool_calls ke riwayat
-      conversation.push({
-        role: 'assistant',
-        content: responseMessage.content || null,
-        tool_calls: responseMessage.tool_calls,
-      });
+    if (functionCalls && functionCalls.length > 0) {
+      // Masukkan respon model yang meminta eksekusi tool ke riwayat percakapan
+      contents.push(initialResponse.candidates?.[0]?.content);
 
-      // Proses tiap tool call
-      for (const toolCall of responseMessage.tool_calls) {
-        let functionArgs = {};
-        if (toolCall.function.arguments) {
-          try {
-            functionArgs = JSON.parse(toolCall.function.arguments);
-          } catch (e) {
-            functionArgs = {};
-          }
-        }
+      const toolResponseParts = [];
 
-        const toolResult = await executeTool(toolCall.function.name, functionArgs);
+      for (const call of functionCalls) {
+        const toolResult = await executeTool(call.name, call.args);
 
-        // Masukkan hasil ke percakapan dengan role 'tool'
-        conversation.push({
-          role: 'tool',
-          tool_call_id: toolCall.id,
-          content: JSON.stringify(toolResult),
+        // Tambahkan hasil eksekusi tool sebagai part 'functionResponse'
+        toolResponseParts.push({
+          functionResponse: {
+            name: call.name,
+            response: { result: toolResult },
+          },
         });
       }
 
-      // Kirim kembali riwayat utuh ke Groq untuk menyusun jawaban akhir
-      const secondResponse = await groq.chat.completions.create({
-        model: 'openai/gpt-oss-20b',
-        messages: conversation,
+      // Masukkan hasil tool balik ke percakapan dengan role 'user'
+      contents.push({
+        role: 'user',
+        parts: toolResponseParts,
+      });
+
+      // Panggil kembali Gemini dengan membawa data hasil tool
+      const secondResponse = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-lite',
+        contents,
+        config: {
+          systemInstruction,
+          tools: [{ functionDeclarations }],
+        },
       });
 
       return NextResponse.json({
         message:
-          secondResponse.choices[0]?.message?.content ||
+          secondResponse.text ||
           'Mohon maaf, terjadi kendala saat memproses jawaban.',
       });
     }
 
     return NextResponse.json({
-      message: responseMessage?.content || 'Mohon maaf, tidak ada respon.',
+      message: initialResponse.text || 'Mohon maaf, tidak ada respon.',
     });
   } catch (error: any) {
     console.error('❌ ERROR DETECTED DI ROUTE CHAT:', error);
