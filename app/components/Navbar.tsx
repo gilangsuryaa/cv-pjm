@@ -33,70 +33,65 @@ export default function Navbar() {
         </a>
 
         {/* Navigation */}
-        <div className="flex items-center gap-[22px] text-[10px] font-medium">
+          <div className="flex items-center gap-7 text-[13px] font-medium">
 
-          {/* Home */}
-          <a
-            href="/"
-            className={
-              isHome
-                ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
-                : "text-[#222] hover:text-[#d91e05]"
-            }
-          >
-            Home
-          </a>
+            {/* Home */}
+            <a
+              href="/"
+              className={
+                isHome
+                  ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+                  : "text-[#222] hover:text-[#d91e05]"
+              }
+            >
+              Home
+            </a>
 
-          {/* About Us */}
-          <a
-            href="/about"
-            className={
-              isAbout
-                ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
-                : "text-[#222] hover:text-[#d91e05]"
-            }
-          >
-            About Us
-          </a>
+            {/* About Us */}
+            <a
+              href="/about"
+              className={
+                isAbout
+                  ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+                  : "text-[#222] hover:text-[#d91e05]"
+              }
+            >
+              About Us
+            </a>
 
-          {/* Services */}
-          <a
-            href="/services"
-            className={
-              pathname === "/services"
-                ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
-                : "text-[#222] hover:text-[#d91e05]"
-            }
-          >
-            Services
-          </a>
+            {/* Services */}
+            <a
+              href="/services"
+              className={
+                pathname === "/services"
+                  ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+                  : "text-[#222] hover:text-[#d91e05]"
+              }
+            >
+              Services
+            </a>
 
-          {/* Products */}
-          <a
-            href="/products"
-            className="text-[#222] hover:text-[#d91e05]"
-          >
-            Products
-          </a>
+            <a
+              href="/products"
+              className="text-[#222] hover:text-[#d91e05]"
+            >
+              Products
+            </a>
 
-          {/* Portfolio */}
-          <a
-            href="/#portfolio"
-            className="text-[#222] hover:text-[#d91e05]"
-          >
-            Portfolio
-          </a>
+            <a
+              href="/#portfolio"
+              className="text-[#222] hover:text-[#d91e05]"
+            >
+              Portfolio
+            </a>
 
-          {/* Contact */}
-          <a
-            href="/contact"
-            className="text-[#222] hover:text-[#d91e05]"
-          >
-            Contact
-          </a>
-
-        </div>
-
+            <a
+              href="/contact"
+              className="text-[#222] hover:text-[#d91e05]"
+            >
+              Contact
+            </a>
+          </div>
        {/* WhatsApp */}
           <a
             href={whatsappUrl}

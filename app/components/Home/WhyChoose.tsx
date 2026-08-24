@@ -38,7 +38,7 @@ export default function WhyChoose() {
       <div className="mx-auto max-w-[1200px] px-8">
 
         <h2 className="text-center text-[24px] font-bold text-[#0788D1]">
-          Mengapa Memilih PJM?
+          Mengapa Memilih CV. Prima Jaya Mandiri?
         </h2>
 
         <div className="mt-8 grid grid-cols-4 gap-5">

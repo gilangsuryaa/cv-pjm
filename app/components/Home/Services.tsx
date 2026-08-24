@@ -36,16 +36,16 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="bg-[#FFF8E8] py-14"
+      className="bg-white py-14"
     >
       <div className="mx-auto max-w-[1200px] px-8">
 
         <div className="text-center">
-          <h2 className="text-[24px] font-bold text-[#0788D1]">
+          <h2 className="text-[24px] font-bold text-[#0F4C75]">
             Layanan Kami
           </h2>
 
-          <p className="mt-2 text-[11px] text-[#666]">
+          <p className="mt-2 text-[11px] text-[#64748B]">
             Solusi profesional untuk kebutuhan AC, listrik, dan elektronik Anda.
           </p>
         </div>
@@ -57,7 +57,7 @@ export default function Services() {
             return (
               <div
                 key={service.title}
-                className="border border-[#dddddd] bg-white px-6 py-7"
+                className="rounded-xl border border-[#DCEAF3] bg-white px-6 py-7 shadow-[0_6px_20px_rgba(15,76,117,0.07)] transition duration-300 hover:-translate-y-1 hover:border-[#B9DDF0] hover:shadow-[0_10px_28px_rgba(15,76,117,0.12)]"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#EAF6FC]">
                   <Icon
@@ -67,17 +67,17 @@ export default function Services() {
                   />
                 </div>
 
-                <h3 className="mt-5 text-[14px] font-bold text-[#222]">
+                <h3 className="mt-5 text-[14px] font-bold text-[#0F4C75]">
                   {service.title}
                 </h3>
 
-                <p className="mt-3 text-[11px] leading-5 text-[#666]">
+                <p className="mt-3 text-[11px] leading-5 text-[#64748B]">
                   {service.description}
                 </p>
 
                 <a
                   href="#contact"
-                  className="mt-5 inline-block text-[10px] font-semibold text-[#D91E05] hover:underline"
+                  className="mt-5 inline-block text-[10px] font-semibold text-[#D91E05] transition hover:text-[#B91803] hover:underline"
                 >
                   Selengkapnya →
                 </a>
