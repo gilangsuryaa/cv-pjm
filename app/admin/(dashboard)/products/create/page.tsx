@@ -3,6 +3,7 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ImageUpload from '@/components/admin/image-upload'
 
 export default function CreateProductPage() {
   const router = useRouter()
@@ -16,6 +17,7 @@ export default function CreateProductPage() {
   const [minRoomArea, setMinRoomArea] = useState('')
   const [maxRoomArea, setMaxRoomArea] = useState('')
   const [description, setDescription] = useState('')
+  const [image, setImage] = useState('')
   const [stockStatus, setStockStatus] = useState(true)
 
   const [loading, setLoading] = useState(false)
@@ -43,6 +45,7 @@ export default function CreateProductPage() {
           : null,
         description: description || null,
         stock_status: stockStatus,
+        image: image || null,
       })
 
     if (error) {
@@ -207,6 +210,20 @@ export default function CreateProductPage() {
             placeholder="Deskripsi produk..."
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Gambar Produk
+          </label>
+
+          <div className="mt-1">
+            <ImageUpload
+              bucket="products"
+              value={image}
+              onChange={setImage}
+            />
+          </div>
         </div>
 
         {/* Stock */}
