@@ -17,6 +17,7 @@ export default function ImageUpload({
   onChange,
 }: ImageUploadProps) {
   const supabase = createClient()
+  const [localPreview, setLocalPreview] = useState('')
 
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
@@ -27,6 +28,7 @@ export default function ImageUpload({
     const file = e.target.files?.[0]
 
     if (!file) return
+    setLocalPreview(URL.createObjectURL(file))
 
     setError('')
     setUploading(true)
@@ -63,7 +65,7 @@ export default function ImageUpload({
     setUploading(false)
   }
 
-  const imagePreview = previewUrl || null
+  const imagePreview = previewUrl || localPreview || null
 
   return (
     <div className="space-y-3">
