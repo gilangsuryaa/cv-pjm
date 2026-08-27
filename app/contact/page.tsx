@@ -55,7 +55,7 @@ ${description}`;
       <Navbar />
 
       {/* HERO */}
-      <section className="border-b border-[#bfe8f8] bg-white px-8 py-12 text-center">
+      <section className="border-b border-[#bfe8f8] bg-white px-4 py-10 text-center sm:px-6 sm:py-12">
         <h1 className="text-[48px] font-bold tracking-tight text-[#0788D1]">
           Technical Consultation
         </h1>

@@ -57,8 +57,8 @@ export default function ProductsPage() {
     <main className="min-h-screen bg-[#fcf9f8] text-[#292525]">
       <Navbar />
 
-      <section className="mx-auto max-w-[1200px] px-8 py-9">
-        <div className="grid grid-cols-[278px_1fr] gap-6">
+      <section className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[278px_1fr]">
 
           {/* SIDEBAR */}
           <aside>
@@ -115,7 +115,7 @@ export default function ProductsPage() {
             </div>
 
             {/* AI Assistance */}
-            <div className="mt-8 border border-[#a90000] bg-[#f7f4f3] p-4">
+            <div className="mt-6 border border-[#a90000] bg-[#f7f4f3] p-4 lg:mt-8">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-[20px] font-semibold leading-7">
@@ -153,17 +153,17 @@ export default function ProductsPage() {
           <div>
 
             {/* Header */}
-            <div className="flex items-end justify-between border-b border-[#e4b9b2] pb-3">
-              <h1 className="text-[32px] font-bold tracking-tight">
+            <div className="flex flex-col gap-4 border-b border-[#e4b9b2] pb-3 sm:flex-row sm:items-end sm:justify-between">
+              <h1 className="text-[26px] font-bold tracking-tight sm:text-[32px]">
                 Pendingin Ruangan (AC)
-              </h1>
+              </h1> 
 
-              <div className="flex items-center gap-2 text-[12px]">
+              <div className="flex w-full items-center gap-2 text-[12px] sm:w-auto">
                 <span className="text-[#624b46]">
                   Urutkan berdasarkan:
                 </span>
 
-                <select className="h-8 w-[181px] border border-[#e2b7b0] bg-white px-2 text-[13px] outline-none">
+                <select className="h-8 w-full border border-[#e2b7b0] bg-white px-2 text-[13px] outline-none sm:w-[181px]">
                   <option>Unggulan</option>
                   <option>Terbaru</option>
                   <option>Nama A-Z</option>
@@ -172,14 +172,14 @@ export default function ProductsPage() {
             </div>
 
             {/* Product Cards */}
-            <div className="mt-8 grid grid-cols-3 gap-6">
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-8 lg:grid-cols-3 lg:gap-6">
               {products.map((product) => (
                 <div
                   key={product.name}
                   className="overflow-hidden border border-[#e5bbb4] bg-white"
                 >
                   {/* Image */}
-                  <div className="relative h-[277px] bg-[#eeeeee]">
+                  <div className="relative h-[240px] bg-[#eeeeee] sm:h-[260px] lg:h-[277px]">
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -226,9 +226,9 @@ export default function ProductsPage() {
                       href={getWhatsappUrl(product.name)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-4 flex h-11 items-center justify-center gap-2 border border-[#d91e05] bg-white py-4 text-[14px] font-semibold text-[#a00000] transition hover:bg-[#d91e05] hover:text-white"
+                      className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 border border-[#d91e05] bg-white px-3 py-2 text-center text-[14px] font-semibold text-[#a00000] transition hover:bg-[#d91e05] hover:text-white"
                     >
-                      <FaWhatsapp size={20} />
+                      <FaWhatsapp size={18} className="shrink-0" />
                       <span>Tanyakan via WhatsApp</span>
                     </a>
                   </div>
