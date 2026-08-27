@@ -107,16 +107,6 @@ export default function ChatWidget() {
             {/* TAMPILAN AWAL / WELCOME SCREEN DENGAN LOGO */}
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full text-center space-y-3 px-2">
-                <div className="relative h-28 w-28 overflow-hidden rounded-2xl p-2 bg-white shadow-md border border-gray-100 flex items-center justify-center">
-                  <Image
-                    src="/logo.png"
-                    alt="PJM Virtual Assistant"
-                    width={112}
-                    height={112}
-                    priority
-                    className="object-contain"
-                  />
-                </div>
                 <div>
                   <h4 className="text-base font-bold text-gray-800">Selamat Datang!</h4>
                   <p className="text-xs font-semibold text-blue-600 mt-0.5">PJM Virtual Assistant</p>
