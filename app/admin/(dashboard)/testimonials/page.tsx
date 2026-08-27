@@ -24,8 +24,30 @@ export default async function TestimonialsPage() {
     )
   }
 
+  const testimonialsWithImageUrl = await Promise.all(
+    testimonials.map(async (testimonial) => {
+      if (!testimonial.image) {
+        return {
+          ...testimonial,
+          imageUrl: null,
+        }
+      }
+
+      const { data: signedUrlData } =
+        await supabase.storage
+          .from('testimonials')
+          .createSignedUrl(testimonial.image, 60 * 60)
+
+      return {
+        ...testimonial,
+        imageUrl: signedUrlData?.signedUrl ?? null,
+      }
+    })
+  )
+
   return (
     <div>
+      {/* Header */}
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -45,10 +67,12 @@ export default async function TestimonialsPage() {
         </Link>
       </div>
 
+      {/* Table */}
       <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
         <table className="w-full text-sm">
           <thead className="border-b border-gray-200 bg-gray-50">
             <tr>
+
               <th className="px-6 py-3 text-left font-semibold text-gray-700">
                 Customer
               </th>
@@ -69,6 +93,10 @@ export default async function TestimonialsPage() {
                 Status
               </th>
 
+              <th className="px-6 py-3 text-left font-semibold text-gray-700">
+                Foto
+              </th>
+              
               <th className="px-6 py-3 text-right font-semibold text-gray-700">
                 Aksi
               </th>
@@ -76,26 +104,31 @@ export default async function TestimonialsPage() {
           </thead>
 
           <tbody className="divide-y divide-gray-200">
-            {testimonials.map((testimonial) => (
+            {testimonialsWithImageUrl.map((testimonial) => (
               <tr key={testimonial.id}>
+                {/* Customer */}
                 <td className="px-6 py-4 font-medium text-gray-900">
                   {testimonial.customer_name}
                 </td>
 
+                {/* Lokasi */}
                 <td className="px-6 py-4 text-gray-700">
                   {testimonial.customer_location ?? '-'}
                 </td>
 
+                {/* Rating */}
                 <td className="px-6 py-4 text-gray-900">
                   {'★'.repeat(testimonial.rating ?? 0)}
                 </td>
 
+                {/* Pesan */}
                 <td className="max-w-md px-6 py-4 text-gray-600">
                   <p className="truncate">
                     {testimonial.message ?? '-'}
                   </p>
                 </td>
 
+                {/* Status */}
                 <td className="px-6 py-4">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-medium ${
@@ -110,6 +143,22 @@ export default async function TestimonialsPage() {
                   </span>
                 </td>
 
+                {/* Foto */}
+                <td className="px-6 py-4">
+                  {testimonial.imageUrl ? (
+                    <img
+                      src={testimonial.imageUrl}
+                      alt={testimonial.customer_name}
+                      className="h-12 w-12 border border-gray-200 object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-xs text-gray-400">
+                      -
+                    </div>
+                  )}
+                </td>
+
+                {/* Aksi */}
                 <td className="px-6 py-4 text-right">
                   <Link
                     href={`/admin/testimonials/${testimonial.id}/edit`}
@@ -118,7 +167,9 @@ export default async function TestimonialsPage() {
                     Edit
                   </Link>
 
-                  <DeleteTestimonialButton id={testimonial.id} />
+                  <DeleteTestimonialButton
+                    id={testimonial.id}
+                  />
                 </td>
               </tr>
             ))}

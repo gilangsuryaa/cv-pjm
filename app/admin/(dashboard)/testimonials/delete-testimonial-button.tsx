@@ -12,6 +12,7 @@ export default function DeleteTestimonialButton({
   id,
 }: DeleteTestimonialButtonProps) {
   const router = useRouter()
+
   const supabase = createClient()
 
   const [loading, setLoading] = useState(false)
@@ -25,15 +26,53 @@ export default function DeleteTestimonialButton({
 
     setLoading(true)
 
-    const { error } = await supabase
+    // Ambil path gambar sebelum row dihapus
+    const { data: testimonial, error: fetchError } =
+      await supabase
+        .from('testimonials')
+        .select('image')
+        .eq('id', id)
+        .single()
+
+    if (fetchError) {
+      alert(
+        `Gagal mengambil data testimonial: ${fetchError.message}`
+      )
+      setLoading(false)
+      return
+    }
+
+    const imagePath = testimonial?.image ?? null
+
+    // Hapus row testimonial
+    const { error: deleteError } = await supabase
       .from('testimonials')
       .delete()
       .eq('id', id)
 
-    if (error) {
-      alert(`Gagal menghapus: ${error.message}`)
+    if (deleteError) {
+      alert(
+        `Gagal menghapus testimonial: ${deleteError.message}`
+      )
       setLoading(false)
       return
+    }
+
+    // Hapus gambar dari Storage kalau testimonial punya gambar
+    if (imagePath) {
+      const { error: storageError } =
+        await supabase.storage
+          .from('testimonials')
+          .remove([imagePath])
+
+      if (storageError) {
+        alert(
+          `Testimonial berhasil dihapus, tetapi gambar gagal dihapus dari Storage: ${storageError.message}`
+        )
+        setLoading(false)
+        router.refresh()
+        return
+      }
     }
 
     router.refresh()
