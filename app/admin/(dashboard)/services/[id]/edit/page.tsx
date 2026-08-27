@@ -18,6 +18,7 @@ function generateSlug(text: string) {
 }
 
 export default function EditServicePage() {
+
   const params = useParams()
   const router = useRouter()
   const supabase = createClient()
@@ -30,6 +31,7 @@ export default function EditServicePage() {
   const [price, setPrice] = useState('')
   const [image, setImage] = useState('')
   const [imagePreview, setImagePreview] = useState('')
+  const [originalImage, setOriginalImage] = useState('')
   const [status, setStatus] = useState(true)
 
   const [loading, setLoading] = useState(true)
@@ -56,15 +58,15 @@ export default function EditServicePage() {
       setPrice(data.price?.toString() ?? '')
       setStatus(data.status)
       setImage(data.image ?? '')
+      setOriginalImage(data.image ?? '')
 
       if (data.image) {
-        const { data: signedUrlData } =
-          await supabase.storage
-            .from('services')
-            .createSignedUrl(data.image, 60 * 60)
+        const { data: signedImage } = await supabase.storage
+          .from('services')
+          .createSignedUrl(data.image, 60 * 60)
 
         setImagePreview(
-          signedUrlData?.signedUrl ?? ''
+          signedImage?.signedUrl ?? ''
         )
       }
 
@@ -79,9 +81,30 @@ export default function EditServicePage() {
   ) {
     e.preventDefault()
 
+    console.log('HANDLE SUBMIT JALAN')
+    console.log('CURRENT IMAGE STATE:', image)
+
     setSaving(true)
     setError('')
 
+    // Simpan path gambar lama sebelum update
+    const { data: currentService, error: fetchError } =
+      await supabase
+        .from('services')
+        .select('image')
+        .eq('id', id)
+        .single()
+
+    if (fetchError) {
+      setError(fetchError.message)
+      setSaving(false)
+      return
+    }
+
+    const oldImage = currentService?.image ?? null
+    const newImage = image || null
+
+    // Update data service
     const { error } = await supabase
       .from('services')
       .update({
@@ -98,6 +121,25 @@ export default function EditServicePage() {
       setError(error.message)
       setSaving(false)
       return
+    }
+
+    // Hapus gambar lama hanya kalau memang diganti
+    if (
+      originalImage &&
+      image &&
+      originalImage !== image
+    ) {
+      const { error: deleteError } =
+        await supabase.storage
+          .from('services')
+          .remove([originalImage])
+
+      if (deleteError) {
+        console.error(
+          'Gagal menghapus gambar lama:',
+          deleteError.message
+        )
+      }
     }
 
     router.push('/admin/services')
@@ -236,9 +278,14 @@ export default function EditServicePage() {
               bucket="services"
               value={image}
               previewUrl={imagePreview}
-              onChange={(path) => {
+              onChange={async (path) => {
                 setImage(path)
-                setImagePreview('')
+
+                const { data } = await supabase.storage
+                  .from('services')
+                  .createSignedUrl(path, 60 * 60)
+
+                setImagePreview(data?.signedUrl ?? '')
               }}
             />
           </div>
