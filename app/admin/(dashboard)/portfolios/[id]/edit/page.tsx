@@ -102,6 +102,23 @@ export default function EditPortfolioPage() {
     setSaving(true)
     setError('')
 
+    // Ambil data image lama terlebih dahulu
+    const { data: currentPortfolio, error: fetchError } =
+      await supabase
+        .from('portfolios')
+        .select('image')
+        .eq('id', id)
+        .single()
+
+    if (fetchError) {
+      setError(fetchError.message)
+      setSaving(false)
+      return
+    }
+
+    const oldImage = currentPortfolio?.image ?? null
+
+    // Update database dengan gambar baru
     const { error } = await supabase
       .from('portfolios')
       .update({
@@ -116,6 +133,20 @@ export default function EditPortfolioPage() {
       setError(error.message)
       setSaving(false)
       return
+    }
+
+    // Kalau gambar berubah, hapus gambar lama dari Storage
+    if (oldImage && oldImage !== image) {
+      const { error: deleteImageError } =
+        await supabase.storage
+          .from('portfolios')
+          .remove([oldImage])
+
+      if (deleteImageError) {
+        alert(
+          `Portfolio berhasil disimpan, tetapi gambar lama gagal dihapus: ${deleteImageError.message}`
+        )
+      }
     }
 
     router.push('/admin/portfolios')
