@@ -7,22 +7,22 @@ import {
   Send,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 const whatsappNumber = "6281949532643";
 
-export default function ContactPage() {
+function ContactContent() {
   const searchParams = useSearchParams();
 
   // Ambil layanan dari URL
   const serviceFromUrl = searchParams.get("service") || "";
 
-  // State layanan agar dropdown bisa diubah manual
+  // State layanan agar dropdown tetap bisa diubah manual
   const [selectedService, setSelectedService] = useState(serviceFromUrl);
 
-  // Update layanan jika parameter URL berubah
+  // Update dropdown jika parameter service di URL berubah
   useEffect(() => {
     setSelectedService(serviceFromUrl);
   }, [serviceFromUrl]);
@@ -59,16 +59,15 @@ Layanan yang Dibutuhkan: ${service}
 Detail kebutuhan / masalah:
 ${description}`;
 
-    window.open(
-      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`,
-      "_blank"
-    );
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <main className="min-h-screen bg-[#fcf9f8] text-[#292525]">
-      <Navbar />
-
+    <>
       {/* HERO */}
       <section className="border-b border-[#bfe8f8] bg-white px-5 py-10 text-center sm:px-8 sm:py-14">
         <h1 className="text-[32px] font-bold tracking-tight text-[#0788D1] sm:text-[48px]">
@@ -151,6 +150,7 @@ ${description}`;
                 loading="lazy"
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
+                title="Lokasi CV Prima Jaya Mandiri"
               />
             </div>
           </div>
@@ -191,7 +191,8 @@ ${description}`;
                     name="name"
                     required
                     type="text"
-                    className="h-[42px] w-full border border-[#d4d4d4] px-3 text-[13px] outline-none focus:border-[#0788D1] sm:text-[14px]"
+                    placeholder="Masukkan nama / perusahaan"
+                    className="h-[42px] w-full border border-[#d4d4d4] px-3 text-[13px] outline-none transition focus:border-[#0788D1] sm:text-[14px]"
                   />
                 </div>
 
@@ -208,7 +209,8 @@ ${description}`;
                     name="whatsapp"
                     required
                     type="tel"
-                    className="h-[42px] w-full border border-[#d4d4d4] px-3 text-[13px] outline-none focus:border-[#0788D1] sm:text-[14px]"
+                    placeholder="08xxxxxxxxxx"
+                    className="h-[42px] w-full border border-[#d4d4d4] px-3 text-[13px] outline-none transition focus:border-[#0788D1] sm:text-[14px]"
                   />
                 </div>
               </div>
@@ -228,15 +230,19 @@ ${description}`;
                   required
                   value={selectedService}
                   onChange={(e) => setSelectedService(e.target.value)}
-                  className="h-[42px] w-full border border-[#d4d4d4] bg-white px-3 text-[13px] outline-none focus:border-[#0788D1] sm:text-[14px]"
+                  className="h-[42px] w-full border border-[#d4d4d4] bg-white px-3 text-[13px] outline-none transition focus:border-[#0788D1] sm:text-[14px]"
                 >
                   <option value="" disabled>
                     Pilih jenis layanan...
                   </option>
 
-                  <option value="Perawatan AC">Perawatan AC</option>
+                  <option value="Perawatan AC">
+                    Perawatan AC
+                  </option>
 
-                  <option value="Instalasi AC">Instalasi AC</option>
+                  <option value="Instalasi AC">
+                    Instalasi AC
+                  </option>
 
                   <option value="Instalasi Listrik">
                     Instalasi Listrik
@@ -250,7 +256,9 @@ ${description}`;
                     Elektronik Industri
                   </option>
 
-                  <option value="Lainnya">Lainnya</option>
+                  <option value="Lainnya">
+                    Lainnya
+                  </option>
                 </select>
               </div>
 
@@ -273,7 +281,7 @@ ${description}`;
                       ? `Saya ingin berkonsultasi mengenai ${selectedService}...`
                       : "Jelaskan kebutuhan atau masalah Anda..."
                   }
-                  className="w-full resize-none border border-[#d4d4d4] px-3 py-3 text-[13px] outline-none focus:border-[#0788D1] sm:text-[14px]"
+                  className="w-full resize-none border border-[#d4d4d4] px-3 py-3 text-[13px] outline-none transition focus:border-[#0788D1] sm:text-[14px]"
                 />
               </div>
 
@@ -291,6 +299,27 @@ ${description}`;
           </div>
         </div>
       </section>
+    </>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <main className="min-h-screen bg-[#fcf9f8] text-[#292525]">
+      <Navbar />
+
+      {/* useSearchParams() berada di dalam Suspense */}
+      <Suspense
+        fallback={
+          <div className="flex min-h-[500px] items-center justify-center bg-[#fcf9f8]">
+            <p className="text-sm text-[#654f4a]">
+              Memuat halaman kontak...
+            </p>
+          </div>
+        }
+      >
+        <ContactContent />
+      </Suspense>
 
       <Footer />
     </main>

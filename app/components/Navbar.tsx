@@ -1,262 +1,182 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronRight, ChevronLeft, Bot } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import { Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 
-const products = [
-  {
-    category: "Split Unit",
-    name: "Daikin Inverter 1 PK",
-    description:
-      "AC dinding efisiensi tinggi yang cocok untuk perumahan dan komersial ringan.",
-    image: "/images/products/daikin-inverter.png",
-    specs: [
-      ["Kapasitas", "9.000 BTU/h"],
-      ["Daya", "800W"],
-      ["Refrigeran", "R32"],
-    ],
-  },
-  {
-    category: "Cassette",
-    name: "Panasonic Cassette 2 PK",
-    description:
-      "Unit plafon yang ideal untuk ruang kantor terbuka dan lingkungan ritel.",
-    image: "/images/products/panasonic-cassette.png",
-    specs: [
-      ["Kapasitas", "18.000 BTU/h"],
-      ["Daya", "1650W"],
-      ["Fase", "Satu Fase"],
-    ],
-  },
-  {
-    category: "Standing",
-    name: "Gree Floor Standing 3 PK",
-    description:
-      "Unit berdiri yang kuat untuk aula besar, ruang server, dan ruang industri.",
-    image: "/images/products/gree-standing.png",
-    specs: [
-      ["Kapasitas", "27.000 BTU/h"],
-      ["Daya", "2500W"],
-      ["Fase", "3-Fase"],
-    ],
-  },
-];
+export default function Navbar() {
+  const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const whatsappNumber = "6281949532643";
+  const isHome = pathname === "/";
+  const isAbout = pathname === "/about";
+  const isServices = pathname === "/services";
+  const isProducts = pathname === "/products";
+  const isContact = pathname === "/contact";
 
-function getWhatsappUrl(productName: string) {
-  const message = `Halo CV Prima Jaya Mandiri, Saya mau konsultasi mengenai produk ${productName}.`;
+  const whatsappMessage =
+    "Halo CV Prima Jaya Mandiri, Saya Mau Konsultasi";
 
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-}
+  const whatsappUrl = `https://wa.me/6281949532643?text=${encodeURIComponent(
+    whatsappMessage
+  )}`;
 
-export default function ProductsPage() {
+  const navClass = (active: boolean) =>
+    active
+      ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
+      : "text-[#222] transition hover:text-[#d91e05]";
+
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
-    <main className="min-h-screen bg-[#fcf9f8] text-[#292525]">
-      <Navbar />
+    <nav className="border-b border-[#e5cfc8] bg-white">
+      <div className="mx-auto flex min-h-[57px] max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo + Nama Perusahaan */}
+        <a href="/" className="flex shrink-0 items-center gap-2">
+          <Image
+            src="/images/Logo.png"
+            alt="Logo CV. Prima Jaya Mandiri"
+            width={56}
+            height={56}
+            className="h-12 w-12 object-contain sm:h-14 sm:w-14"
+          />
 
-      <section className="mx-auto max-w-[1200px] px-5 py-7 sm:px-8 sm:py-9">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[278px_1fr]">
-          {/* SIDEBAR */}
-          <aside>
-            {/* Category */}
-            <div className="border border-[#e9b9b0] bg-white">
-              <h2 className="px-4 pt-4 text-[18px] font-semibold text-[#7f0000] sm:text-[20px]">
-                Kategori
-              </h2>
+          <div className="leading-tight">
+            <p className="text-[14px] font-bold text-[#0788D1] sm:text-[16px]">
+              CV. Prima Jaya Mandiri
+            </p>
+            <p className="text-[10px] text-[#777] sm:text-[11px]">
+              Layanan Teknik & Pemeliharaan
+            </p>
+          </div>
+        </a>
 
-              <div className="mt-2 pb-3">
-                <a
-                  href="/products"
-                  className="mx-3 flex items-center justify-between border-l-4 border-[#a90000] bg-[#f3f0ef] px-3 py-3 text-[12px] font-semibold text-[#970000] sm:mx-4 sm:text-[14px]"
-                >
-                  <span>PENDINGIN RUANGAN</span>
-                  <ChevronRight size={14} />
-                </a>
+        {/* Desktop Navigation */}
+        <div className="hidden items-center gap-5 text-[13px] font-medium md:flex lg:gap-7">
+          <a href="/" className={navClass(isHome)}>
+            Home
+          </a>
 
-                <a
-                  href="/products?category=kompresor"
-                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
-                >
-                  <span>Kompresor</span>
-                  <ChevronRight size={14} />
-                </a>
+          <a href="/about" className={navClass(isAbout)}>
+            About Us
+          </a>
 
-                <a
-                  href="/products?category=panel"
-                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
-                >
-                  <span>Panel Listrik</span>
-                  <ChevronRight size={14} />
-                </a>
+          <a href="/services" className={navClass(isServices)}>
+            Services
+          </a>
 
-                <a
-                  href="/products?category=kabel"
-                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
-                >
-                  <span>Kabel & Instalasi</span>
-                  <ChevronRight size={14} />
-                </a>
+          <a href="/products" className={navClass(isProducts)}>
+            Products
+          </a>
 
-                <a
-                  href="/products?category=sensor"
-                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
-                >
-                  <span>Sensor & Relay</span>
-                  <ChevronRight size={14} />
-                </a>
-              </div>
-            </div>
+          <a
+            href="/#portfolio"
+            className="text-[#222] transition hover:text-[#d91e05]"
+          >
+            Portfolio
+          </a>
 
-            {/* AI Assistance */}
-            <div className="mt-5 border border-[#a90000] bg-[#f7f4f3] p-4 sm:mt-8">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-[18px] font-semibold leading-6 sm:text-[20px] sm:leading-7">
-                    Butuh Bantuan
-                    <br />
-                    Memilih?
-                  </h3>
-                </div>
+          <a href="/contact" className={navClass(isContact)}>
+            Contact
+          </a>
+        </div>
 
-                <Bot
-                  size={42}
-                  strokeWidth={1.5}
-                  className="text-[#dedada] sm:h-12 sm:w-12"
-                />
-              </div>
+        {/* Desktop WhatsApp */}
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden items-center gap-1.5 bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white transition hover:bg-[#b91803] md:flex"
+        >
+          <FaWhatsapp size={13} />
+          WhatsApp CTA
+        </a>
 
-              <p className="mt-3 text-[12px] leading-5 text-[#725b56] sm:text-[14px]">
-                Asisten AI kami dapat merekomendasikan unit AC yang tepat
-                berdasarkan ukuran dan kebutuhan ruangan Anda.
-              </p>
+        {/* Mobile Menu Button */}
+        <button
+          type="button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="flex items-center justify-center p-2 text-[#222] md:hidden"
+          aria-label="Toggle menu"
+          aria-expanded={isMenuOpen}
+        >
+          {isMenuOpen ? <X size={25} /> : <Menu size={25} />}
+        </button>
+      </div>
 
-              <a
-                href={getWhatsappUrl("AC")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 flex items-center justify-center gap-2 border border-[#a90000] bg-white py-2.5 text-[12px] font-semibold text-[#900000] transition hover:bg-[#a90000] hover:text-white sm:text-[14px]"
-              >
-                <Bot size={17} />
-                Mulai Chat AI
-              </a>
-            </div>
-          </aside>
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="border-t border-[#e5cfc8] bg-white px-4 py-4 md:hidden">
+          <div className="flex flex-col gap-1 text-[14px] font-medium">
+            <a
+              href="/"
+              onClick={closeMenu}
+              className={`py-3 ${isHome ? "text-[#d91e05]" : "text-[#222]"}`}
+            >
+              Home
+            </a>
 
-          {/* PRODUCTS */}
-          <div>
-            {/* Header */}
-            <div className="flex flex-col gap-4 border-b border-[#e4b9b2] pb-3 sm:flex-row sm:items-end sm:justify-between">
-              <h1 className="text-[26px] font-bold tracking-tight sm:text-[32px]">
-                Pendingin Ruangan (AC)
-              </h1>
+            <a
+              href="/about"
+              onClick={closeMenu}
+              className={`py-3 ${isAbout ? "text-[#d91e05]" : "text-[#222]"}`}
+            >
+              About Us
+            </a>
 
-              <div className="flex w-full items-center justify-between gap-2 text-[11px] sm:w-auto sm:text-[12px]">
-                <span className="text-[#624b46]">
-                  Urutkan berdasarkan:
-                </span>
+            <a
+              href="/services"
+              onClick={closeMenu}
+              className={`py-3 ${
+                isServices ? "text-[#d91e05]" : "text-[#222]"
+              }`}
+            >
+              Services
+            </a>
 
-                <select className="h-8 w-[145px] border border-[#e2b7b0] bg-white px-2 text-[12px] outline-none sm:w-[181px] sm:text-[13px]">
-                  <option>Unggulan</option>
-                  <option>Terbaru</option>
-                  <option>Nama A-Z</option>
-                </select>
-              </div>
-            </div>
+            <a
+              href="/products"
+              onClick={closeMenu}
+              className={`py-3 ${
+                isProducts ? "text-[#d91e05]" : "text-[#222]"
+              }`}
+            >
+              Products
+            </a>
 
-            {/* Product Cards */}
-            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-8 lg:grid-cols-3 lg:gap-6">
-              {products.map((product) => (
-                <div
-                  key={product.name}
-                  className="overflow-hidden border border-[#e5bbb4] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-md"
-                >
-                  {/* Image */}
-                  <div className="relative h-[240px] bg-[#eeeeee] sm:h-[260px] lg:h-[277px]">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      className="object-contain p-2"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
+            <a
+              href="/#portfolio"
+              onClick={closeMenu}
+              className="py-3 text-[#222]"
+            >
+              Portfolio
+            </a>
 
-                    <span className="absolute left-2 top-2 bg-[#a8d1fa] px-2 py-1 text-[10px] text-[#315b83] sm:text-[12px]">
-                      {product.category}
-                    </span>
-                  </div>
+            <a
+              href="/contact"
+              onClick={closeMenu}
+              className={`py-3 ${
+                isContact ? "text-[#d91e05]" : "text-[#222]"
+              }`}
+            >
+              Contact
+            </a>
 
-                  {/* Content */}
-                  <div className="p-4">
-                    <h2 className="text-[14px] font-semibold sm:text-[15px]">
-                      {product.name}
-                    </h2>
-
-                    <p className="mt-1 text-[12px] leading-5 text-[#654f4a] sm:text-[14px]">
-                      {product.description}
-                    </p>
-
-                    {/* Specs */}
-                    <div className="mt-4 border-t border-[#e7c4bf] pt-2">
-                      {product.specs.map(([label, value]) => (
-                        <div
-                          key={label}
-                          className="flex justify-between gap-3 text-[11px] leading-5 sm:text-[12px]"
-                        >
-                          <span className="text-[#654f4a]">{label}</span>
-
-                          <span className="text-right font-medium text-[#222]">
-                            {value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* WhatsApp */}
-                    <a
-                      href={getWhatsappUrl(product.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 border border-[#d91e05] bg-white px-3 py-2 text-center text-[14px] font-semibold text-[#a00000] transition hover:bg-[#d91e05] hover:text-white"
-                    >
-                      <FaWhatsapp size={18} className="shrink-0" />
-                      <span>Tanyakan via WhatsApp</span>
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            <div className="mt-10 flex justify-center gap-2 sm:mt-12">
-              <button className="flex h-8 w-8 items-center justify-center border border-[#ead4d0] bg-white text-[#cdbeba]">
-                <ChevronLeft size={15} />
-              </button>
-
-              <button className="h-8 w-8 bg-[#a90000] text-[13px] text-white">
-                1
-              </button>
-
-              <button className="h-8 w-8 border border-[#e4c5c0] bg-white text-[13px]">
-                2
-              </button>
-
-              <button className="h-8 w-8 border border-[#e4c5c0] bg-white text-[13px]">
-                3
-              </button>
-
-              <button className="flex h-8 w-8 items-center justify-center border border-[#e4c5c0] bg-white">
-                <ChevronRight size={15} />
-              </button>
-            </div>
+            {/* WhatsApp Mobile */}
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex items-center justify-center gap-2 bg-[#d91e05] py-3 text-white"
+            >
+              <FaWhatsapp size={17} />
+              WhatsApp CTA
+            </a>
           </div>
         </div>
-      </section>
-
-      <Footer />
-    </main>
+      )}
+    </nav>
   );
 }
