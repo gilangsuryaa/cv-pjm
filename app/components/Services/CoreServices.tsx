@@ -10,49 +10,67 @@ import {
 export default function CoreServices() {
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-[1200px] px-8 py-10">
+      <div className="mx-auto max-w-[1200px] px-5 py-8 sm:px-8 sm:py-10">
 
         {/* Heading */}
         <div className="border-b border-[#e5cfc8] pb-3">
-          <h2 className="flex items-center gap-2 text-[27px] font-bold text-[#171717]">
-            <Snowflake size={18} className="text-[#8f1710]" />
-            Our Core Services
+          <h2 className="flex items-center gap-2 text-[22px] font-bold text-[#171717] sm:text-[27px]">
+            <Snowflake
+              size={17}
+              className="shrink-0 text-[#0788D1] sm:h-[18px] sm:w-[18px]"
+            />
+            Layanan Utama Kami
           </h2>
+
+          <p className="mt-2 max-w-[650px] text-[11px] leading-5 text-[#666] sm:text-[12px]">
+            Berbagai solusi untuk kebutuhan AC, kelistrikan, dan elektronik
+            dengan pelayanan profesional dan teknisi berpengalaman.
+          </p>
         </div>
 
         {/* AC */}
-        <div className="mt-3 grid grid-cols-2 border border-[#e5cfc8]">
+        <div className="mt-3 grid grid-cols-1 border border-[#dceaf3] lg:grid-cols-2">
 
-          <div className="p-7">
-            <span className="inline-flex items-center gap-1 bg-[#f2efed] px-2 py-1 text-[10px] text-[#604f4b]">
+          {/* Content */}
+          <div className="p-5 sm:p-7">
+            <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
               <Snowflake size={11} />
-              HVAC
+              AC &amp; REFRIGERASI
             </span>
 
-            <h3 className="mt-4 text-[22px] font-semibold text-[#171717]">
-              AC Systems & Maintenance
+            <h3 className="mt-4 text-[20px] font-semibold leading-7 text-[#171717] sm:text-[22px]">
+              Solusi AC Lengkap
             </h3>
 
-            <p className="mt-3 text-[13px] leading-5 text-[#604f4b]">
-              Comprehensive climate control solutions for commercial and
-              residential infrastructure. Our certified technicians ensure
-              peak efficiency and extended equipment lifespan.
+            <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
+              Melayani kebutuhan AC mulai dari pembelian unit, pemasangan,
+              perawatan, hingga perbaikan untuk rumah, kantor, dan kebutuhan
+              usaha.
             </p>
 
-            <ul className="mt-4 space-y-2 text-[12px] text-[#333]">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8f1710]" />
-                Scheduled Preventative Maintenance
+            <ul className="mt-4 space-y-2 text-[11px] text-[#333] sm:text-[12px]">
+              <li className="flex items-start gap-2">
+                <CheckCircle2
+                  size={14}
+                  className="mt-0.5 shrink-0 text-[#0788D1]"
+                />
+                <span>Pembelian &amp; Pengadaan Unit AC</span>
               </li>
 
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8f1710]" />
-                Precision Diagnostics & Repair
+              <li className="flex items-start gap-2">
+                <CheckCircle2
+                  size={14}
+                  className="mt-0.5 shrink-0 text-[#0788D1]"
+                />
+                <span>Instalasi &amp; Pemasangan AC</span>
               </li>
 
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8f1710]" />
-                Industrial & Split-System Installation
+              <li className="flex items-start gap-2">
+                <CheckCircle2
+                  size={14}
+                  className="mt-0.5 shrink-0 text-[#0788D1]"
+                />
+                <span>Service, Perawatan &amp; Perbaikan AC</span>
               </li>
             </ul>
 
@@ -60,17 +78,18 @@ export default function CoreServices() {
               href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20AC"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 bg-[#a80f08] px-5 py-3 text-[11px] font-semibold text-white hover:bg-[#8e0d07]"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-[#D91E05] px-5 py-3 text-[11px] font-semibold text-white transition hover:bg-[#B91803] sm:w-auto"
             >
-              Request AC Service
+              Konsultasi AC
               <ArrowRight size={14} />
             </a>
           </div>
 
-          <div className="relative min-h-[300px]">
+          {/* Image */}
+          <div className="relative min-h-[230px] sm:min-h-[300px]">
             <Image
               src="/images/ac-service.jpeg"
-              alt="AC Systems and Maintenance"
+              alt="Layanan service dan instalasi AC CV Prima Jaya Mandiri"
               fill
               className="object-cover"
             />
@@ -78,31 +97,31 @@ export default function CoreServices() {
         </div>
 
         {/* Electrical + Electronics */}
-        <div className="mt-5 grid grid-cols-2 gap-5">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:mt-5 sm:gap-5 lg:grid-cols-2">
 
           {/* Electrical */}
-          <div className="border border-[#e5cfc8] p-7">
-            <span className="inline-flex items-center gap-1 bg-[#f2efed] px-2 py-1 text-[10px] text-[#604f4b]">
+          <div className="border border-[#dceaf3] p-5 sm:p-7">
+            <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
               <Zap size={11} />
-              Power
+              KELISTRIKAN
             </span>
 
-            <h3 className="mt-4 text-[21px] font-semibold text-[#171717]">
-              Electrical Installation
+            <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
+              Instalasi &amp; Perawatan Listrik
             </h3>
 
-            <p className="mt-3 text-[13px] leading-5 text-[#604f4b]">
-              Robust electrical wiring and panel maintenance engineered
-              for safety and uninterrupted operation.
+            <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
+              Solusi untuk kebutuhan instalasi, perawatan, dan pengecekan
+              sistem kelistrikan agar tetap aman dan berfungsi dengan baik.
             </p>
 
-            <div className="mt-4 border-t border-[#e5cfc8] pt-3 text-[12px] text-[#333]">
-              <p className="border-l-2 border-[#8f1710] pl-2">
-                Structural Wiring & Upgrades
+            <div className="mt-4 border-t border-[#dceaf3] pt-3 text-[11px] text-[#333] sm:text-[12px]">
+              <p className="border-l-2 border-[#D91E05] pl-2">
+                Instalasi &amp; Penambahan Jalur Listrik
               </p>
 
-              <p className="mt-2 border-l-2 border-[#8f1710] pl-2">
-                Control Panel Maintenance
+              <p className="mt-2 border-l-2 border-[#D91E05] pl-2">
+                Pengecekan &amp; Perawatan Sistem Kelistrikan
               </p>
             </div>
 
@@ -110,35 +129,35 @@ export default function CoreServices() {
               href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20Instalasi%20Listrik"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 block border border-[#8f6c67] px-4 py-3 text-center text-[11px] font-semibold text-[#6d1712] hover:bg-[#faf5f4]"
+              className="mt-5 block w-full border border-[#D91E05] px-4 py-3 text-center text-[11px] font-semibold text-[#D91E05] transition hover:bg-[#FFF5F3]"
             >
-              Request Electrical Service
+              Konsultasi Kelistrikan
             </a>
           </div>
 
           {/* Electronics */}
-          <div className="border border-[#e5cfc8] p-7">
-            <span className="inline-flex items-center gap-1 bg-[#f2efed] px-2 py-1 text-[10px] text-[#604f4b]">
+          <div className="border border-[#dceaf3] p-5 sm:p-7">
+            <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
               <Cpu size={11} />
-              PCB
+              ELEKTRONIK
             </span>
 
-            <h3 className="mt-4 text-[21px] font-semibold text-[#171717]">
-              Electronics Services
+            <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
+              Service &amp; Perbaikan Elektronik
             </h3>
 
-            <p className="mt-3 text-[13px] leading-5 text-[#604f4b]">
-              Component-level diagnostics and repair for specialized
-              electronic systems and industrial control boards.
+            <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
+              Membantu pengecekan dan perbaikan berbagai perangkat elektronik
+              sesuai dengan jenis kerusakan dan kebutuhan pelanggan.
             </p>
 
-            <div className="mt-4 border-t border-[#e5cfc8] pt-3 text-[12px] text-[#333]">
-              <p className="border-l-2 border-[#8f1710] pl-2">
-                Circuit Board Repair
+            <div className="mt-4 border-t border-[#dceaf3] pt-3 text-[11px] text-[#333] sm:text-[12px]">
+              <p className="border-l-2 border-[#D91E05] pl-2">
+                Pemeriksaan &amp; Diagnosa Kerusakan
               </p>
 
-              <p className="mt-2 border-l-2 border-[#8f1710] pl-2">
-                Component Troubleshooting
+              <p className="mt-2 border-l-2 border-[#D91E05] pl-2">
+                Service &amp; Perbaikan Komponen
               </p>
             </div>
 
@@ -146,9 +165,9 @@ export default function CoreServices() {
               href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20Service%20Elektronik"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 block border border-[#8f6c67] px-4 py-3 text-center text-[11px] font-semibold text-[#6d1712] hover:bg-[#faf5f4]"
+              className="mt-5 block w-full border border-[#D91E05] px-4 py-3 text-center text-[11px] font-semibold text-[#D91E05] transition hover:bg-[#FFF5F3]"
             >
-              Request Electronics Repair
+              Konsultasi Elektronik
             </a>
           </div>
 

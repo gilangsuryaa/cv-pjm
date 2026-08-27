@@ -1,9 +1,12 @@
+"use client";
+
 import {
   UserRoundCheck,
   BadgeCheck,
   Zap,
   ShieldCheck,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function WhyChoose() {
   const features = [
@@ -11,7 +14,7 @@ export default function WhyChoose() {
       icon: UserRoundCheck,
       title: "Teknisi Berpengalaman",
       description:
-        "Tim ahli bersertifikat dengan jam terbang tinggi di industri.",
+        "Tim ahli dengan jam terbang tinggi di industri.",
     },
     {
       icon: BadgeCheck,
@@ -33,36 +36,52 @@ export default function WhyChoose() {
     },
   ];
 
-  return (
-    <section id="about" className="bg-white py-14">
-      <div className="mx-auto max-w-[1200px] px-8">
+  const [isVisible, setIsVisible] = useState(false);
 
-        <h2 className="text-center text-[24px] font-bold text-[#0788D1]">
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  return (
+    <section
+      id="about"
+      className={`border-b border-[#DCEAF3] bg-[#F8FCFE] py-14 transition-opacity duration-1000 ease-out sm:py-18 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
+
+        {/* Heading */}
+        <h2 className="text-center text-[22px] font-bold leading-7 text-[#0F4C75] sm:text-[24px] sm:leading-normal">
           Mengapa Memilih CV. Prima Jaya Mandiri?
         </h2>
 
-        <div className="mt-8 grid grid-cols-4 gap-5">
+        {/* Features */}
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {features.map((feature) => {
             const Icon = feature.icon;
 
             return (
               <div
                 key={feature.title}
-                className="border border-[#dddddd] bg-white px-6 py-7 text-center"
+                className="flex h-full min-h-[250px] flex-col rounded-xl border border-[#DCEAF3] bg-white px-6 py-7 transition duration-300 hover:-translate-y-1 hover:border-[#B9DDF0] hover:shadow-[0_10px_28px_rgba(15,76,117,0.12)] sm:px-7 sm:py-8"
               >
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-[#F4F4F4]">
+                {/* Icon */}
+                <div className="flex h-13 w-13 items-center justify-center rounded-lg bg-[#EAF6FC] sm:h-14 sm:w-14">
                   <Icon
-                    size={26}
+                    size={28}
                     strokeWidth={1.8}
                     className="text-[#0788D1]"
                   />
                 </div>
 
-                <h3 className="mt-4 text-[14px] font-bold text-[#222]">
+                {/* Title */}
+                <h3 className="mt-5 text-base font-bold text-[#0F4C75]">
                   {feature.title}
                 </h3>
 
-                <p className="mt-3 text-[11px] leading-5 text-[#666]">
+                {/* Description */}
+                <p className="mt-3 text-[13px] leading-6 text-[#64748B]">
                   {feature.description}
                 </p>
               </div>

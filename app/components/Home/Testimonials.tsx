@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 export default function Testimonials() {
   const testimonials = [
     {
@@ -12,39 +16,51 @@ export default function Testimonials() {
     },
   ];
 
-  return (
-    <section className="bg-white py-14">
-      <div className="mx-auto max-w-[1200px] px-8">
+  const [isVisible, setIsVisible] = useState(false);
 
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  return (
+    <section
+      className={`bg-[#F8FCFE] py-14 transition-opacity duration-1000 ease-out sm:py-18 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
+
+        {/* Heading */}
         <div className="text-center">
-          <h2 className="text-[24px] font-bold text-[#0788D1]">
+          <h2 className="text-[28px] font-bold leading-tight text-[#0F4C75] sm:text-[32px]">
             Apa Kata Klien Kami
           </h2>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-5">
+        {/* Testimonials */}
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:gap-6">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="border border-[#dddddd] bg-[#FAFAFA] p-6"
+              className="flex min-h-[250px] flex-col rounded-xl border border-[#DCEAF3] bg-white p-6 shadow-[0_6px_20px_rgba(15,76,117,0.06)] transition duration-300 hover:-translate-y-1 hover:border-[#B9DDF0] hover:shadow-[0_10px_28px_rgba(15,76,117,0.12)] sm:p-7"
             >
               {/* Stars */}
-              <div className="text-[16px] tracking-[2px] text-[#F5B400]">
+              <div className="text-base tracking-[2px] text-[#F5B400] sm:text-[17px]">
                 ★★★★★
               </div>
 
               {/* Testimonial */}
-              <p className="mt-4 text-[11px] italic leading-5 text-[#555]">
+              <p className="mt-4 text-sm italic leading-6 text-[#64748B] sm:text-[15px]">
                 "{testimonial.text}"
               </p>
 
               {/* Client */}
-              <div className="mt-5">
-                <p className="text-[11px] font-bold text-[#222]">
+              <div className="mt-auto pt-6">
+                <p className="text-[15px] font-bold text-[#0F4C75]">
                   {testimonial.name}
                 </p>
 
-                <p className="mt-1 text-[9px] text-[#777]">
+                <p className="mt-1 text-[13px] leading-5 text-[#64748B]">
                   {testimonial.role}
                 </p>
               </div>

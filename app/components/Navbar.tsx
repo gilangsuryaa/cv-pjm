@@ -1,168 +1,262 @@
 "use client";
 
 import Image from "next/image";
+import { ChevronRight, ChevronLeft, Bot } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
-import { Menu, X } from "lucide-react";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-export default function Navbar() {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+const products = [
+  {
+    category: "Split Unit",
+    name: "Daikin Inverter 1 PK",
+    description:
+      "AC dinding efisiensi tinggi yang cocok untuk perumahan dan komersial ringan.",
+    image: "/images/products/daikin-inverter.png",
+    specs: [
+      ["Kapasitas", "9.000 BTU/h"],
+      ["Daya", "800W"],
+      ["Refrigeran", "R32"],
+    ],
+  },
+  {
+    category: "Cassette",
+    name: "Panasonic Cassette 2 PK",
+    description:
+      "Unit plafon yang ideal untuk ruang kantor terbuka dan lingkungan ritel.",
+    image: "/images/products/panasonic-cassette.png",
+    specs: [
+      ["Kapasitas", "18.000 BTU/h"],
+      ["Daya", "1650W"],
+      ["Fase", "Satu Fase"],
+    ],
+  },
+  {
+    category: "Standing",
+    name: "Gree Floor Standing 3 PK",
+    description:
+      "Unit berdiri yang kuat untuk aula besar, ruang server, dan ruang industri.",
+    image: "/images/products/gree-standing.png",
+    specs: [
+      ["Kapasitas", "27.000 BTU/h"],
+      ["Daya", "2500W"],
+      ["Fase", "3-Fase"],
+    ],
+  },
+];
 
-  const isHome = pathname === "/";
-  const isAbout = pathname === "/about";
-  const isServices = pathname === "/services";
-  const isProducts = pathname === "/products";
-  const isContact = pathname === "/contact";
+const whatsappNumber = "6281949532643";
 
-  const whatsappMessage =
-    "Halo CV Prima Jaya Mandiri, Saya Mau Konsultasi";
+function getWhatsappUrl(productName: string) {
+  const message = `Halo CV Prima Jaya Mandiri, Saya mau konsultasi mengenai produk ${productName}.`;
 
-  const whatsappUrl = `https://wa.me/6281949532643?text=${encodeURIComponent(
-    whatsappMessage
-  )}`;
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
 
-  const navClass = (active: boolean) =>
-    active
-      ? "border-b border-[#d91e05] pb-[6px] text-[#d91e05]"
-      : "text-[#222] transition hover:text-[#d91e05]";
-
+export default function ProductsPage() {
   return (
-    <nav className="border-b border-[#e5cfc8] bg-white">
-      <div className="mx-auto flex min-h-[57px] max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#fcf9f8] text-[#292525]">
+      <Navbar />
 
-        {/* Logo */}
-        <a href="/" className="flex items-center">
-          <Image
-            src="/images/logo.png"
-            alt="PJM Logo"
-            width={45}
-            height={45}
-            className="h-[45px] w-[45px] object-contain"
-          />
-        </a>
+      <section className="mx-auto max-w-[1200px] px-5 py-7 sm:px-8 sm:py-9">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[278px_1fr]">
+          {/* SIDEBAR */}
+          <aside>
+            {/* Category */}
+            <div className="border border-[#e9b9b0] bg-white">
+              <h2 className="px-4 pt-4 text-[18px] font-semibold text-[#7f0000] sm:text-[20px]">
+                Kategori
+              </h2>
 
-        {/* Desktop Navigation */}
-        <div className="hidden items-center gap-5 text-[13px] font-medium md:flex lg:gap-7">
+              <div className="mt-2 pb-3">
+                <a
+                  href="/products"
+                  className="mx-3 flex items-center justify-between border-l-4 border-[#a90000] bg-[#f3f0ef] px-3 py-3 text-[12px] font-semibold text-[#970000] sm:mx-4 sm:text-[14px]"
+                >
+                  <span>PENDINGIN RUANGAN</span>
+                  <ChevronRight size={14} />
+                </a>
 
-          <a href="/" className={navClass(isHome)}>
-            Home
-          </a>
+                <a
+                  href="/products?category=kompresor"
+                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
+                >
+                  <span>Kompresor</span>
+                  <ChevronRight size={14} />
+                </a>
 
-          <a href="/about" className={navClass(isAbout)}>
-            About Us
-          </a>
+                <a
+                  href="/products?category=panel"
+                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
+                >
+                  <span>Panel Listrik</span>
+                  <ChevronRight size={14} />
+                </a>
 
-          <a href="/services" className={navClass(isServices)}>
-            Services
-          </a>
+                <a
+                  href="/products?category=kabel"
+                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
+                >
+                  <span>Kabel & Instalasi</span>
+                  <ChevronRight size={14} />
+                </a>
 
-          <a href="/products" className={navClass(isProducts)}>
-            Products
-          </a>
+                <a
+                  href="/products?category=sensor"
+                  className="flex items-center justify-between px-5 py-3 text-[12px] text-[#624b46] transition hover:text-[#a90000] sm:px-6 sm:text-[14px]"
+                >
+                  <span>Sensor & Relay</span>
+                  <ChevronRight size={14} />
+                </a>
+              </div>
+            </div>
 
-          <a
-            href="/#portfolio"
-            className="text-[#222] transition hover:text-[#d91e05]"
-          >
-            Portfolio
-          </a>
+            {/* AI Assistance */}
+            <div className="mt-5 border border-[#a90000] bg-[#f7f4f3] p-4 sm:mt-8">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-[18px] font-semibold leading-6 sm:text-[20px] sm:leading-7">
+                    Butuh Bantuan
+                    <br />
+                    Memilih?
+                  </h3>
+                </div>
 
-          <a href="/contact" className={navClass(isContact)}>
-            Contact
-          </a>
-        </div>
+                <Bot
+                  size={42}
+                  strokeWidth={1.5}
+                  className="text-[#dedada] sm:h-12 sm:w-12"
+                />
+              </div>
 
-        {/* Desktop WhatsApp */}
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden items-center gap-1.5 bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white transition hover:bg-[#b91803] md:flex"
-        >
-          <FaWhatsapp size={13} />
-          WhatsApp CTA
-        </a>
+              <p className="mt-3 text-[12px] leading-5 text-[#725b56] sm:text-[14px]">
+                Asisten AI kami dapat merekomendasikan unit AC yang tepat
+                berdasarkan ukuran dan kebutuhan ruangan Anda.
+              </p>
 
-        {/* Mobile Menu Button */}
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-center p-2 text-[#222] md:hidden"
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={25} /> : <Menu size={25} />}
-        </button>
-      </div>
+              <a
+                href={getWhatsappUrl("AC")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 flex items-center justify-center gap-2 border border-[#a90000] bg-white py-2.5 text-[12px] font-semibold text-[#900000] transition hover:bg-[#a90000] hover:text-white sm:text-[14px]"
+              >
+                <Bot size={17} />
+                Mulai Chat AI
+              </a>
+            </div>
+          </aside>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="border-t border-[#e5cfc8] bg-white px-4 py-4 md:hidden">
+          {/* PRODUCTS */}
+          <div>
+            {/* Header */}
+            <div className="flex flex-col gap-4 border-b border-[#e4b9b2] pb-3 sm:flex-row sm:items-end sm:justify-between">
+              <h1 className="text-[26px] font-bold tracking-tight sm:text-[32px]">
+                Pendingin Ruangan (AC)
+              </h1>
 
-          <div className="flex flex-col gap-1 text-[14px] font-medium">
+              <div className="flex w-full items-center justify-between gap-2 text-[11px] sm:w-auto sm:text-[12px]">
+                <span className="text-[#624b46]">
+                  Urutkan berdasarkan:
+                </span>
 
-            <a
-              href="/"
-              onClick={() => setIsOpen(false)}
-              className="py-3"
-            >
-              Home
-            </a>
+                <select className="h-8 w-[145px] border border-[#e2b7b0] bg-white px-2 text-[12px] outline-none sm:w-[181px] sm:text-[13px]">
+                  <option>Unggulan</option>
+                  <option>Terbaru</option>
+                  <option>Nama A-Z</option>
+                </select>
+              </div>
+            </div>
 
-            <a
-              href="/about"
-              onClick={() => setIsOpen(false)}
-              className="py-3"
-            >
-              About Us
-            </a>
+            {/* Product Cards */}
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-8 lg:grid-cols-3 lg:gap-6">
+              {products.map((product) => (
+                <div
+                  key={product.name}
+                  className="overflow-hidden border border-[#e5bbb4] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-md"
+                >
+                  {/* Image */}
+                  <div className="relative h-[240px] bg-[#eeeeee] sm:h-[260px] lg:h-[277px]">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      fill
+                      className="object-contain p-2"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
 
-            <a
-              href="/services"
-              onClick={() => setIsOpen(false)}
-              className="py-3"
-            >
-              Services
-            </a>
+                    <span className="absolute left-2 top-2 bg-[#a8d1fa] px-2 py-1 text-[10px] text-[#315b83] sm:text-[12px]">
+                      {product.category}
+                    </span>
+                  </div>
 
-            <a
-              href="/products"
-              onClick={() => setIsOpen(false)}
-              className="py-3"
-            >
-              Products
-            </a>
+                  {/* Content */}
+                  <div className="p-4">
+                    <h2 className="text-[14px] font-semibold sm:text-[15px]">
+                      {product.name}
+                    </h2>
 
-            <a
-              href="/#portfolio"
-              onClick={() => setIsOpen(false)}
-              className="py-3"
-            >
-              Portfolio
-            </a>
+                    <p className="mt-1 text-[12px] leading-5 text-[#654f4a] sm:text-[14px]">
+                      {product.description}
+                    </p>
 
-            <a
-              href="/contact"
-              onClick={() => setIsOpen(false)}
-              className="py-3"
-            >
-              Contact
-            </a>
+                    {/* Specs */}
+                    <div className="mt-4 border-t border-[#e7c4bf] pt-2">
+                      {product.specs.map(([label, value]) => (
+                        <div
+                          key={label}
+                          className="flex justify-between gap-3 text-[11px] leading-5 sm:text-[12px]"
+                        >
+                          <span className="text-[#654f4a]">{label}</span>
 
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 flex items-center justify-center gap-2 bg-[#d91e05] py-3 text-white"
-            >
-              <FaWhatsapp size={17} />
-              WhatsApp CTA
-            </a>
+                          <span className="text-right font-medium text-[#222]">
+                            {value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
 
+                    {/* WhatsApp */}
+                    <a
+                      href={getWhatsappUrl(product.name)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 border border-[#d91e05] bg-white px-3 py-2 text-center text-[14px] font-semibold text-[#a00000] transition hover:bg-[#d91e05] hover:text-white"
+                    >
+                      <FaWhatsapp size={18} className="shrink-0" />
+                      <span>Tanyakan via WhatsApp</span>
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="mt-10 flex justify-center gap-2 sm:mt-12">
+              <button className="flex h-8 w-8 items-center justify-center border border-[#ead4d0] bg-white text-[#cdbeba]">
+                <ChevronLeft size={15} />
+              </button>
+
+              <button className="h-8 w-8 bg-[#a90000] text-[13px] text-white">
+                1
+              </button>
+
+              <button className="h-8 w-8 border border-[#e4c5c0] bg-white text-[13px]">
+                2
+              </button>
+
+              <button className="h-8 w-8 border border-[#e4c5c0] bg-white text-[13px]">
+                3
+              </button>
+
+              <button className="flex h-8 w-8 items-center justify-center border border-[#e4c5c0] bg-white">
+                <ChevronRight size={15} />
+              </button>
+            </div>
           </div>
         </div>
-      )}
-    </nav>
+      </section>
+
+      <Footer />
+    </main>
   );
 }

@@ -1,75 +1,104 @@
+"use client";
+
 import { MapPin, Phone, Mail } from "lucide-react";
+import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
   return (
-    <footer className="border-t border-[#e5cfc8] bg-white">
-      <div className="mx-auto max-w-[1200px] px-8 py-10">
+    <footer
+      className={`border-t border-[#e5cfc8] bg-white transition-opacity duration-1000 ease-out ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className="mx-auto max-w-[1280px] px-5 py-14 sm:px-8 lg:px-12">
 
         {/* Footer Content */}
-        <div className="grid grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_1.35fr_0.85fr_0.85fr] lg:gap-16">
 
           {/* Company */}
-          <div>
-            <a
-              href="/"
-              className="text-[11px] font-bold text-[#0788D1] hover:text-[#D91E05]"
-            >
-              CV. Prima Jaya Mandiri
-            </a>
+          <div className="lg:order-1">
+            <div className="flex items-start gap-4">
+              <a href="/" className="shrink-0" aria-label="CV.Prima Jaya Mandiri">
+                <Image
+                  src="/images/Logo.png"
+                  alt="Logo CV. Prima Jaya Mandiri"
+                  width={84}
+                  height={84}
+                  className="h-[68px] w-[68px] object-contain sm:h-[76px] sm:w-[76px]"
+                />
+              </a>
 
-            <p className="mt-4 max-w-[220px] text-[10px] leading-5 text-[#666]">
-              Solusi terpercaya untuk kebutuhan AC, Listrik, dan Elektronik.
-              Melayani dengan profesionalisme dan integritas.
-            </p>
+              <div className="pt-1">
+                <a
+                  href="/"
+                  className="text-[15px] font-bold text-[#0788D1] hover:text-[#D91E05]"
+                >
+                  CV.Prima Jaya Mandiri
+                </a>
+
+                <p className="mt-3 max-w-[260px] text-[13px] leading-5.5 text-[#666]">
+                  Solusi terpercaya untuk kebutuhan AC, mulai dari pembelian unit,
+                  instalasi, perawatan, hingga perbaikan. Kami juga melayani
+                  kebutuhan instalasi dan perawatan kelistrikan.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Services */}
-          <div>
-            <h3 className="text-[11px] font-bold text-[#0788D1]">
+          <div className="lg:order-3">
+            <h3 className="text-[15px] font-bold text-[#0788D1]">
               Layanan
             </h3>
 
-            <div className="mt-4 flex flex-col gap-2 text-[10px] text-[#666]">
+            <div className="mt-3.5 flex flex-col gap-2 text-[13px] text-[#666]">
 
               <a
                 href="/services"
                 className="hover:text-[#D91E05]"
               >
-                Service AC
+                Pembelian Unit AC
               </a>
 
               <a
                 href="/services"
                 className="hover:text-[#D91E05]"
               >
-                Instalasi Listrik
+                Instalasi AC
               </a>
 
               <a
                 href="/services"
                 className="hover:text-[#D91E05]"
               >
-                Perbaikan Elektronik
+                Service & Perawatan AC
               </a>
 
               <a
                 href="/services"
                 className="hover:text-[#D91E05]"
               >
-                Kontrak Maintenance
+                Instalasi & Perawatan Listrik
               </a>
 
             </div>
           </div>
 
           {/* Company Links */}
-          <div>
-            <h3 className="text-[11px] font-bold text-[#0788D1]">
+          <div className="lg:order-4">
+            <h3 className="text-[15px] font-bold text-[#0788D1]">
               Perusahaan
             </h3>
 
-            <div className="mt-4 flex flex-col gap-2 text-[10px] text-[#666]">
+            <div className="mt-3.5 flex flex-col gap-2 text-[13px] text-[#666]">
 
               <a
                 href="/about"
@@ -82,14 +111,7 @@ export default function Footer() {
                 href="/#portfolio"
                 className="hover:text-[#D91E05]"
               >
-                Portfolio
-              </a>
-
-              <a
-                href="/contact"
-                className="hover:text-[#D91E05]"
-              >
-                Karir
+                Portofolio
               </a>
 
               <a
@@ -103,12 +125,12 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-[11px] font-bold text-[#0788D1]">
+          <div className="lg:order-2">
+            <h3 className="text-[15px] font-bold text-[#0788D1]">
               Kontak
             </h3>
 
-            <div className="mt-4 flex flex-col gap-3 text-[10px] leading-5 text-[#666]">
+            <div className="mt-3.5 flex flex-col gap-2.5 text-[13px] leading-5.5 text-[#666]">
 
               {/* Address */}
               <a
@@ -118,7 +140,7 @@ export default function Footer() {
                 className="flex gap-2 hover:text-[#D91E05]"
               >
                 <MapPin
-                  size={13}
+                  size={15}
                   className="mt-0.5 shrink-0"
                 />
 
@@ -126,7 +148,7 @@ export default function Footer() {
                   Jl. Pakuwon No. 50, Dusun Karangtangsi RT. 08/RW. 03,
                   Desa Losari Kidul, Kecamatan Losari,
                   <br />
-                  Kabupaten Cirebon, Provinsi Jawa Barat, Kode Pos 45192
+                  Kabupaten Cirebon, Jawa Barat, 45192
                 </p>
               </a>
 
@@ -135,11 +157,8 @@ export default function Footer() {
                 href="tel:0231831597"
                 className="flex items-center gap-2 hover:text-[#D91E05]"
               >
-                <Phone size={13} />
-
-                <p>
-                  (0231) 831597
-                </p>
+                <Phone size={15} />
+                <p>(0231) 831597</p>
               </a>
 
               {/* WhatsApp */}
@@ -149,11 +168,8 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-[#D91E05]"
               >
-                <FaWhatsapp size={15} />
-
-                <p>
-                  +62 819-4953-2643
-                </p>
+                <FaWhatsapp size={16} />
+                <p>+62 819-4953-2643</p>
               </a>
 
               {/* Email */}
@@ -161,45 +177,42 @@ export default function Footer() {
                 href="mailto:primajayamandiricv123@gmail.com"
                 className="flex items-center gap-2 hover:text-[#D91E05]"
               >
-                <Mail size={13} />
-
-                <p>
-                  primajayamandiricv123@gmail.com
-                </p>
+                <Mail size={15} />
+                <p>primajayamandiricv123@gmail.com</p>
               </a>
 
             </div>
           </div>
-
         </div>
 
-        {/* Bottom Footer */}
-        <div className="mt-8 flex items-center justify-between border-t border-[#eeeeee] pt-5 text-[9px] text-[#777]">
+      </div>
+
+      <div className="bg-[#123b58]">
+        <div className="mx-auto flex max-w-[1280px] flex-col gap-3 px-5 py-5 text-[11px] text-white/75 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
 
           <p>
-            © 2024 CV. Prima Jaya Mandiri. All rights reserved.
+            © {new Date().getFullYear()} CV. Prima Jaya Mandiri. Hak cipta dilindungi.
           </p>
 
           <div className="flex gap-5">
 
             <a
               href="/privacy-policy"
-              className="hover:text-[#D91E05]"
+              className="transition-colors hover:text-white"
             >
-              Privacy Policy
+              Kebijakan Privasi
             </a>
 
             <a
               href="/terms"
-              className="hover:text-[#D91E05]"
+              className="transition-colors hover:text-white"
             >
-              Terms of Service
+              Syarat & Ketentuan
             </a>
 
           </div>
 
         </div>
-
       </div>
     </footer>
   );
