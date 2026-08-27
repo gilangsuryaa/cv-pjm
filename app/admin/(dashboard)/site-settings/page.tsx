@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import ImageUpload from '@/components/admin/image-upload-sitesettings'
 
 type SiteSettings = {
   id: number
@@ -30,6 +31,8 @@ export default function SiteSettingsPage() {
   const [description, setDescription] = useState('')
   const [logo, setLogo] = useState('')
   const [favicon, setFavicon] = useState('')
+  const [logoPreview, setLogoPreview] = useState('')
+  const [faviconPreview, setFaviconPreview] = useState('')
   const [phone, setPhone] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [email, setEmail] = useState('')
@@ -64,6 +67,23 @@ export default function SiteSettingsPage() {
       setDescription(data.description ?? '')
       setLogo(data.logo ?? '')
       setFavicon(data.favicon ?? '')
+
+      if (data.logo) {
+        const { data: logoUrl } = supabase.storage
+          .from('site-settings')
+          .getPublicUrl(data.logo)
+        
+        setLogoPreview(logoUrl.publicUrl)
+      }
+
+      if (data.favicon) {
+        const { data: faviconUrl } = supabase.storage
+          .from('site-settings')
+          .getPublicUrl(data.favicon)
+
+        setFaviconPreview(faviconUrl.publicUrl)
+      }
+
       setPhone(data.phone ?? '')
       setWhatsapp(data.whatsapp ?? '')
       setEmail(data.email ?? '')
@@ -212,35 +232,49 @@ export default function SiteSettingsPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Logo
               </label>
 
-              <input
-                type="text"
-                value={logo}
-                onChange={(e) =>
-                  setLogo(e.target.value)
-                }
-                placeholder="URL atau path logo"
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-              />
+              <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
+                <ImageUpload
+                  bucket="site-settings"
+                  value={logo}
+                  previewUrl={logoPreview}
+                  filePath="logo"
+                  onChange={(path) => {
+                    setLogo(path)
+                    setLogoPreview(
+                      supabase.storage
+                        .from('site-settings')
+                        .getPublicUrl(path).data.publicUrl
+                    )
+                  }}
+                />
+              </div>
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-700">
                 Favicon
               </label>
 
-              <input
-                type="text"
-                value={favicon}
-                onChange={(e) =>
-                  setFavicon(e.target.value)
-                }
-                placeholder="URL atau path favicon"
-                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-              />
+              <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
+                <ImageUpload
+                  bucket="site-settings"
+                  value={favicon}
+                  previewUrl={faviconPreview}
+                  filePath="favicon"
+                  onChange={(path) => {
+                    setFavicon(path)
+                    setFaviconPreview(
+                      supabase.storage
+                        .from('site-settings')
+                        .getPublicUrl(path).data.publicUrl
+                    )
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
