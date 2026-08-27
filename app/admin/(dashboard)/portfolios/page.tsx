@@ -29,6 +29,30 @@ export default async function PortfoliosPage() {
     )
   }
 
+  const portfoliosWithImages = await Promise.all(
+    (portfolios ?? []).map(async (portfolio) => {
+      if (!portfolio.image) {
+        return {
+          ...portfolio,
+          imageUrl: '',
+        }
+      }
+
+      const { data: signedImage } =
+        await supabase.storage
+          .from('portfolios')
+          .createSignedUrl(
+            portfolio.image,
+            60 * 60
+          )
+
+      return {
+        ...portfolio,
+        imageUrl: signedImage?.signedUrl ?? '',
+      }
+    })
+  )
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -66,6 +90,10 @@ export default async function PortfoliosPage() {
                 Deskripsi
               </th>
 
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Gambar
+              </th>
+
               <th className="px-6 py-3 text-right font-semibold text-gray-700">
                 Aksi
               </th>
@@ -73,7 +101,7 @@ export default async function PortfoliosPage() {
           </thead>
 
           <tbody className="divide-y divide-gray-200">
-            {portfolios.map((portfolio) => (
+            {portfoliosWithImages.map((portfolio) => (
               <tr key={portfolio.id}>
                 <td className="px-6 py-4 font-medium text-gray-900">
                   {portfolio.title}
@@ -87,6 +115,20 @@ export default async function PortfoliosPage() {
                   <p className="truncate">
                     {portfolio.description ?? '-'}
                   </p>
+                </td>
+
+                <td className="px-6 py-4">
+                  {portfolio.imageUrl ? (
+                    <img
+                      src={portfolio.imageUrl}
+                      alt={portfolio.title}
+                      className="h-16 w-16 rounded-md border border-gray-200 object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm text-gray-400">
+                      Tidak ada gambar
+                    </span>
+                  )}
                 </td>
 
                 <td className="px-6 py-4 text-right">

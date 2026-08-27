@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ImageUpload from '@/components/admin/image-upload'
 
 type Service = {
   id: number
@@ -18,6 +19,7 @@ export default function CreatePortfolioPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [serviceId, setServiceId] = useState('')
+  const [image, setImage] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -60,6 +62,7 @@ export default function CreatePortfolioPage() {
         title,
         description: description || null,
         service_id: Number(serviceId),
+        image: image || null,
       })
 
     if (error) {
@@ -154,6 +157,21 @@ export default function CreatePortfolioPage() {
             placeholder="Deskripsi pekerjaan..."
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        {/* Gambar */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Gambar Portfolio
+          </label>
+
+          <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
+            <ImageUpload
+              bucket="portfolios"
+              value={image}
+              onChange={setImage}
+            />
+          </div>
         </div>
 
         {/* Error */}

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ImageUpload from '@/components/admin/image-upload'
 
 type Service = {
   id: number
@@ -21,6 +22,8 @@ export default function EditPortfolioPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [serviceId, setServiceId] = useState('')
+  const [image, setImage] = useState('')
+  const [imagePreview, setImagePreview] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -65,6 +68,19 @@ export default function EditPortfolioPage() {
         portfolio.service_id?.toString() ?? ''
       )
 
+      setImage(portfolio.image ?? '')
+
+      if (portfolio.image) {
+        const { data: signedUrlData } =
+          await supabase.storage
+            .from('portfolios')
+            .createSignedUrl(portfolio.image, 60 * 60)
+
+        setImagePreview(
+          signedUrlData?.signedUrl ?? ''
+        )
+      }
+
       setServices(servicesResult.data ?? [])
 
       setLoading(false)
@@ -92,6 +108,7 @@ export default function EditPortfolioPage() {
         title,
         description: description || null,
         service_id: Number(serviceId),
+        image: image || null,
       })
       .eq('id', id)
 
@@ -190,6 +207,25 @@ export default function EditPortfolioPage() {
             placeholder="Deskripsi pekerjaan..."
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        {/* Gambar */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Gambar Portfolio
+          </label>
+
+          <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
+            <ImageUpload
+              bucket="portfolios"
+              value={image}
+              previewUrl={imagePreview}
+              onChange={(path) => {
+                setImage(path)
+                setImagePreview('')
+              }}
+            />
+          </div>
         </div>
 
         {/* Error */}
