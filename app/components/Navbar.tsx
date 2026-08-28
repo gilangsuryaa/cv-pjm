@@ -4,17 +4,35 @@ import Image from "next/image";
 import { FaWhatsapp } from "react-icons/fa";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isHome = pathname === "/";
-  const isAbout = pathname === "/about";
-  const isServices = pathname === "/services";
-  const isProducts = pathname === "/products";
-  const isContact = pathname === "/contact";
+const [hash, setHash] = useState("");
+
+useEffect(() => {
+  const updateHash = () => {
+    setHash(window.location.hash);
+  };
+
+  updateHash();
+
+  window.addEventListener("hashchange", updateHash);
+
+  return () => {
+    window.removeEventListener("hashchange", updateHash);
+  };
+}, []);
+
+const isPortfolio = pathname === "/" && hash === "#portfolio";
+
+const isHome = pathname === "/" && !isPortfolio;
+const isAbout = pathname === "/about";
+const isServices = pathname === "/services";
+const isProducts = pathname === "/products";
+const isContact = pathname === "/contact";
 
   const whatsappMessage =
     "Halo CV Prima Jaya Mandiri, Saya Mau Konsultasi";
@@ -76,7 +94,7 @@ export default function Navbar() {
 
           <a
             href="/#portfolio"
-            className="text-[#222] transition hover:text-[#d91e05]"
+            className={navClass(isPortfolio)}
           >
             Portofolio
           </a>
