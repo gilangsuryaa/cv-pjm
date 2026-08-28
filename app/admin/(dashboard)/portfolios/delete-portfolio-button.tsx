@@ -13,7 +13,6 @@ export default function DeletePortfolioButton({
 }: DeletePortfolioButtonProps) {
   const router = useRouter()
   const supabase = createClient()
-
   const [loading, setLoading] = useState(false)
 
   async function handleDelete() {
@@ -25,15 +24,42 @@ export default function DeletePortfolioButton({
 
     setLoading(true)
 
-    const { error } = await supabase
+    // Ambil data portfolio terlebih dahulu untuk mendapatkan path gambar
+    const { data: portfolio, error: fetchError } = await supabase
+      .from('portfolios')
+      .select('image')
+      .eq('id', id)
+      .single()
+
+    if (fetchError) {
+      alert(`Gagal mengambil data portfolio: ${fetchError.message}`)
+      setLoading(false)
+      return
+    }
+
+    // Hapus row portfolio
+    const { error: deleteError } = await supabase
       .from('portfolios')
       .delete()
       .eq('id', id)
 
-    if (error) {
-      alert(`Gagal menghapus: ${error.message}`)
+    if (deleteError) {
+      alert(`Gagal menghapus portfolio: ${deleteError.message}`)
       setLoading(false)
       return
+    }
+
+    // Kalau portfolio punya gambar, hapus juga dari Storage
+    if (portfolio?.image) {
+      const { error: storageError } = await supabase.storage
+        .from('portfolios')
+        .remove([portfolio.image])
+
+      if (storageError) {
+        alert(
+          `Portfolio berhasil dihapus, tapi gambar gagal dihapus dari Storage: ${storageError.message}`
+        )
+      }
     }
 
     router.refresh()

@@ -6,9 +6,9 @@ export default async function ProductsPage() {
   const supabase = await createClient()
 
   const { data: products, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false })
+  .from('products')
+  .select('*')
+  .order('created_at', { ascending: false })
 
   if (error) {
     return (
@@ -23,6 +23,26 @@ export default async function ProductsPage() {
       </div>
     )
   }
+
+  const productsWithImages = await Promise.all(
+    products.map(async (product) => {
+      if (!product.image) {
+        return {
+          ...product,
+          imageUrl: null,
+        }
+      }
+
+      const { data } = await supabase.storage
+        .from('products')
+        .createSignedUrl(product.image, 60 * 60)
+
+      return {
+        ...product,
+        imageUrl: data?.signedUrl ?? null,
+      }
+    })
+  )
 
   return (
     <div>
@@ -79,14 +99,19 @@ export default async function ProductsPage() {
                 Stok
               </th>
 
+              <th className="px-6 py-3 text-left font-semibold text-gray-700">
+                Gambar
+              </th>
+
               <th className="px-6 py-3 text-right font-semibold text-gray-700">
                 Aksi
               </th>
+
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-200">
-            {products.map((product) => (
+            {productsWithImages.map((product) => (
               <tr key={product.id}>
                 <td className="px-6 py-4 font-medium text-gray-900">
                   {product.name}
@@ -133,6 +158,20 @@ export default async function ProductsPage() {
                       ? 'Tersedia'
                       : 'Tidak tersedia'}
                   </span>
+                </td>
+
+                <td className="px-6 py-4">
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="h-16 w-16 rounded-md border border-gray-200 object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm text-gray-400">
+                      Tidak ada gambar
+                    </span>
+                  )}
                 </td>
 
                 <td className="px-6 py-4 text-right">

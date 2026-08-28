@@ -25,20 +25,60 @@ export default function DeleteProductButton({
 
     setLoading(true)
 
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id)
+    // 1. Ambil path gambar terlebih dahulu
+    const { data: product, error: fetchError } =
+      await supabase
+        .from('products')
+        .select('image')
+        .eq('id', id)
+        .single()
 
-    if (error) {
-      alert(`Gagal menghapus: ${error.message}`)
+    if (fetchError) {
+      alert(
+        `Gagal mengambil data produk: ${fetchError.message}`
+      )
       setLoading(false)
       return
+    }
+
+    // 2. Hapus data product
+    const { error: deleteError } =
+      await supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+
+    if (deleteError) {
+      alert(
+        `Gagal menghapus produk: ${deleteError.message}`
+      )
+      setLoading(false)
+      return
+    }
+
+    // 3. Kalau punya gambar, hapus dari Storage
+    if (product?.image) {
+      const { error: storageError } =
+        await supabase.storage
+          .from('products')
+          .remove([product.image])
+
+      if (storageError) {
+        console.error(
+          'Gagal menghapus gambar dari Storage:',
+          storageError.message
+        )
+
+        alert(
+          `Produk berhasil dihapus, tetapi gambar gagal dihapus dari Storage: ${storageError.message}`
+        )
+      }
     }
 
     router.refresh()
     setLoading(false)
   }
+
 
   return (
     <button

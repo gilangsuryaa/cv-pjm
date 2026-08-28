@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import ImageUpload from '@/components/admin/image-upload'
 
 export default function EditProductPage() {
   const params = useParams()
@@ -20,6 +21,9 @@ export default function EditProductPage() {
   const [maxRoomArea, setMaxRoomArea] = useState('')
   const [description, setDescription] = useState('')
   const [stockStatus, setStockStatus] = useState(true)
+  const [image, setImage] = useState('')
+  const [imagePreview, setImagePreview] = useState('')
+  const [originalImage, setOriginalImage] = useState('')
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -48,6 +52,18 @@ export default function EditProductPage() {
       setMaxRoomArea(data.max_room_area?.toString() ?? '')
       setDescription(data.description ?? '')
       setStockStatus(data.stock_status ?? false)
+      setImage(data.image ?? '')
+      setOriginalImage(data.image ?? '')
+
+      if (data.image) {
+        const { data: signedImage } = await supabase.storage
+          .from('products')
+          .createSignedUrl(data.image, 60 * 60)
+
+        setImagePreview(
+          signedImage?.signedUrl ?? ''
+        )
+      }
 
       setLoading(false)
     }
@@ -55,7 +71,9 @@ export default function EditProductPage() {
     getProduct()
   }, [id])
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    e: FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault()
 
     setSaving(true)
@@ -64,19 +82,8 @@ export default function EditProductPage() {
     const { error } = await supabase
       .from('products')
       .update({
-        name,
-        brand: brand || null,
-        type: type || null,
-        pk: pk ? Number(pk) : null,
-        price: price ? Number(price) : null,
-        min_room_area: minRoomArea
-          ? Number(minRoomArea)
-          : null,
-        max_room_area: maxRoomArea
-          ? Number(maxRoomArea)
-          : null,
-        description: description || null,
-        stock_status: stockStatus,
+        // field lainnya...
+        image: image || null,
       })
       .eq('id', id)
 
@@ -84,6 +91,25 @@ export default function EditProductPage() {
       setError(error.message)
       setSaving(false)
       return
+    }
+
+    // Hapus gambar lama hanya kalau memang diganti
+    if (
+      originalImage &&
+      image &&
+      originalImage !== image
+    ) {
+      const { error: deleteError } =
+        await supabase.storage
+          .from('products')
+          .remove([originalImage])
+
+      if (deleteError) {
+        console.error(
+          'Gagal menghapus gambar lama:',
+          deleteError.message
+        )
+      }
     }
 
     router.push('/admin/products')
@@ -218,6 +244,29 @@ export default function EditProductPage() {
             rows={5}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Gambar Produk
+          </label>
+
+          <div className="mt-1">
+            <ImageUpload
+          bucket="products"
+          value={image}
+          previewUrl={imagePreview}
+          onChange={async (path) => {
+            setImage(path)
+
+            const { data } = await supabase.storage
+              .from('products')
+              .createSignedUrl(path, 60 * 60)
+
+            setImagePreview(data?.signedUrl ?? '')
+          }}
+        />
+          </div>
         </div>
 
         <div>

@@ -24,6 +24,26 @@ export default async function ServicesPage() {
     )
   }
 
+  const servicesWithImages = await Promise.all(
+    services.map(async (service) => {
+      if (!service.image) {
+        return {
+          ...service,
+          imageUrl: null,
+        }
+      }
+
+      const { data } = await supabase.storage
+        .from('services')
+        .createSignedUrl(service.image, 60 * 60)
+
+      return {
+        ...service,
+        imageUrl: data?.signedUrl ?? null,
+      }
+    })
+  )
+
   return (
     <div>
       {/* Header */}
@@ -67,6 +87,10 @@ export default async function ServicesPage() {
                 Status
               </th>
 
+              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                Gambar
+              </th>
+
               <th className="px-6 py-3 text-right font-medium text-gray-600">
                 Aksi
               </th>
@@ -74,7 +98,7 @@ export default async function ServicesPage() {
           </thead>
 
           <tbody className="divide-y">
-            {services.map((service) => (
+            {servicesWithImages.map((service) => (
               <tr key={service.id}>
                 <td className="px-6 py-4 text-gray-900">
                   {service.name}
@@ -104,6 +128,20 @@ export default async function ServicesPage() {
                       ? 'Aktif'
                       : 'Nonaktif'}
                   </span>
+                </td>
+
+                <td className="px-6 py-4">
+                  {service.imageUrl ? (
+                    <img
+                      src={service.imageUrl}
+                      alt={service.name}
+                      className="h-16 w-16 rounded-md border border-gray-200 object-cover"
+                    />
+                  ) : (
+                    <span className="text-sm text-gray-400">
+                      Tidak ada gambar
+                    </span>
+                  )}
                 </td>
 
                 <td className="px-6 py-4 text-right">
