@@ -31,8 +31,9 @@ export default function Navbar() {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <nav className="border-b border-[#e5cfc8] bg-white">
+    <nav className="sticky top-0 z-50 border-b border-[#e5cfc8] bg-white">
       <div className="mx-auto flex min-h-[57px] max-w-[1200px] items-center justify-between px-4 sm:px-6 lg:px-8">
+
         {/* Logo + Nama Perusahaan */}
         <a href="/" className="flex shrink-0 items-center gap-2">
           <Image
@@ -47,6 +48,7 @@ export default function Navbar() {
             <p className="text-[14px] font-bold text-[#0788D1] sm:text-[16px]">
               CV. Prima Jaya Mandiri
             </p>
+
             <p className="text-[10px] text-[#777] sm:text-[11px]">
               Layanan Teknik & Pemeliharaan
             </p>
@@ -55,31 +57,32 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-5 text-[13px] font-medium md:flex lg:gap-7">
+
           <a href="/" className={navClass(isHome)}>
-            Home
+            Beranda
           </a>
 
           <a href="/about" className={navClass(isAbout)}>
-            About Us
+            Tentang Kami
           </a>
 
           <a href="/services" className={navClass(isServices)}>
-            Services
+            Layanan
           </a>
 
           <a href="/products" className={navClass(isProducts)}>
-            Products
+            Produk
           </a>
 
           <a
             href="/#portfolio"
             className="text-[#222] transition hover:text-[#d91e05]"
           >
-            Portfolio
+            Portofolio
           </a>
 
           <a href="/contact" className={navClass(isContact)}>
-            Contact
+            Kontak
           </a>
         </div>
 
@@ -91,7 +94,7 @@ export default function Navbar() {
           className="hidden items-center gap-1.5 bg-[#d91e05] px-[14px] py-[6px] text-[9px] font-semibold text-white transition hover:bg-[#b91803] md:flex"
         >
           <FaWhatsapp size={13} />
-          WhatsApp CTA
+          Konsultasi via WhatsApp
         </a>
 
         {/* Mobile Menu Button */}
@@ -99,7 +102,7 @@ export default function Navbar() {
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="flex items-center justify-center p-2 text-[#222] md:hidden"
-          aria-label="Toggle menu"
+          aria-label="Buka menu"
           aria-expanded={isMenuOpen}
         >
           {isMenuOpen ? <X size={25} /> : <Menu size={25} />}
@@ -110,20 +113,25 @@ export default function Navbar() {
       {isMenuOpen && (
         <div className="border-t border-[#e5cfc8] bg-white px-4 py-4 md:hidden">
           <div className="flex flex-col gap-1 text-[14px] font-medium">
+
             <a
               href="/"
               onClick={closeMenu}
-              className={`py-3 ${isHome ? "text-[#d91e05]" : "text-[#222]"}`}
+              className={`py-3 ${
+                isHome ? "text-[#d91e05]" : "text-[#222]"
+              }`}
             >
-              Home
+              Beranda
             </a>
 
             <a
               href="/about"
               onClick={closeMenu}
-              className={`py-3 ${isAbout ? "text-[#d91e05]" : "text-[#222]"}`}
+              className={`py-3 ${
+                isAbout ? "text-[#d91e05]" : "text-[#222]"
+              }`}
             >
-              About Us
+              Tentang Kami
             </a>
 
             <a
@@ -133,7 +141,7 @@ export default function Navbar() {
                 isServices ? "text-[#d91e05]" : "text-[#222]"
               }`}
             >
-              Services
+              Layanan
             </a>
 
             <a
@@ -143,15 +151,17 @@ export default function Navbar() {
                 isProducts ? "text-[#d91e05]" : "text-[#222]"
               }`}
             >
-              Products
+              Produk
             </a>
 
             <a
               href="/#portfolio"
               onClick={closeMenu}
-              className="py-3 text-[#222]"
+              className={`py-3 ${
+                isPortfolio ? "text-[#d91e05] border-b border-[#d91e05]" : "text-[#222]"
+              }`}
             >
-              Portfolio
+              Portofolio
             </a>
 
             <a
@@ -161,7 +171,7 @@ export default function Navbar() {
                 isContact ? "text-[#d91e05]" : "text-[#222]"
               }`}
             >
-              Contact
+              Kontak
             </a>
 
             {/* WhatsApp Mobile */}
@@ -172,8 +182,9 @@ export default function Navbar() {
               className="mt-2 flex items-center justify-center gap-2 bg-[#d91e05] py-3 text-white"
             >
               <FaWhatsapp size={17} />
-              WhatsApp CTA
+              Konsultasi via WhatsApp
             </a>
+
           </div>
         </div>
       )}

@@ -14,7 +14,7 @@ export default function PrivacyPolicy() {
         </Link>
 
         <h1 className="mb-3 text-3xl font-bold text-[#222]">
-          Privacy Policy
+          Kebijakan Privasi
         </h1>
 
         <p className="mb-8 text-sm text-[#777]">

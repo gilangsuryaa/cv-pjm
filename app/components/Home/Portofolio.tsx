@@ -8,17 +8,17 @@ export default function Portfolio() {
     {
       image: "/images/Portofolio/Portofolio(1).png",
       title: "Instalasi AC",
-      category: "AC & Refrigeration",
+      category: "AC & Pendingin",
     },
     {
       image: "/images/Portofolio/portofolio(2).png",
       title: "Instalasi Kelistrikan",
-      category: "Electrical",
+      category: "Kelistrikan",
     },
     {
       image: "/images/Portofolio/Portofolio(3).png",
-      title: "Maintenance AC",
-      category: "Maintenance",
+      title: "Perawatan AC",
+      category: "Perawatan",
     },
   ];
 

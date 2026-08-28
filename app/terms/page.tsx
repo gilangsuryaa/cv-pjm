@@ -12,7 +12,7 @@ export default function TermsOfService() {
           ← Kembali
         </Link>
         <h1 className="mb-3 text-3xl font-bold text-[#222]">
-          Terms of Service
+          Syarat & Ketentuan
         </h1>
 
         <p className="mb-8 text-sm text-[#777]">
