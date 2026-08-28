@@ -96,7 +96,6 @@ export default function EditProductPage() {
         description: description || null,
         stock_status: stockStatus,
         image: image || null,
-        image: image || null,
       })
       .eq('id', id)
 
