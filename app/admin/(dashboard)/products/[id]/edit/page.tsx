@@ -82,7 +82,20 @@ export default function EditProductPage() {
     const { error } = await supabase
       .from('products')
       .update({
-        // field lainnya...
+        name,
+        brand: brand || null,
+        type: type || null,
+        pk: pk ? Number(pk) : null,
+        price: price ? Number(price) : null,
+        min_room_area: minRoomArea
+          ? Number(minRoomArea)
+          : null,
+        max_room_area: maxRoomArea
+          ? Number(maxRoomArea)
+          : null,
+        description: description || null,
+        stock_status: stockStatus,
+        image: image || null,
         image: image || null,
       })
       .eq('id', id)
