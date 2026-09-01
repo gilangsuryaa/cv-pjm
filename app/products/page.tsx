@@ -33,13 +33,14 @@ const products = [
   },
   {
     category: "Standing",
-    name: "Gree Floor Standing 3 PK",
+    name: "Polytron Floor Standing 5 PK",
     description:
-      "Unit berdiri yang kuat untuk aula besar, ruang server, dan ruang industri.",
-    image: "/images/products/gree-standing.png",
+      "AC Floor Standing Polytron dengan kapasitas besar yang cocok untuk ruangan luas, area komersial, dan kebutuhan pendinginan skala besar.",
+    image: "/images/products/polytron-ac-floor-standing.jpg",
     specs: [
-      ["Kapasitas", "27.000 BTU/h"],
-      ["Daya", "2500W"],
+      ["Kapasitas", "42.000 BTU/h"],
+      ["Daya", "3700W"],
+      ["Refrigeran", "R32"],
       ["Fase", "3-Fase"],
     ],
   },

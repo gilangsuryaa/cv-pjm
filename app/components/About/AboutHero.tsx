@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 export default function AboutCompany() {
   const images = [
     "/images/about/aboutcompany1.png",
-    "/images/about/aboutcompany(2).png",
-    "/images/about/aboutcompany3.png",
+    "/images/about/aboutcompany2.png",
+    "/images/about/aboutcompany 3.png",
   ];
 
   const [current, setCurrent] = useState(0);

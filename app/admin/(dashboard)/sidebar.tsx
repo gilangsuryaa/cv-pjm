@@ -28,6 +28,10 @@ const menuItems = [
     label: 'FAQ',
     href: '/admin/faqs',
   },
+  {
+  label: 'AI Assistant',
+  href: '/admin/ai',
+  },
 ]
 
 export default function Sidebar() {

@@ -11,7 +11,7 @@ export default function Portfolio() {
       category: "AC & Pendingin",
     },
     {
-      image: "/images/Portofolio/portofolio(2).png",
+      image: "/images/Portofolio/Portofolio 2.jpg",
       title: "Instalasi Kelistrikan",
       category: "Kelistrikan",
     },
