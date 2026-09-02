@@ -88,7 +88,7 @@ export default function CoreServices() {
           {/* Image */}
           <div className="relative min-h-[230px] sm:min-h-[300px]">
             <Image
-              src="/images/Services/solusi ac lengkap.png"
+              src="/images/Services/services.jpg"
               alt="Layanan service dan instalasi AC CV Prima Jaya Mandiri"
               fill
               className="object-cover"

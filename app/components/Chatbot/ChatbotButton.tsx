@@ -101,13 +101,13 @@ export default function ChatbotButton() {
             </button>
 
             {/* Logo */}
-            <div className="relative mr-3 h-10 w-10 overflow-hidden rounded-xl bg-[#b40000]">
+            <div className="relative mr-3 h-10 w-10 overflow-hidden rounded-xl bg-white">
               <Image
-                src="/images/chatbot/logo-chatbot.png"
+                src="/images/chatbot/Chatbot-logo.png"
                 alt="PJM Asisten"
                 fill
                 sizes="40px"
-                className="object-contain p-1"
+                className="object-contain"
               />
             </div>
 
@@ -150,15 +150,15 @@ export default function ChatbotButton() {
                   shrink-0
                   overflow-hidden
                   rounded-full
-                  bg-[#b40000]
+                  bg-white
                 "
               >
                 <Image
-                  src="/images/chatbot/logo-chatbot.png"
+                  src="/images/chatbot/Chatbot-logo.png"
                   alt="PJM Asisten"
                   fill
                   sizes="32px"
-                  className="object-contain p-1"
+                  className="object-contain"
                 />
               </div>
 

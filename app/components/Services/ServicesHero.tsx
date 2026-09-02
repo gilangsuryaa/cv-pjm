@@ -49,7 +49,7 @@ export default function ServicesHero() {
         {/* Image */}
         <div className="relative h-[320px] w-full overflow-hidden rounded-2xl shadow-md sm:h-[380px] md:h-[420px] lg:h-[460px]">
           <Image
-            src="/images/Services/services-hero.png"
+            src="/images/Services/services.jpg"
             alt="Layanan AC, listrik, dan elektronik CV Prima Jaya Mandiri"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"

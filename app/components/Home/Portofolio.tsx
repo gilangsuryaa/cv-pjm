@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Portfolio() {
   const projects = [
     {
-      image: "/images/Portofolio/Portofolio(1).png",
+      image: "/images/Portofolio/Portofolio 1.png",
       title: "Instalasi AC",
       category: "AC & Pendingin",
     },
@@ -16,7 +16,7 @@ export default function Portfolio() {
       category: "Kelistrikan",
     },
     {
-      image: "/images/Portofolio/Portofolio(3).png",
+      image: "/images/Portofolio/Portofolio 3.png",
       title: "Perawatan AC",
       category: "Perawatan",
     },
