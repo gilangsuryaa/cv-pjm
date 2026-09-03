@@ -16,6 +16,8 @@ export default function EditProductPage() {
   const [brand, setBrand] = useState('')
   const [type, setType] = useState('')
   const [pk, setPk] = useState('')
+  const [daya, setDaya] = useState('')
+  const [kapasitas, setKapasitas] = useState('')
   const [price, setPrice] = useState('')
   const [minRoomArea, setMinRoomArea] = useState('')
   const [maxRoomArea, setMaxRoomArea] = useState('')
@@ -47,6 +49,8 @@ export default function EditProductPage() {
       setBrand(data.brand ?? '')
       setType(data.type ?? '')
       setPk(data.pk?.toString() ?? '')
+      setDaya(data.daya?.toString() ?? '')
+      setKapasitas(data.kapasitas?.toString() ?? '')
       setPrice(data.price?.toString() ?? '')
       setMinRoomArea(data.min_room_area?.toString() ?? '')
       setMaxRoomArea(data.max_room_area?.toString() ?? '')
@@ -86,6 +90,8 @@ export default function EditProductPage() {
         brand: brand || null,
         type: type || null,
         pk: pk ? Number(pk) : null,
+        daya: daya ? Number(daya) : null,
+        kapasitas: kapasitas ? Number(kapasitas) : null,
         price: price ? Number(price) : null,
         min_room_area: minRoomArea
           ? Number(minRoomArea)
@@ -201,6 +207,41 @@ export default function EditProductPage() {
             onChange={(e) => setPk(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        {/* Daya & Kapasitas (BTU/h) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Daya (Watt)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={daya}
+              onChange={(e) => setDaya(e.target.value)}
+              placeholder="900"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Kapasitas (BTU/h)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={kapasitas}
+              onChange={(e) => setKapasitas(e.target.value)}
+              placeholder="9000"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
         </div>
 
         <div>

@@ -13,6 +13,8 @@ export default function CreateProductPage() {
   const [brand, setBrand] = useState('')
   const [type, setType] = useState('')
   const [pk, setPk] = useState('')
+  const [daya, setDaya] = useState('')
+  const [kapasitas, setKapasitas] = useState('')
   const [price, setPrice] = useState('')
   const [minRoomArea, setMinRoomArea] = useState('')
   const [maxRoomArea, setMaxRoomArea] = useState('')
@@ -36,6 +38,8 @@ export default function CreateProductPage() {
         brand: brand || null,
         type: type || null,
         pk: pk ? Number(pk) : null,
+        daya: daya ? Number(daya) : null,
+        kapasitas: kapasitas ? Number(kapasitas) : null,
         price: price ? Number(price) : null,
         min_room_area: minRoomArea
           ? Number(minRoomArea)
@@ -139,6 +143,49 @@ export default function CreateProductPage() {
           <p className="mt-1 text-xs text-gray-500">
             Contoh: 0.5, 1, 1.5, 2
           </p>
+        </div>
+
+        {/* Daya & Kapasitas (BTU/h) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Daya (Watt)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={daya}
+              onChange={(e) => setDaya(e.target.value)}
+              placeholder="900"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+
+            <p className="mt-1 text-xs text-gray-500">
+              Contoh: 900 (akan tampil sebagai 900W)
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Kapasitas (BTU/h)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={kapasitas}
+              onChange={(e) => setKapasitas(e.target.value)}
+              placeholder="9000"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+
+            <p className="mt-1 text-xs text-gray-500">
+              Contoh: 9000 (akan tampil sebagai 9.000 BTU/h)
+            </p>
+          </div>
         </div>
 
         {/* Harga */}
