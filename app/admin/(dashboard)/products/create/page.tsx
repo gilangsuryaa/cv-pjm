@@ -12,6 +12,7 @@ export default function CreateProductPage() {
   const supabase = createClient()
 
   const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
   const [type, setType] = useState('')
   const [pk, setPk] = useState('')
@@ -37,6 +38,7 @@ export default function CreateProductPage() {
       .from('products')
       .insert({
         name,
+        category: category || null,
         brand: brand || null,
         type: type || null,
         pk: pk ? Number(pk) : null,
@@ -112,6 +114,21 @@ export default function CreateProductPage() {
             placeholder="Contoh: Daikin FTKC 1 PK"
             required
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:border-gray-900"
+          />
+        </div>
+
+        {/* Kategori */}
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Kategori
+          </label>
+
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Contoh: AC, Kulkas, TV"
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
         </div>
 
