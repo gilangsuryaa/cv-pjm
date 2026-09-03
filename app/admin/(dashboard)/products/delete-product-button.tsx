@@ -25,23 +25,26 @@ export default function DeleteProductButton({
 
     setLoading(true)
 
-    // 1. Ambil path gambar terlebih dahulu
-    const { data: product, error: fetchError } =
+    // 1. Ambil semua path gambar produk ini terlebih dahulu
+    //    (row product_images akan ikut terhapus lewat cascade,
+    //    jadi harus diambil sebelum produk dihapus)
+    const { data: productImages, error: fetchError } =
       await supabase
-        .from('products')
-        .select('image')
-        .eq('id', id)
-        .single()
+        .from('product_images')
+        .select('path')
+        .eq('product_id', id)
 
     if (fetchError) {
       alert(
-        `Gagal mengambil data produk: ${fetchError.message}`
+        `Gagal mengambil data gambar produk: ${fetchError.message}`
       )
       setLoading(false)
       return
     }
 
     // 2. Hapus data product
+    //    (row di product_images ikut terhapus otomatis lewat
+    //    "on delete cascade" di database)
     const { error: deleteError } =
       await supabase
         .from('products')
@@ -56,12 +59,16 @@ export default function DeleteProductButton({
       return
     }
 
-    // 3. Kalau punya gambar, hapus dari Storage
-    if (product?.image) {
+    // 3. Kalau punya gambar, hapus semuanya dari Storage
+    const paths = (productImages ?? []).map(
+      (img: { path: string }) => img.path
+    )
+
+    if (paths.length > 0) {
       const { error: storageError } =
         await supabase.storage
           .from('products')
-          .remove([product.image])
+          .remove(paths)
 
       if (storageError) {
         console.error(
