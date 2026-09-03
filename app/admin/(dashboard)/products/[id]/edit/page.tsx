@@ -15,6 +15,7 @@ export default function EditProductPage() {
   const id = params.id as string
 
   const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
   const [type, setType] = useState('')
   const [pk, setPk] = useState('')
@@ -50,6 +51,7 @@ export default function EditProductPage() {
       }
 
       setName(data.name ?? '')
+      setCategory(data.category ?? '')
       setBrand(data.brand ?? '')
       setType(data.type ?? '')
       setPk(data.pk?.toString() ?? '')
@@ -112,6 +114,7 @@ export default function EditProductPage() {
       .from('products')
       .update({
         name,
+        category: category || null,
         brand: brand || null,
         type: type || null,
         pk: pk ? Number(pk) : null,
@@ -194,6 +197,20 @@ export default function EditProductPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Kategori
+          </label>
+
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Contoh: AC, Kulkas, TV"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
         </div>

@@ -86,6 +86,10 @@ export default async function ProductsPage() {
               </th>
 
               <th className="whitespace-nowrap px-6 py-3 text-left font-semibold text-gray-700">
+                Kategori
+              </th>
+
+              <th className="whitespace-nowrap px-6 py-3 text-left font-semibold text-gray-700">
                 Brand
               </th>
 
@@ -110,10 +114,6 @@ export default async function ProductsPage() {
               </th>
 
               <th className="whitespace-nowrap px-6 py-3 text-left font-semibold text-gray-700">
-                Area
-              </th>
-
-              <th className="whitespace-nowrap px-6 py-3 text-left font-semibold text-gray-700">
                 Stok
               </th>
 
@@ -133,6 +133,10 @@ export default async function ProductsPage() {
               <tr key={product.id}>
                 <td className="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
                   {product.name}
+                </td>
+
+                <td className="whitespace-nowrap px-6 py-4 text-gray-700">
+                  {product.category || '-'}
                 </td>
 
                 <td className="whitespace-nowrap px-6 py-4 text-gray-700">
@@ -166,13 +170,6 @@ export default async function ProductsPage() {
                     ? `Rp ${Number(
                         product.price
                       ).toLocaleString('id-ID')}`
-                    : '-'}
-                </td>
-
-                <td className="whitespace-nowrap px-6 py-4 text-gray-700">
-                  {product.min_room_area != null &&
-                  product.max_room_area != null
-                    ? `${product.min_room_area}–${product.max_room_area} m²`
                     : '-'}
                 </td>
 
