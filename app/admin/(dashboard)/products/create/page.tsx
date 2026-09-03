@@ -3,7 +3,9 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import ImageUpload from '@/components/admin/image-upload'
+import MultiImageUpload, {
+  UploadedImage,
+} from '@/components/admin/multi-image-upload'
 
 export default function CreateProductPage() {
   const router = useRouter()
@@ -19,7 +21,7 @@ export default function CreateProductPage() {
   const [minRoomArea, setMinRoomArea] = useState('')
   const [maxRoomArea, setMaxRoomArea] = useState('')
   const [description, setDescription] = useState('')
-  const [image, setImage] = useState('')
+  const [images, setImages] = useState<UploadedImage[]>([])
   const [stockStatus, setStockStatus] = useState(true)
 
   const [loading, setLoading] = useState(false)
@@ -31,7 +33,7 @@ export default function CreateProductPage() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase
+    const { data: product, error: insertError } = await supabase
       .from('products')
       .insert({
         name,
@@ -49,13 +51,32 @@ export default function CreateProductPage() {
           : null,
         description: description || null,
         stock_status: stockStatus,
-        image: image || null,
       })
+      .select()
+      .single()
 
-    if (error) {
-      setError(error.message)
+    if (insertError) {
+      setError(insertError.message)
       setLoading(false)
       return
+    }
+
+    if (images.length > 0) {
+      const { error: imagesError } = await supabase
+        .from('product_images')
+        .insert(
+          images.map((image, index) => ({
+            product_id: product.id,
+            path: image.path,
+            sort_order: index,
+          }))
+        )
+
+      if (imagesError) {
+        setError(imagesError.message)
+        setLoading(false)
+        return
+      }
     }
 
     router.push('/admin/products')
@@ -265,10 +286,10 @@ export default function CreateProductPage() {
           </label>
 
           <div className="mt-1">
-            <ImageUpload
+            <MultiImageUpload
               bucket="products"
-              value={image}
-              onChange={setImage}
+              images={images}
+              onChange={setImages}
             />
           </div>
         </div>

@@ -3,7 +3,9 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import ImageUpload from '@/components/admin/image-upload'
+import MultiImageUpload, {
+  UploadedImage,
+} from '@/components/admin/multi-image-upload'
 
 export default function EditProductPage() {
   const params = useParams()
@@ -23,9 +25,7 @@ export default function EditProductPage() {
   const [maxRoomArea, setMaxRoomArea] = useState('')
   const [description, setDescription] = useState('')
   const [stockStatus, setStockStatus] = useState(true)
-  const [image, setImage] = useState('')
-  const [imagePreview, setImagePreview] = useState('')
-  const [originalImage, setOriginalImage] = useState('')
+  const [images, setImages] = useState<UploadedImage[]>([])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -35,8 +35,12 @@ export default function EditProductPage() {
     async function getProduct() {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('*, product_images(id, path, sort_order)')
         .eq('id', id)
+        .order('sort_order', {
+          foreignTable: 'product_images',
+          ascending: true,
+        })
         .single()
 
       if (error) {
@@ -56,24 +60,45 @@ export default function EditProductPage() {
       setMaxRoomArea(data.max_room_area?.toString() ?? '')
       setDescription(data.description ?? '')
       setStockStatus(data.stock_status ?? false)
-      setImage(data.image ?? '')
-      setOriginalImage(data.image ?? '')
 
-      if (data.image) {
-        const { data: signedImage } = await supabase.storage
-          .from('products')
-          .createSignedUrl(data.image, 60 * 60)
+      const productImages = data.product_images ?? []
 
-        setImagePreview(
-          signedImage?.signedUrl ?? ''
-        )
-      }
+      const withUrls = await Promise.all(
+        productImages.map(async (img: { id: string; path: string }) => {
+          const { data: signedData } = await supabase.storage
+            .from('products')
+            .createSignedUrl(img.path, 60 * 60)
 
+          return {
+            id: img.id,
+            path: img.path,
+            url: signedData?.signedUrl ?? '',
+          }
+        })
+      )
+
+      setImages(withUrls)
       setLoading(false)
     }
 
     getProduct()
   }, [id])
+
+  async function handleImageRemoved(image: UploadedImage) {
+    if (!image.id) return
+
+    const { error: deleteError } = await supabase
+      .from('product_images')
+      .delete()
+      .eq('id', image.id)
+
+    if (deleteError) {
+      console.error(
+        'Gagal menghapus data gambar:',
+        deleteError.message
+      )
+    }
+  }
 
   async function handleSubmit(
     e: FormEvent<HTMLFormElement>
@@ -83,7 +108,7 @@ export default function EditProductPage() {
     setSaving(true)
     setError('')
 
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from('products')
       .update({
         name,
@@ -101,32 +126,37 @@ export default function EditProductPage() {
           : null,
         description: description || null,
         stock_status: stockStatus,
-        image: image || null,
       })
       .eq('id', id)
 
-    if (error) {
-      setError(error.message)
+    if (updateError) {
+      setError(updateError.message)
       setSaving(false)
       return
     }
 
-    // Hapus gambar lama hanya kalau memang diganti
-    if (
-      originalImage &&
-      image &&
-      originalImage !== image
-    ) {
-      const { error: deleteError } =
-        await supabase.storage
-          .from('products')
-          .remove([originalImage])
+    // Gambar baru (belum punya id) perlu di-insert sebagai row baru.
+    // Gambar lama yang masih ada di array tidak perlu disentuh —
+    // yang dihapus sudah ditangani langsung lewat handleImageRemoved.
+    const newImages = images.filter((image) => !image.id)
 
-      if (deleteError) {
-        console.error(
-          'Gagal menghapus gambar lama:',
-          deleteError.message
+    if (newImages.length > 0) {
+      const existingCount = images.length - newImages.length
+
+      const { error: imagesError } = await supabase
+        .from('product_images')
+        .insert(
+          newImages.map((image, index) => ({
+            product_id: id,
+            path: image.path,
+            sort_order: existingCount + index,
+          }))
         )
+
+      if (imagesError) {
+        setError(imagesError.message)
+        setSaving(false)
+        return
       }
     }
 
@@ -305,20 +335,12 @@ export default function EditProductPage() {
           </label>
 
           <div className="mt-1">
-            <ImageUpload
-          bucket="products"
-          value={image}
-          previewUrl={imagePreview}
-          onChange={async (path) => {
-            setImage(path)
-
-            const { data } = await supabase.storage
-              .from('products')
-              .createSignedUrl(path, 60 * 60)
-
-            setImagePreview(data?.signedUrl ?? '')
-          }}
-        />
+            <MultiImageUpload
+              bucket="products"
+              images={images}
+              onChange={setImages}
+              onRemove={handleImageRemoved}
+            />
           </div>
         </div>
 

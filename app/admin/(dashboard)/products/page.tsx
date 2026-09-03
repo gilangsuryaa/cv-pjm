@@ -6,9 +6,13 @@ export default async function ProductsPage() {
   const supabase = await createClient()
 
   const { data: products, error } = await supabase
-  .from('products')
-  .select('*')
-  .order('created_at', { ascending: false })
+    .from('products')
+    .select('*, product_images(id, path, sort_order)')
+    .order('created_at', { ascending: false })
+    .order('sort_order', {
+      foreignTable: 'product_images',
+      ascending: true,
+    })
 
   if (error) {
     return (
@@ -26,20 +30,25 @@ export default async function ProductsPage() {
 
   const productsWithImages = await Promise.all(
     products.map(async (product) => {
-      if (!product.image) {
+      const images = product.product_images ?? []
+      const cover = images[0]
+
+      if (!cover) {
         return {
           ...product,
-          imageUrl: null,
+          coverUrl: null,
+          imageCount: 0,
         }
       }
 
       const { data } = await supabase.storage
         .from('products')
-        .createSignedUrl(product.image, 60 * 60)
+        .createSignedUrl(cover.path, 60 * 60)
 
       return {
         ...product,
-        imageUrl: data?.signedUrl ?? null,
+        coverUrl: data?.signedUrl ?? null,
+        imageCount: images.length,
       }
     })
   )
@@ -167,7 +176,7 @@ export default async function ProductsPage() {
                     : '-'}
                 </td>
 
-                <td className="px-6 py-4">
+                <td className="whitespace-nowrap px-6 py-4">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                       product.stock_status
@@ -182,12 +191,20 @@ export default async function ProductsPage() {
                 </td>
 
                 <td className="px-6 py-4">
-                  {product.imageUrl ? (
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="h-16 w-16 rounded-md border border-gray-200 object-cover"
-                    />
+                  {product.coverUrl ? (
+                    <div className="relative inline-block">
+                      <img
+                        src={product.coverUrl}
+                        alt={product.name}
+                        className="h-16 w-16 rounded-md border border-gray-200 object-cover"
+                      />
+
+                      {product.imageCount > 1 && (
+                        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gray-900 px-1 text-[10px] font-semibold text-white">
+                          +{product.imageCount - 1}
+                        </span>
+                      )}
+                    </div>
                   ) : (
                     <span className="text-sm text-gray-400">
                       Tidak ada gambar
