@@ -24,20 +24,23 @@ export default function DeletePortfolioButton({
 
     setLoading(true)
 
-    // Ambil data portfolio terlebih dahulu untuk mendapatkan path gambar
-    const { data: portfolio, error: fetchError } = await supabase
-      .from('portfolios')
-      .select('image')
-      .eq('id', id)
-      .single()
+    // Ambil semua path gambar portfolio ini terlebih dahulu
+    // (row portfolio_images akan ikut terhapus lewat cascade,
+    // jadi harus diambil sebelum portfolio dihapus)
+    const { data: portfolioImages, error: fetchError } = await supabase
+      .from('portfolio_images')
+      .select('path')
+      .eq('portfolio_id', id)
 
     if (fetchError) {
-      alert(`Gagal mengambil data portfolio: ${fetchError.message}`)
+      alert(`Gagal mengambil data gambar portfolio: ${fetchError.message}`)
       setLoading(false)
       return
     }
 
     // Hapus row portfolio
+    // (row di portfolio_images ikut terhapus otomatis lewat
+    // "on delete cascade" di database)
     const { error: deleteError } = await supabase
       .from('portfolios')
       .delete()
@@ -49,11 +52,15 @@ export default function DeletePortfolioButton({
       return
     }
 
-    // Kalau portfolio punya gambar, hapus juga dari Storage
-    if (portfolio?.image) {
+    // Kalau punya gambar, hapus semuanya dari Storage
+    const paths = (portfolioImages ?? []).map(
+      (img: { path: string }) => img.path
+    )
+
+    if (paths.length > 0) {
       const { error: storageError } = await supabase.storage
         .from('portfolios')
-        .remove([portfolio.image])
+        .remove(paths)
 
       if (storageError) {
         alert(

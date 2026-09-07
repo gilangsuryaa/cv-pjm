@@ -3,7 +3,9 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import ImageUpload from '@/components/admin/image-upload'
+import MultiImageUpload, {
+  UploadedImage,
+} from '@/components/admin/multi-image-upload'
 
 type Service = {
   id: number
@@ -22,8 +24,8 @@ export default function EditPortfolioPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [serviceId, setServiceId] = useState('')
-  const [image, setImage] = useState('')
-  const [imagePreview, setImagePreview] = useState('')
+  const [projectDate, setProjectDate] = useState('')
+  const [images, setImages] = useState<UploadedImage[]>([])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -37,8 +39,19 @@ export default function EditPortfolioPage() {
       ] = await Promise.all([
         supabase
           .from('portfolios')
-          .select('*')
+          .select(`
+            *,
+            portfolio_images (
+              id,
+              path,
+              sort_order
+            )
+          `)
           .eq('id', id)
+          .order('sort_order', {
+            foreignTable: 'portfolio_images',
+            ascending: true,
+          })
           .single(),
 
         supabase
@@ -67,20 +80,27 @@ export default function EditPortfolioPage() {
       setServiceId(
         portfolio.service_id?.toString() ?? ''
       )
+      setProjectDate(portfolio.project_date ?? '')
 
-      setImage(portfolio.image ?? '')
+      const portfolioImages = portfolio.portfolio_images ?? []
 
-      if (portfolio.image) {
-        const { data: signedUrlData } =
-          await supabase.storage
-            .from('portfolios')
-            .createSignedUrl(portfolio.image, 60 * 60)
+      const withUrls = await Promise.all(
+        portfolioImages.map(
+          async (img: { id: string; path: string }) => {
+            const { data: signedData } = await supabase.storage
+              .from('portfolios')
+              .createSignedUrl(img.path, 60 * 60)
 
-        setImagePreview(
-          signedUrlData?.signedUrl ?? ''
+            return {
+              id: img.id,
+              path: img.path,
+              url: signedData?.signedUrl ?? '',
+            }
+          }
         )
-      }
+      )
 
+      setImages(withUrls)
       setServices(servicesResult.data ?? [])
 
       setLoading(false)
@@ -88,6 +108,22 @@ export default function EditPortfolioPage() {
 
     getData()
   }, [id, supabase])
+
+  async function handleImageRemoved(image: UploadedImage) {
+    if (!image.id) return
+
+    const { error: deleteError } = await supabase
+      .from('portfolio_images')
+      .delete()
+      .eq('id', image.id)
+
+    if (deleteError) {
+      console.error(
+        'Gagal menghapus data gambar:',
+        deleteError.message
+      )
+    }
+  }
 
   async function handleSubmit(
     e: FormEvent<HTMLFormElement>
@@ -102,50 +138,44 @@ export default function EditPortfolioPage() {
     setSaving(true)
     setError('')
 
-    // Ambil data image lama terlebih dahulu
-    const { data: currentPortfolio, error: fetchError } =
-      await supabase
-        .from('portfolios')
-        .select('image')
-        .eq('id', id)
-        .single()
-
-    if (fetchError) {
-      setError(fetchError.message)
-      setSaving(false)
-      return
-    }
-
-    const oldImage = currentPortfolio?.image ?? null
-
-    // Update database dengan gambar baru
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from('portfolios')
       .update({
         title,
         description: description || null,
         service_id: Number(serviceId),
-        image: image || null,
+        project_date: projectDate || null,
       })
       .eq('id', id)
 
-    if (error) {
-      setError(error.message)
+    if (updateError) {
+      setError(updateError.message)
       setSaving(false)
       return
     }
 
-    // Kalau gambar berubah, hapus gambar lama dari Storage
-    if (oldImage && oldImage !== image) {
-      const { error: deleteImageError } =
-        await supabase.storage
-          .from('portfolios')
-          .remove([oldImage])
+    // Gambar baru (belum punya id) perlu di-insert sebagai row baru.
+    // Gambar lama yang masih ada di array tidak perlu disentuh —
+    // yang dihapus sudah ditangani langsung lewat handleImageRemoved.
+    const newImages = images.filter((image) => !image.id)
 
-      if (deleteImageError) {
-        alert(
-          `Portfolio berhasil disimpan, tetapi gambar lama gagal dihapus: ${deleteImageError.message}`
+    if (newImages.length > 0) {
+      const existingCount = images.length - newImages.length
+
+      const { error: imagesError } = await supabase
+        .from('portfolio_images')
+        .insert(
+          newImages.map((image, index) => ({
+            portfolio_id: id,
+            path: image.path,
+            sort_order: existingCount + index,
+          }))
         )
+
+      if (imagesError) {
+        setError(imagesError.message)
+        setSaving(false)
+        return
       }
     }
 
@@ -223,6 +253,20 @@ export default function EditPortfolioPage() {
           </select>
         </div>
 
+        {/* Tanggal Pengerjaan */}
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Tanggal Pengerjaan
+          </label>
+
+          <input
+            type="date"
+            value={projectDate}
+            onChange={(e) => setProjectDate(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+          />
+        </div>
+
         {/* Description */}
         <div>
           <label className="text-sm font-medium text-gray-700">
@@ -247,14 +291,12 @@ export default function EditPortfolioPage() {
           </label>
 
           <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
-            <ImageUpload
+            <MultiImageUpload
               bucket="portfolios"
-              value={image}
-              previewUrl={imagePreview}
-              onChange={(path) => {
-                setImage(path)
-                setImagePreview('')
-              }}
+              images={images}
+              onChange={setImages}
+              onRemove={handleImageRemoved}
+              maxImages={8}
             />
           </div>
         </div>
