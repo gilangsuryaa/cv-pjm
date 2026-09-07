@@ -25,20 +25,67 @@ export default function DeleteProductButton({
 
     setLoading(true)
 
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id)
+    // 1. Ambil semua path gambar produk ini terlebih dahulu
+    //    (row product_images akan ikut terhapus lewat cascade,
+    //    jadi harus diambil sebelum produk dihapus)
+    const { data: productImages, error: fetchError } =
+      await supabase
+        .from('product_images')
+        .select('path')
+        .eq('product_id', id)
 
-    if (error) {
-      alert(`Gagal menghapus: ${error.message}`)
+    if (fetchError) {
+      alert(
+        `Gagal mengambil data gambar produk: ${fetchError.message}`
+      )
       setLoading(false)
       return
+    }
+
+    // 2. Hapus data product
+    //    (row di product_images ikut terhapus otomatis lewat
+    //    "on delete cascade" di database)
+    const { error: deleteError } =
+      await supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+
+    if (deleteError) {
+      alert(
+        `Gagal menghapus produk: ${deleteError.message}`
+      )
+      setLoading(false)
+      return
+    }
+
+    // 3. Kalau punya gambar, hapus semuanya dari Storage
+    const paths = (productImages ?? []).map(
+      (img: { path: string }) => img.path
+    )
+
+    if (paths.length > 0) {
+      const { error: storageError } =
+        await supabase.storage
+          .from('products')
+          .remove(paths)
+
+      if (storageError) {
+        console.error(
+          'Gagal menghapus gambar dari Storage:',
+          storageError.message
+        )
+
+        alert(
+          `Produk berhasil dihapus, tetapi gambar gagal dihapus dari Storage: ${storageError.message}`
+        )
+      }
     }
 
     router.refresh()
     setLoading(false)
   }
+
 
   return (
     <button

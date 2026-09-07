@@ -1,37 +1,22 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
-
 import { useParams, useRouter } from 'next/navigation'
-
 import { createClient } from '@/lib/supabase/client'
-
 import ImageUpload from '@/components/admin/image-upload'
 
-function generateSlug(text: string) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-}
-
-export default function EditServicePage() {
-
+export default function EditTestimonialPage() {
   const params = useParams()
   const router = useRouter()
   const supabase = createClient()
-
   const id = params.id as string
 
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
-  const [description, setDescription] = useState('')
-  const [price, setPrice] = useState('')
+  const [customerName, setCustomerName] = useState('')
+  const [customerLocation, setCustomerLocation] = useState('')
+  const [rating, setRating] = useState('5')
+  const [message, setMessage] = useState('')
   const [image, setImage] = useState('')
   const [imagePreview, setImagePreview] = useState('')
-  const [originalImage, setOriginalImage] = useState('')
   const [status, setStatus] = useState(true)
 
   const [loading, setLoading] = useState(true)
@@ -39,9 +24,9 @@ export default function EditServicePage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    async function getService() {
+    async function getTestimonial() {
       const { data, error } = await supabase
-        .from('services')
+        .from('testimonials')
         .select('*')
         .eq('id', id)
         .single()
@@ -52,45 +37,43 @@ export default function EditServicePage() {
         return
       }
 
-      setName(data.name)
-      setSlug(data.slug)
-      setDescription(data.description ?? '')
-      setPrice(data.price?.toString() ?? '')
-      setStatus(data.status)
+      setCustomerName(data.customer_name ?? '')
+      setCustomerLocation(data.customer_location ?? '')
+      setRating(data.rating?.toString() ?? '5')
+      setMessage(data.message ?? '')
+      setStatus(data.status ?? true)
+
       setImage(data.image ?? '')
-      setOriginalImage(data.image ?? '')
 
       if (data.image) {
-        const { data: signedImage } = await supabase.storage
-          .from('services')
-          .createSignedUrl(data.image, 60 * 60)
+        const { data: signedUrlData } =
+          await supabase.storage
+            .from('testimonials')
+            .createSignedUrl(data.image, 60 * 60)
 
         setImagePreview(
-          signedImage?.signedUrl ?? ''
+          signedUrlData?.signedUrl ?? ''
         )
       }
 
       setLoading(false)
     }
 
-    getService()
-  }, [id])
+    getTestimonial()
+  }, [id, supabase])
 
   async function handleSubmit(
     e: FormEvent<HTMLFormElement>
   ) {
     e.preventDefault()
 
-    console.log('HANDLE SUBMIT JALAN')
-    console.log('CURRENT IMAGE STATE:', image)
-
     setSaving(true)
     setError('')
 
-    // Simpan path gambar lama sebelum update
-    const { data: currentService, error: fetchError } =
+    // Ambil gambar lama dari database
+    const { data: currentTestimonial, error: fetchError } =
       await supabase
-        .from('services')
+        .from('testimonials')
         .select('image')
         .eq('id', id)
         .single()
@@ -101,48 +84,43 @@ export default function EditServicePage() {
       return
     }
 
-    const oldImage = currentService?.image ?? null
-    const newImage = image || null
+    const oldImage = currentTestimonial?.image ?? null
 
-    // Update data service
-    const { error } = await supabase
-      .from('services')
+    // Update data testimonial
+    const { error: updateError } = await supabase
+      .from('testimonials')
       .update({
-        name,
-        slug,
-        description: description || null,
-        price: price ? Number(price) : null,
+        customer_name: customerName,
+        customer_location: customerLocation || null,
+        rating: Number(rating),
+        message,
         image: image || null,
         status,
       })
       .eq('id', id)
 
-    if (error) {
-      setError(error.message)
+    if (updateError) {
+      setError(updateError.message)
       setSaving(false)
       return
     }
 
-    // Hapus gambar lama hanya kalau memang diganti
-    if (
-      originalImage &&
-      image &&
-      originalImage !== image
-    ) {
-      const { error: deleteError } =
-        await supabase.storage
-          .from('services')
-          .remove([originalImage])
+    // Kalau gambar berubah, hapus gambar lama dari Storage
+    if (oldImage && oldImage !== image) {
+      const { error: removeError } = await supabase.storage
+        .from('testimonials')
+        .remove([oldImage])
 
-      if (deleteError) {
-        console.error(
-          'Gagal menghapus gambar lama:',
-          deleteError.message
+      if (removeError) {
+        setError(
+          `Data berhasil disimpan, tetapi gambar lama gagal dihapus: ${removeError.message}`
         )
+        setSaving(false)
+        return
       }
     }
 
-    router.push('/admin/services')
+    router.push('/admin/testimonials')
     router.refresh()
   }
 
@@ -150,7 +128,7 @@ export default function EditServicePage() {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-6">
         <p className="text-sm text-gray-600">
-          Memuat data layanan...
+          Memuat data testimonial...
         </p>
       </div>
     )
@@ -161,131 +139,134 @@ export default function EditServicePage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">
-          Edit Layanan
+          Edit Testimonial
         </h1>
 
         <p className="mt-1 text-sm text-gray-600">
-          Ubah informasi layanan yang sudah ada.
+          Ubah informasi testimonial pelanggan.
         </p>
       </div>
 
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm"
+        className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6"
       >
-        {/* Nama */}
+        {/* Customer Name */}
         <div className="mb-5">
           <label
-            htmlFor="name"
+            htmlFor="customerName"
             className="block text-sm font-medium text-gray-700"
           >
-            Nama Layanan
+            Nama Customer
           </label>
 
           <input
-            id="name"
+            id="customerName"
             type="text"
-            value={name}
-            onChange={(e) => {
-              const value = e.target.value
-              setName(value)
-              setSlug(generateSlug(value))
-            }}
-            required
-            className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
-          />
-        </div>
-
-        {/* Slug */}
-        <div className="mb-5">
-          <label
-            htmlFor="slug"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Slug
-          </label>
-
-          <input
-            id="slug"
-            type="text"
-            value={slug}
+            value={customerName}
             onChange={(e) =>
-              setSlug(generateSlug(e.target.value))
+              setCustomerName(e.target.value)
             }
             required
             className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
           />
-
-          <p className="mt-1.5 text-xs text-gray-500">
-            URL: /layanan/{slug}
-          </p>
         </div>
 
-        {/* Deskripsi */}
+        {/* Location */}
         <div className="mb-5">
           <label
-            htmlFor="description"
+            htmlFor="customerLocation"
             className="block text-sm font-medium text-gray-700"
           >
-            Deskripsi
+            Lokasi
+          </label>
+
+          <input
+            id="customerLocation"
+            type="text"
+            value={customerLocation}
+            onChange={(e) =>
+              setCustomerLocation(e.target.value)
+            }
+            className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+          />
+        </div>
+
+        {/* Rating */}
+        <div className="mb-5">
+          <label
+            htmlFor="rating"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Rating
+          </label>
+
+          <select
+            id="rating"
+            value={rating}
+            onChange={(e) =>
+              setRating(e.target.value)
+            }
+            className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
+          >
+            <option value="5">
+              ★★★★★ — 5
+            </option>
+
+            <option value="4">
+              ★★★★☆ — 4
+            </option>
+
+            <option value="3">
+              ★★★☆☆ — 3
+            </option>
+
+            <option value="2">
+              ★★☆☆☆ — 2
+            </option>
+
+            <option value="1">
+              ★☆☆☆☆ — 1
+            </option>
+          </select>
+        </div>
+
+        {/* Message */}
+        <div className="mb-5">
+          <label
+            htmlFor="message"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Pesan
           </label>
 
           <textarea
-            id="description"
-            value={description}
+            id="message"
+            value={message}
             onChange={(e) =>
-              setDescription(e.target.value)
+              setMessage(e.target.value)
             }
             rows={5}
+            required
             className="mt-2 block w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
           />
-        </div>
-
-        {/* Harga */}
-        <div className="mb-5">
-          <label
-            htmlFor="price"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Harga
-          </label>
-
-          <input
-            id="price"
-            type="number"
-            value={price}
-            onChange={(e) =>
-              setPrice(e.target.value)
-            }
-            min="0"
-            className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition focus:border-gray-900 focus:ring-1 focus:ring-gray-900"
-          />
-
-          <p className="mt-1.5 text-xs text-gray-500">
-            Masukkan harga dalam Rupiah.
-          </p>
         </div>
 
         {/* Gambar */}
         <div className="mb-5">
           <label className="block text-sm font-medium text-gray-700">
-            Gambar Layanan
+            Foto Customer
           </label>
 
           <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
             <ImageUpload
-              bucket="services"
+              bucket="testimonials"
               value={image}
               previewUrl={imagePreview}
-              onChange={async (path) => {
+              onChange={(path) => {
                 setImage(path)
-
-                const { data } = await supabase.storage
-                  .from('services')
-                  .createSignedUrl(path, 60 * 60)
-
-                setImagePreview(data?.signedUrl ?? '')
+                setImagePreview('')
               }}
             />
           </div>
@@ -295,6 +276,7 @@ export default function EditServicePage() {
         <div className="mb-6">
           <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-gray-700">
             <input
+              id="status"
               type="checkbox"
               checked={status}
               onChange={(e) =>
@@ -303,11 +285,11 @@ export default function EditServicePage() {
               className="h-4 w-4 rounded border-gray-300"
             />
 
-            <span>Aktif</span>
+            <span>Aktifkan testimonial</span>
           </label>
 
-          <p className="mt-1.5 ml-6 text-xs text-gray-500">
-            Layanan aktif akan ditampilkan sebagai layanan yang tersedia.
+          <p className="ml-6 mt-1.5 text-xs text-gray-500">
+            Testimonial aktif akan ditampilkan di website.
           </p>
         </div>
 

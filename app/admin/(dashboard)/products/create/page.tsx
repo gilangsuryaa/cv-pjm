@@ -3,19 +3,26 @@
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import MultiImageUpload, {
+  UploadedImage,
+} from '@/components/admin/multi-image-upload'
 
 export default function CreateProductPage() {
   const router = useRouter()
   const supabase = createClient()
 
   const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
   const [type, setType] = useState('')
   const [pk, setPk] = useState('')
+  const [daya, setDaya] = useState('')
+  const [kapasitas, setKapasitas] = useState('')
   const [price, setPrice] = useState('')
   const [minRoomArea, setMinRoomArea] = useState('')
   const [maxRoomArea, setMaxRoomArea] = useState('')
   const [description, setDescription] = useState('')
+  const [images, setImages] = useState<UploadedImage[]>([])
   const [stockStatus, setStockStatus] = useState(true)
 
   const [loading, setLoading] = useState(false)
@@ -27,13 +34,16 @@ export default function CreateProductPage() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase
+    const { data: product, error: insertError } = await supabase
       .from('products')
       .insert({
         name,
+        category: category || null,
         brand: brand || null,
         type: type || null,
         pk: pk ? Number(pk) : null,
+        daya: daya ? Number(daya) : null,
+        kapasitas: kapasitas ? Number(kapasitas) : null,
         price: price ? Number(price) : null,
         min_room_area: minRoomArea
           ? Number(minRoomArea)
@@ -44,11 +54,31 @@ export default function CreateProductPage() {
         description: description || null,
         stock_status: stockStatus,
       })
+      .select()
+      .single()
 
-    if (error) {
-      setError(error.message)
+    if (insertError) {
+      setError(insertError.message)
       setLoading(false)
       return
+    }
+
+    if (images.length > 0) {
+      const { error: imagesError } = await supabase
+        .from('product_images')
+        .insert(
+          images.map((image, index) => ({
+            product_id: product.id,
+            path: image.path,
+            sort_order: index,
+          }))
+        )
+
+      if (imagesError) {
+        setError(imagesError.message)
+        setLoading(false)
+        return
+      }
     }
 
     router.push('/admin/products')
@@ -84,6 +114,21 @@ export default function CreateProductPage() {
             placeholder="Contoh: Daikin FTKC 1 PK"
             required
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:border-gray-900"
+          />
+        </div>
+
+        {/* Kategori */}
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Kategori
+          </label>
+
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Contoh: AC, Kulkas, TV"
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
         </div>
 
@@ -136,6 +181,49 @@ export default function CreateProductPage() {
           <p className="mt-1 text-xs text-gray-500">
             Contoh: 0.5, 1, 1.5, 2
           </p>
+        </div>
+
+        {/* Daya & Kapasitas (BTU/h) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Daya (Watt)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={daya}
+              onChange={(e) => setDaya(e.target.value)}
+              placeholder="900"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+
+            <p className="mt-1 text-xs text-gray-500">
+              Contoh: 900 (akan tampil sebagai 900W)
+            </p>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Kapasitas (BTU/h)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={kapasitas}
+              onChange={(e) => setKapasitas(e.target.value)}
+              placeholder="9000"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+
+            <p className="mt-1 text-xs text-gray-500">
+              Contoh: 9000 (akan tampil sebagai 9.000 BTU/h)
+            </p>
+          </div>
         </div>
 
         {/* Harga */}
@@ -207,6 +295,20 @@ export default function CreateProductPage() {
             placeholder="Deskripsi produk..."
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Gambar Produk
+          </label>
+
+          <div className="mt-1">
+            <MultiImageUpload
+              bucket="products"
+              images={images}
+              onChange={setImages}
+            />
+          </div>
         </div>
 
         {/* Stock */}

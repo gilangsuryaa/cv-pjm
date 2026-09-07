@@ -9,6 +9,10 @@ const menuItems = [
     href: '/admin/dashboard',
   },
   {
+    label: 'Pengaturan Website',
+    href: '/admin/site-settings',
+  },
+  {
     label: 'Layanan',
     href: '/admin/services',
   },

@@ -3,6 +3,9 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import MultiImageUpload, {
+  UploadedImage,
+} from '@/components/admin/multi-image-upload'
 
 export default function EditProductPage() {
   const params = useParams()
@@ -12,14 +15,18 @@ export default function EditProductPage() {
   const id = params.id as string
 
   const [name, setName] = useState('')
+  const [category, setCategory] = useState('')
   const [brand, setBrand] = useState('')
   const [type, setType] = useState('')
   const [pk, setPk] = useState('')
+  const [daya, setDaya] = useState('')
+  const [kapasitas, setKapasitas] = useState('')
   const [price, setPrice] = useState('')
   const [minRoomArea, setMinRoomArea] = useState('')
   const [maxRoomArea, setMaxRoomArea] = useState('')
   const [description, setDescription] = useState('')
   const [stockStatus, setStockStatus] = useState(true)
+  const [images, setImages] = useState<UploadedImage[]>([])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -29,8 +36,12 @@ export default function EditProductPage() {
     async function getProduct() {
       const { data, error } = await supabase
         .from('products')
-        .select('*')
+        .select('*, product_images(id, path, sort_order)')
         .eq('id', id)
+        .order('sort_order', {
+          foreignTable: 'product_images',
+          ascending: true,
+        })
         .single()
 
       if (error) {
@@ -40,34 +51,75 @@ export default function EditProductPage() {
       }
 
       setName(data.name ?? '')
+      setCategory(data.category ?? '')
       setBrand(data.brand ?? '')
       setType(data.type ?? '')
       setPk(data.pk?.toString() ?? '')
+      setDaya(data.daya?.toString() ?? '')
+      setKapasitas(data.kapasitas?.toString() ?? '')
       setPrice(data.price?.toString() ?? '')
       setMinRoomArea(data.min_room_area?.toString() ?? '')
       setMaxRoomArea(data.max_room_area?.toString() ?? '')
       setDescription(data.description ?? '')
       setStockStatus(data.stock_status ?? false)
 
+      const productImages = data.product_images ?? []
+
+      const withUrls = await Promise.all(
+        productImages.map(async (img: { id: string; path: string }) => {
+          const { data: signedData } = await supabase.storage
+            .from('products')
+            .createSignedUrl(img.path, 60 * 60)
+
+          return {
+            id: img.id,
+            path: img.path,
+            url: signedData?.signedUrl ?? '',
+          }
+        })
+      )
+
+      setImages(withUrls)
       setLoading(false)
     }
 
     getProduct()
   }, [id])
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleImageRemoved(image: UploadedImage) {
+    if (!image.id) return
+
+    const { error: deleteError } = await supabase
+      .from('product_images')
+      .delete()
+      .eq('id', image.id)
+
+    if (deleteError) {
+      console.error(
+        'Gagal menghapus data gambar:',
+        deleteError.message
+      )
+    }
+  }
+
+  async function handleSubmit(
+    e: FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault()
 
     setSaving(true)
     setError('')
 
-    const { error } = await supabase
+    const { error: updateError } = await supabase
       .from('products')
       .update({
         name,
+        category: category || null,
         brand: brand || null,
         type: type || null,
         pk: pk ? Number(pk) : null,
+        daya: daya ? Number(daya) : null,
+        kapasitas: kapasitas ? Number(kapasitas) : null,
         price: price ? Number(price) : null,
         min_room_area: minRoomArea
           ? Number(minRoomArea)
@@ -80,10 +132,35 @@ export default function EditProductPage() {
       })
       .eq('id', id)
 
-    if (error) {
-      setError(error.message)
+    if (updateError) {
+      setError(updateError.message)
       setSaving(false)
       return
+    }
+
+    // Gambar baru (belum punya id) perlu di-insert sebagai row baru.
+    // Gambar lama yang masih ada di array tidak perlu disentuh —
+    // yang dihapus sudah ditangani langsung lewat handleImageRemoved.
+    const newImages = images.filter((image) => !image.id)
+
+    if (newImages.length > 0) {
+      const existingCount = images.length - newImages.length
+
+      const { error: imagesError } = await supabase
+        .from('product_images')
+        .insert(
+          newImages.map((image, index) => ({
+            product_id: id,
+            path: image.path,
+            sort_order: existingCount + index,
+          }))
+        )
+
+      if (imagesError) {
+        setError(imagesError.message)
+        setSaving(false)
+        return
+      }
     }
 
     router.push('/admin/products')
@@ -120,6 +197,20 @@ export default function EditProductPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Kategori
+          </label>
+
+          <input
+            type="text"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Contoh: AC, Kulkas, TV"
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
         </div>
@@ -163,6 +254,41 @@ export default function EditProductPage() {
             onChange={(e) => setPk(e.target.value)}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        {/* Daya & Kapasitas (BTU/h) */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Daya (Watt)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={daya}
+              onChange={(e) => setDaya(e.target.value)}
+              placeholder="900"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Kapasitas (BTU/h)
+            </label>
+
+            <input
+              type="number"
+              step="1"
+              min="0"
+              value={kapasitas}
+              onChange={(e) => setKapasitas(e.target.value)}
+              placeholder="9000"
+              className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+            />
+          </div>
         </div>
 
         <div>
@@ -218,6 +344,21 @@ export default function EditProductPage() {
             rows={5}
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Gambar Produk
+          </label>
+
+          <div className="mt-1">
+            <MultiImageUpload
+              bucket="products"
+              images={images}
+              onChange={setImages}
+              onRemove={handleImageRemoved}
+            />
+          </div>
         </div>
 
         <div>
