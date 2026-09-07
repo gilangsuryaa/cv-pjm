@@ -3,6 +3,9 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import MultiImageUpload, {
+  UploadedImage,
+} from '@/components/admin/multi-image-upload'
 
 type Service = {
   id: number
@@ -18,6 +21,8 @@ export default function CreatePortfolioPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [serviceId, setServiceId] = useState('')
+  const [projectDate, setProjectDate] = useState('')
+  const [images, setImages] = useState<UploadedImage[]>([])
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -54,18 +59,39 @@ export default function CreatePortfolioPage() {
     setSaving(true)
     setError('')
 
-    const { error } = await supabase
+    const { data: portfolio, error: insertError } = await supabase
       .from('portfolios')
       .insert({
         title,
         description: description || null,
         service_id: Number(serviceId),
+        project_date: projectDate || null,
       })
+      .select()
+      .single()
 
-    if (error) {
-      setError(error.message)
+    if (insertError) {
+      setError(insertError.message)
       setSaving(false)
       return
+    }
+
+    if (images.length > 0) {
+      const { error: imagesError } = await supabase
+        .from('portfolio_images')
+        .insert(
+          images.map((image, index) => ({
+            portfolio_id: portfolio.id,
+            path: image.path,
+            sort_order: index,
+          }))
+        )
+
+      if (imagesError) {
+        setError(imagesError.message)
+        setSaving(false)
+        return
+      }
     }
 
     router.push('/admin/portfolios')
@@ -139,6 +165,20 @@ export default function CreatePortfolioPage() {
           </select>
         </div>
 
+        {/* Tanggal Pengerjaan */}
+        <div>
+          <label className="text-sm font-medium text-gray-700">
+            Tanggal Pengerjaan
+          </label>
+
+          <input
+            type="date"
+            value={projectDate}
+            onChange={(e) => setProjectDate(e.target.value)}
+            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+          />
+        </div>
+
         {/* Description */}
         <div>
           <label className="text-sm font-medium text-gray-700">
@@ -154,6 +194,22 @@ export default function CreatePortfolioPage() {
             placeholder="Deskripsi pekerjaan..."
             className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           />
+        </div>
+
+        {/* Gambar */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Gambar Portfolio
+          </label>
+
+          <div className="mt-2 rounded-md border border-gray-200 bg-gray-50 p-4">
+            <MultiImageUpload
+              bucket="portfolios"
+              images={images}
+              onChange={setImages}
+              maxImages={8}
+            />
+          </div>
         </div>
 
         {/* Error */}
