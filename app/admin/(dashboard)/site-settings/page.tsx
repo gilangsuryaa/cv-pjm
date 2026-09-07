@@ -15,6 +15,7 @@ type SiteSettings = {
   whatsapp: string | null
   email: string | null
   address: string | null
+  branch: string | null
   maps_url: string | null
   instagram_url: string | null
   facebook_url: string | null
@@ -37,6 +38,7 @@ export default function SiteSettingsPage() {
   const [whatsapp, setWhatsapp] = useState('')
   const [email, setEmail] = useState('')
   const [address, setAddress] = useState('')
+  const [branch, setBranch] = useState('')
   const [mapsUrl, setMapsUrl] = useState('')
   const [instagramUrl, setInstagramUrl] = useState('')
   const [facebookUrl, setFacebookUrl] = useState('')
@@ -88,6 +90,7 @@ export default function SiteSettingsPage() {
       setWhatsapp(data.whatsapp ?? '')
       setEmail(data.email ?? '')
       setAddress(data.address ?? '')
+      setBranch(data.branch ?? '')
       setMapsUrl(data.maps_url ?? '')
       setInstagramUrl(data.instagram_url ?? '')
       setFacebookUrl(data.facebook_url ?? '')
@@ -121,6 +124,7 @@ export default function SiteSettingsPage() {
         whatsapp: whatsapp || null,
         email: email || null,
         address: address || null,
+        branch: branch || null,
         maps_url: mapsUrl || null,
         instagram_url: instagramUrl || null,
         facebook_url: facebookUrl || null,
@@ -342,6 +346,22 @@ export default function SiteSettingsPage() {
                 onChange={(e) =>
                   setAddress(e.target.value)
                 }
+                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Cabang
+              </label>
+
+              <input
+                type="text"
+                value={branch}
+                onChange={(e) =>
+                  setBranch(e.target.value)
+                }
+                placeholder="Contoh: Cabang Purwokerto"
                 className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
               />
             </div>
