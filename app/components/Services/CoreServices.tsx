@@ -28,7 +28,7 @@ export default function CoreServices() {
           </p>
         </div>
 
-        {/* AC */}
+        {/* ==================== AC ==================== */}
         <div className="mt-3 grid grid-cols-1 border border-[#dceaf3] lg:grid-cols-2">
 
           {/* Content */}
@@ -96,79 +96,107 @@ export default function CoreServices() {
           </div>
         </div>
 
-        {/* Electrical + Electronics */}
+        {/* ==================== ELECTRICAL + ELECTRONICS ==================== */}
         <div className="mt-4 grid grid-cols-1 gap-4 sm:mt-5 sm:gap-5 lg:grid-cols-2">
 
-          {/* Electrical */}
-          <div className="border border-[#dceaf3] p-5 sm:p-7">
-            <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
-              <Zap size={11} />
-              KELISTRIKAN
-            </span>
+          {/* ==================== ELECTRICAL ==================== */}
+          <div className="overflow-hidden border border-[#dceaf3]">
 
-            <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
-              Instalasi &amp; Perawatan Listrik
-            </h3>
-
-            <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
-              Solusi untuk kebutuhan instalasi, perawatan, dan pengecekan
-              sistem kelistrikan agar tetap aman dan berfungsi dengan baik.
-            </p>
-
-            <div className="mt-4 border-t border-[#dceaf3] pt-3 text-[11px] text-[#333] sm:text-[12px]">
-              <p className="border-l-2 border-[#D91E05] pl-2">
-                Instalasi &amp; Penambahan Jalur Listrik
-              </p>
-
-              <p className="mt-2 border-l-2 border-[#D91E05] pl-2">
-                Pengecekan &amp; Perawatan Sistem Kelistrikan
-              </p>
+            {/* Image */}
+            <div className="relative h-[220px] w-full sm:h-[250px]">
+              <Image
+                src="/images/Services/services 2.jpg"
+                alt="Layanan instalasi dan perawatan kelistrikan"
+                fill
+                className="object-cover"
+              />
             </div>
 
-            <a
-              href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20Instalasi%20Listrik"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 block w-full border border-[#D91E05] px-4 py-3 text-center text-[11px] font-semibold text-[#D91E05] transition hover:bg-[#FFF5F3]"
-            >
-              Konsultasi Kelistrikan
-            </a>
+            {/* Content */}
+            <div className="p-5 sm:p-7">
+              <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
+                <Zap size={11} />
+                KELISTRIKAN
+              </span>
+
+              <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
+                Instalasi &amp; Perawatan Listrik
+              </h3>
+
+              <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
+                Solusi untuk kebutuhan instalasi, perawatan, dan pengecekan
+                sistem kelistrikan agar tetap aman dan berfungsi dengan baik.
+              </p>
+
+              <div className="mt-4 border-t border-[#dceaf3] pt-3 text-[11px] text-[#333] sm:text-[12px]">
+                <p className="border-l-2 border-[#D91E05] pl-2">
+                  Instalasi &amp; Penambahan Jalur Listrik
+                </p>
+
+                <p className="mt-2 border-l-2 border-[#D91E05] pl-2">
+                  Pengecekan &amp; Perawatan Sistem Kelistrikan
+                </p>
+              </div>
+
+              <a
+                href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20Instalasi%20Listrik"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 block w-full border border-[#D91E05] px-4 py-3 text-center text-[11px] font-semibold text-[#D91E05] transition hover:bg-[#FFF5F3]"
+              >
+                Konsultasi Kelistrikan
+              </a>
+            </div>
           </div>
 
-          {/* Electronics */}
-          <div className="border border-[#dceaf3] p-5 sm:p-7">
-            <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
-              <Cpu size={11} />
-              ELEKTRONIK
-            </span>
+          {/* ==================== ELECTRONICS ==================== */}
+          <div className="overflow-hidden border border-[#dceaf3]">
 
-            <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
-              Service &amp; Perbaikan Elektronik
-            </h3>
-
-            <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
-              Membantu pengecekan dan perbaikan berbagai perangkat elektronik
-              sesuai dengan jenis kerusakan dan kebutuhan pelanggan.
-            </p>
-
-            <div className="mt-4 border-t border-[#dceaf3] pt-3 text-[11px] text-[#333] sm:text-[12px]">
-              <p className="border-l-2 border-[#D91E05] pl-2">
-                Pemeriksaan &amp; Diagnosa Kerusakan
-              </p>
-
-              <p className="mt-2 border-l-2 border-[#D91E05] pl-2">
-                Service &amp; Perbaikan Komponen
-              </p>
+            {/* Image */}
+            <div className="relative h-[220px] w-full sm:h-[250px]">
+              <Image
+                src="/images/Services/services 3.jpg"
+                alt="Layanan service dan perbaikan elektronik"
+                fill
+                className="object-cover"
+              />
             </div>
 
-            <a
-              href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20Service%20Elektronik"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 block w-full border border-[#D91E05] px-4 py-3 text-center text-[11px] font-semibold text-[#D91E05] transition hover:bg-[#FFF5F3]"
-            >
-              Konsultasi Elektronik
-            </a>
+            {/* Content */}
+            <div className="p-5 sm:p-7">
+              <span className="inline-flex items-center gap-1 bg-[#eaf6fc] px-2 py-1 text-[10px] font-medium text-[#0788D1]">
+                <Cpu size={11} />
+                ELEKTRONIK
+              </span>
+
+              <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
+                Service &amp; Perbaikan Elektronik
+              </h3>
+
+              <p className="mt-3 text-[12px] leading-5 text-[#604f4b] sm:text-[13px]">
+                Membantu pengecekan dan perbaikan berbagai perangkat elektronik
+                sesuai dengan jenis kerusakan dan kebutuhan pelanggan.
+              </p>
+
+              <div className="mt-4 border-t border-[#dceaf3] pt-3 text-[11px] text-[#333] sm:text-[12px]">
+                <p className="border-l-2 border-[#D91E05] pl-2">
+                  Pemeriksaan &amp; Diagnosa Kerusakan
+                </p>
+
+                <p className="mt-2 border-l-2 border-[#D91E05] pl-2">
+                  Service &amp; Perbaikan Komponen
+                </p>
+              </div>
+
+              <a
+                href="https://wa.me/6281949532643?text=Halo%20CV%20Prima%20Jaya%20Mandiri%2C%20Saya%20Mau%20Konsultasi%20Service%20Elektronik"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 block w-full border border-[#D91E05] px-4 py-3 text-center text-[11px] font-semibold text-[#D91E05] transition hover:bg-[#FFF5F3]"
+              >
+                Konsultasi Elektronik
+              </a>
+            </div>
           </div>
 
         </div>
