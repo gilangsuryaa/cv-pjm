@@ -23,9 +23,10 @@ export default function ChatbotButton() {
             bottom-6
             right-6
             z-50
-            h-24
-            w-24
+            h-32
+            w-32
             bg-transparent
+            drop-shadow-[0_8px_18px_rgba(0,0,0,0.3)]
             transition-all
             duration-300
             hover:scale-110
@@ -37,8 +38,8 @@ export default function ChatbotButton() {
               src="/images/chatbot/logo-chatbot.png"
               alt="PJM Chatbot"
               fill
-              sizes="96px"
-              className="object-contain drop-shadow-lg"
+              sizes="128px"
+              className="object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
             />
           </div>
         </button>

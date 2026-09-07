@@ -113,6 +113,30 @@ ${description}`;
               </div>
             </div>
 
+            <div className="border border-[#bfe8f8] bg-white p-4">
+              <div className="flex gap-4">
+                <div className="flex h-[42px] w-[34px] shrink-0 items-center justify-center bg-[#f1eeee]">
+                  <MapPin
+                    size={21}
+                    fill="#d91e05"
+                    className="text-[#d91e05]"
+                  />
+                </div>
+
+                <div>
+                  <h2 className="text-[18px] font-semibold text-[#0788D1] sm:text-[20px]">
+                    Kantor Cabang
+                  </h2>
+
+                  <p className="mt-2 text-[14px] leading-6 text-[#654f4a] sm:text-[16px]">
+                    Dusun Bedog RT. 03, Trihanggo, Gamping
+                    <br />
+                    Sleman, Yogyakarta
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* TELEPON */}
             <div className="border border-[#bfe8f8] bg-white p-4">
               <div className="flex gap-4">

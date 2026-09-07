@@ -145,12 +145,29 @@ export default function Footer() {
                 />
 
                 <p>
+                  <span className="font-semibold text-[#0788D1]">Kantor Pusat</span>
+                  <br />
                   Jl. Pakuwon No. 50, Dusun Karangtangsi RT. 08/RW. 03,
                   Desa Losari Kidul, Kecamatan Losari,
                   <br />
                   Kabupaten Cirebon, Jawa Barat, 45192
                 </p>
               </a>
+
+              <div className="flex gap-2">
+                <MapPin
+                  size={15}
+                  className="mt-0.5 shrink-0"
+                />
+
+                <p>
+                  <span className="font-semibold text-[#0788D1]">Kantor Cabang</span>
+                  <br />
+                  Dusun Bedog RT. 03, Trihanggo, Gamping,
+                  <br />
+                  Sleman, Yogyakarta
+                </p>
+              </div>
 
               {/* Phone */}
               <a
