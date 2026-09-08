@@ -4,7 +4,6 @@ import Image from "next/image";
 import {
   ChevronRight,
   ChevronLeft,
-  Bot,
   Search,
   X,
 } from "lucide-react";
@@ -20,6 +19,7 @@ const products = [
     description:
       "AC dinding efisiensi tinggi yang cocok untuk perumahan dan komersial ringan.",
     image: "/images/products/daikin-inverter.png",
+    price: "Rp 2.500.000",
     specs: [
       ["Kapasitas", "9.000 BTU/h"],
       ["Daya", "800W"],
@@ -32,6 +32,7 @@ const products = [
     description:
       "Unit plafon yang ideal untuk ruang kantor terbuka dan lingkungan ritel.",
     image: "/images/products/panasonic-cassette.png",
+    price: "Rp 6.000.000",
     specs: [
       ["Kapasitas", "18.000 BTU/h"],
       ["Daya", "1650W"],
@@ -44,6 +45,7 @@ const products = [
     description:
       "AC Floor Standing Polytron dengan kapasitas besar yang cocok untuk ruangan luas, area komersial, dan kebutuhan pendinginan skala besar.",
     image: "/images/products/polytron-ac-floor-standing.jpg",
+    price: "Rp 10.000.000",
     specs: [
       ["Kapasitas", "42.000 BTU/h"],
       ["Daya", "3700W"],
@@ -82,10 +84,11 @@ export default function ProductsPage() {
 
       {/* CONTENT */}
       <section className="mx-auto max-w-[1200px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-9">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[278px_1fr]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
 
           {/* SIDEBAR */}
-          <aside>
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+
             {/* CATEGORY */}
             <div className="border border-[#e9b9b0] bg-white">
               <h2 className="px-4 pt-4 text-[18px] font-semibold text-[#7f0000] sm:text-[20px]">
@@ -133,40 +136,6 @@ export default function ProductsPage() {
                   <ChevronRight size={14} />
                 </a>
               </div>
-            </div>
-
-            {/* AI ASSISTANCE */}
-            <div className="mt-6 border border-[#a90000] bg-[#f7f4f3] p-4 sm:mt-8">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-[18px] font-semibold leading-6 sm:text-[20px] sm:leading-7">
-                    Butuh Bantuan
-                    <br />
-                    Memilih?
-                  </h3>
-                </div>
-
-                <Bot
-                  size={42}
-                  strokeWidth={1.5}
-                  className="text-[#dedada] sm:h-12 sm:w-12"
-                />
-              </div>
-
-              <p className="mt-3 text-[12px] leading-5 text-[#725b56] sm:text-[14px]">
-                Asisten AI kami dapat merekomendasikan unit AC yang tepat
-                berdasarkan ukuran dan kebutuhan ruangan Anda.
-              </p>
-
-              <a
-                href={getWhatsappUrl("AC")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 flex items-center justify-center gap-2 border border-[#a90000] bg-white py-2.5 text-[12px] font-semibold text-[#900000] transition hover:bg-[#a90000] hover:text-white sm:text-[14px]"
-              >
-                <Bot size={17} />
-                Mulai Chat AI
-              </a>
             </div>
           </aside>
 
@@ -224,7 +193,9 @@ export default function ProductsPage() {
                 {searchTerm && (
                   <p className="mt-2 text-[12px] text-[#725b56]">
                     Menampilkan {filteredProducts.length} produk untuk pencarian{" "}
-                    <span className="font-semibold">"{searchTerm}"</span>
+                    <span className="font-semibold">
+                      "{searchTerm}"
+                    </span>
                   </p>
                 )}
               </div>
@@ -238,6 +209,7 @@ export default function ProductsPage() {
                     key={product.name}
                     className="flex h-full flex-col overflow-hidden border border-[#e5bbb4] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-md"
                   >
+
                     {/* IMAGE */}
                     <div className="relative h-[240px] bg-[#eeeeee] sm:h-[260px] lg:h-[277px]">
                       <Image
@@ -255,16 +227,32 @@ export default function ProductsPage() {
 
                     {/* CONTENT */}
                     <div className="flex flex-1 flex-col p-4">
+
+                      {/* NAME */}
                       <h2 className="text-[14px] font-semibold sm:text-[15px]">
                         {product.name}
                       </h2>
 
-                      <p className="mt-1 min-h-[84px] text-[12px] leading-5 text-[#654f4a] sm:text-[14px]">
+                      {/* DESCRIPTION */}
+                      <div className="mt-2 h-[84px] overflow-hidden">
+                        <p className="text-[12px] leading-5 text-[#654f4a] sm:text-[14px]">
                         {product.description}
-                      </p>
+                        </p>
+                      </div>
+
+                      {/* PRICE */}
+                      <div className="mt-4 border-t border-[#e7c4bf] pt-3">
+                        <p className="text-[12px] text-[#8b7772] sm:text-[13px]">
+                          Harga mulai dari
+                        </p>
+
+                        <p className="mt-1 text-[22px] font-bold text-[#a90000] sm:text-[24px]">
+                          {product.price}
+                        </p>
+                      </div>
 
                       {/* SPECS */}
-                      <div className="mt-4 min-h-[104px] border-t border-[#e7c4bf] pt-2">
+                      <div className="mt-4 border-t border-[#e7c4bf] pt-2">
                         {product.specs.map(([label, value]) => (
                           <div
                             key={label}
@@ -296,6 +284,7 @@ export default function ProductsPage() {
                 ))}
               </div>
             ) : (
+
               /* NO SEARCH RESULT */
               <div className="mt-8 border border-[#e5bbb4] bg-white px-6 py-16 text-center">
                 <Search
@@ -361,6 +350,7 @@ export default function ProductsPage() {
                 </button>
               </div>
             )}
+
           </div>
         </div>
       </section>
