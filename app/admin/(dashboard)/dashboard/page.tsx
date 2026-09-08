@@ -70,7 +70,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Actions */}
-        <div className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50">
+        <div className="mt-6 flex justify-end border-t border-gray-200 pt-5">
           <LogoutButton />
         </div>
       </div>
