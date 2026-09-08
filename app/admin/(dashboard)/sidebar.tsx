@@ -25,8 +25,8 @@ const menuItems = [
     href: '/admin/portfolios',
   },
   {
-    label: 'Testimoni',
-    href: '/admin/testimonials',
+    label: 'Album',
+    href: '/admin/albums',
   },
   {
     label: 'FAQ',
