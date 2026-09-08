@@ -4,7 +4,7 @@ import WhyChoose from "./components/Home/WhyChoose";
 import Services from "./components/Home/Services";
 import Pricing from "./components/Home/Pricing";
 import Portofolio from "./components/Home/Portofolio";
-import Testimonials from "./components/Home/Testimonials";
+import AlbumTerbaru from "./components/Home/AlbumTerbaru";
 import CTA from "./components/Home/CTA";
 import Footer from "./components/Footer";
 
@@ -17,7 +17,7 @@ export default function Home() {
       <Services />
       <Pricing />
       <Portofolio />
-      <Testimonials />
+      <AlbumTerbaru />
       <CTA />
       <Footer />
     </main>

@@ -30,6 +30,7 @@ const branches = [
 export default function ServiceCoverage() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeBranch, setActiveBranch] = useState("cirebon");
+  const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
 
   useEffect(() => {
     setIsVisible(true);
@@ -64,15 +65,22 @@ export default function ServiceCoverage() {
 
             <div className="mt-6 grid grid-cols-1 gap-3">
               {branches.map((branch) => {
-                const isActive = activeBranch === branch.id;
+                const isSelected = selectedBranches.includes(branch.id);
 
                 return (
                   <button
                     key={branch.id}
                     type="button"
-                    onClick={() => setActiveBranch(branch.id)}
+                    onClick={() => {
+                      setActiveBranch(branch.id);
+                      setSelectedBranches((current) =>
+                        current.includes(branch.id)
+                          ? current.filter((id) => id !== branch.id)
+                          : [...current, branch.id],
+                      );
+                    }}
                     className={`w-full border p-5 text-left transition-all sm:p-6 ${
-                      isActive
+                      isSelected
                         ? "border-[#0788D1] bg-[#f8fcff] shadow-sm"
                         : "border-[#e5cfc8] bg-[#fafafa] hover:border-[#0788D1]"
                     }`}
@@ -95,15 +103,11 @@ export default function ServiceCoverage() {
                             </h3>
                           </div>
 
-                          <span
-                            className={`text-xs font-semibold ${
-                              isActive
-                                ? "text-[#0788D1]"
-                                : "text-[#999]"
-                            }`}
-                          >
-                            {isActive ? "● Dipilih" : "Lihat lokasi →"}
-                          </span>
+                          {isSelected && (
+                            <span className="text-xs font-semibold text-[#0788D1]">
+                              ● Dipilih
+                            </span>
+                          )}
                         </div>
 
                         <p className="mt-2 text-sm leading-6 text-[#666]">
