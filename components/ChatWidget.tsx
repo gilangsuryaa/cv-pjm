@@ -74,10 +74,10 @@ export default function ChatWidget() {
   if (pathname?.startsWith('/admin')) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end font-sans">
       {/* JENDELA POPUP CHATBOT */}
       {isOpen && (
-        <div className="mb-4 flex h-[580px] w-[360px] sm:w-[400px] flex-col rounded-3xl border border-slate-100 bg-white/95 backdrop-blur-md shadow-[0_15px_50px_rgba(0,0,0,0.15)] transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 overflow-hidden">
+        <div className="mb-3 sm:mb-4 flex h-[calc(100dvh-8rem)] max-h-[500px] w-[calc(100vw-2rem)] max-w-[400px] flex-col rounded-3xl border border-slate-100 bg-white/95 backdrop-blur-md shadow-[0_15px_50px_rgba(0,0,0,0.15)] transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 overflow-hidden">
           
           {/* Header Popup Premium */}
           <div className="flex items-center justify-between bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-600 px-5 py-4 text-white shadow-md">
