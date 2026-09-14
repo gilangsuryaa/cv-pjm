@@ -85,7 +85,7 @@ export default function ChatWidget() {
               {/* Avatar Logo */}
               <div className="relative h-10 w-10 overflow-hidden rounded-2xl border border-white/30 bg-white p-1 shadow-sm transition-transform hover:scale-105">
                 <Image
-                  src="/popup.png"
+                  src="/images/chatbot/logo-chatbot.png"
                   alt="PJM Logo"
                   width={40}
                   height={40}
@@ -166,7 +166,7 @@ export default function ChatWidget() {
                 {msg.role === 'assistant' && (
                   <div className="relative h-7 w-7 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm mb-0.5">
                     <Image
-                      src="/popup.png"
+                      src="/images/chatbot/logo-chatbot.png"
                       alt="PJM Avatar"
                       width={28}
                       height={28}
@@ -233,7 +233,7 @@ export default function ChatWidget() {
               <div className="flex justify-start items-end gap-2.5">
                 <div className="relative h-7 w-7 flex-shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm mb-0.5">
                   <Image
-                    src="/popup.png"
+                    src="/images/chatbot/logo-chatbot.png"
                     alt="PJM Avatar"
                     width={28}
                     height={28}
@@ -294,7 +294,7 @@ export default function ChatWidget() {
           // Logo PJM saat Chat Tertutup
           <div className="relative h-full w-full overflow-hidden rounded-full border border-slate-100">
             <Image
-              src="/logo.png"
+              src="/images/chatbot/logo-chatbot.png"
               alt="PJM Assistant"
               fill
               sizes="56px"
