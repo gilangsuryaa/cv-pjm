@@ -15,6 +15,7 @@ export type SiteSettings = {
   maps_url: string | null
   instagram_url: string | null
   facebook_url: string | null
+  updated_at: string | null
 }
 
 // Dipakai kalau tabel site_settings belum terisi / gagal diambil,
@@ -34,6 +35,7 @@ export const SITE_SETTINGS_FALLBACK: SiteSettings = {
   maps_url: null,
   instagram_url: null,
   facebook_url: null,
+  updated_at: null,
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -81,10 +83,20 @@ export function formatPhoneHref(value: string | null | undefined) {
 }
 
 // Bucket "site-settings" bersifat publik, jadi cukup pakai public URL.
-export function getSiteAssetUrl(path: string | null | undefined) {
+//
+// Logo dan favicon selalu ditimpa ke path yang sama ("logo" / "favicon"),
+// jadi URL-nya tidak berubah saat admin menggantinya dan browser bisa
+// terus menyajikan versi lama dari cache. Stempel waktu update dipakai
+// sebagai penanda versi supaya URL-nya ikut berubah.
+export function getSiteAssetUrl(
+  path: string | null | undefined,
+  version?: string | null
+) {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL
 
   if (!path || !base) return null
 
-  return `${base}/storage/v1/object/public/site-settings/${path}`
+  const url = `${base}/storage/v1/object/public/site-settings/${path}`
+
+  return version ? `${url}?v=${encodeURIComponent(version)}` : url
 }

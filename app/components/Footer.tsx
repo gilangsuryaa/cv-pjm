@@ -20,7 +20,7 @@ export default async function Footer() {
   ]);
 
   const companyName = settings.company_name ?? "CV. Prima Jaya Mandiri";
-  const logoUrl = getSiteAssetUrl(settings.logo) ?? "/images/Logo.png";
+  const logoUrl = getSiteAssetUrl(settings.logo, settings.updated_at) ?? "/images/Logo.png";
   const phoneHref = formatPhoneHref(settings.phone);
 
   const whatsappUrl = buildWhatsappUrl(

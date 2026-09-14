@@ -14,7 +14,7 @@ export default async function Navbar() {
     <NavbarClient
       companyName={companyName}
       tagline={settings.tagline ?? "Layanan Teknik & Pemeliharaan"}
-      logoUrl={getSiteAssetUrl(settings.logo) ?? "/images/Logo.png"}
+      logoUrl={getSiteAssetUrl(settings.logo, settings.updated_at) ?? "/images/Logo.png"}
       whatsappUrl={buildWhatsappUrl(
         settings.whatsapp,
         `Halo ${companyName}, Saya Mau Konsultasi`
