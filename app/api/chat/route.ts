@@ -6,8 +6,7 @@ import { siteSettingsToolDefinition, handleGetSiteSettings } from '@/tools/siteS
 import { faqsToolDefinition, handleGetFaqs } from '@/tools/faqs.tool';
 import { acCalculatorToolDefinition, handleCalculateAcCapacity } from '@/tools/acCalculator.tool';
 import { productsToolDefinition, handleGetProducts } from '@/tools/products.tool';
-import { portofoliosToolDefinition, handleGetPortofolios } from '@/tools/portofolios.tool';
-import { testimonialsToolDefinition, handleGetTestimonials } from '@/tools/testimonials.tool';
+import { portfoliosToolDefinition, handleGetPortfolios } from '@/tools/portfolios.tool';
 
 // Inisialisasi Google Gen AI Client
 const ai = new GoogleGenAI({
@@ -27,10 +26,8 @@ async function executeTool(name: string, args: Record<string, unknown>) {
         return await handleCalculateAcCapacity(args as unknown as { length: number; width: number });
       case 'get_products':
         return await handleGetProducts(args);
-      case 'get_portofolios':
-        return await handleGetPortofolios(args);
-      case 'get_testimonials':
-        return await handleGetTestimonials(args);
+      case 'get_portfolios':
+        return await handleGetPortfolios(args);
       default:
         return { success: false, message: 'Tool tidak ditemukan' };
     }
@@ -47,8 +44,7 @@ const functionDeclarations = [
   faqsToolDefinition,
   acCalculatorToolDefinition,
   productsToolDefinition,
-  portofoliosToolDefinition,
-  testimonialsToolDefinition,
+  portfoliosToolDefinition,
 ].map((tool: Record<string, unknown>) => {
   // Jika definisi tool Anda sudah berformat OpenAPI / JSON Schema bawaan
   if (tool.function) {
@@ -102,9 +98,8 @@ export async function POST(req: Request) {
     2. Jika bertanya tentang "produk", "barang", "AC", "stok", "harga produk", panggil tool 'get_products'.
     3. Jika bertanya tentang "kontak", "alamat", "WhatsApp", panggil tool 'get_site_settings'.
     4. Jika bertanya tentang "garansi", "pembayaran", panggil tool 'get_faqs'.
-    5. Jika bertanya tentang "testimoni", "ulasan", panggil tool 'get_testimonials'.
-    6. Jika bertanya tentang "portofolio", "hasil kerja", panggil tool 'get_portofolios'.
-    7. Jika bertanya saran ukuran AC/ruangan, panggil tool 'calculate_ac_capacity'.
+    5. Jika bertanya tentang "portofolio", "hasil kerja", panggil tool 'get_portfolios'.
+    6. Jika bertanya saran ukuran AC/ruangan, panggil tool 'calculate_ac_capacity'.
 
     Tugas kamu fokus pada topik terkait produk elektronik, terutama AC, dan memberikan informasi yang akurat serta relevan.
     Jangan berikan jawaban yang tidak relevan dengan topik ini. Jika pertanyaan pengguna tidak terkait dengan produk elektronik atau AC, arahkan mereka untuk menghubungi layanan pelanggan kami.

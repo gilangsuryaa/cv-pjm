@@ -45,7 +45,8 @@ export async function handleGetServices(args?: { category?: string }) {
       success: true,
       services: data,
     };
-  } catch (err: any) {
-    return { success: false, services: [], error: err?.message || 'Error internal' };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Error internal';
+    return { success: false, services: [], error: message };
   }
 }

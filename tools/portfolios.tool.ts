@@ -1,10 +1,10 @@
 import { supabase } from '@/lib/supabase/supabase';
 
-export const portofoliosToolDefinition = {
+export const portfoliosToolDefinition = {
   type: 'function' as const,
   function: {
-    name: 'get_portofolios',
-    description: 'Mencari riwayat pengerjaan proyek, contoh hasil kerja, dan foto portofolio dari tabel portofolios.',
+    name: 'get_portfolios',
+    description: 'Mencari riwayat pengerjaan proyek, contoh hasil kerja, dan foto portofolio dari tabel portfolios.',
     parameters: {
       type: 'object',
       properties: {
@@ -18,8 +18,10 @@ export const portofoliosToolDefinition = {
   },
 };
 
-export async function handleGetPortofolios(args: { searchQuery?: string }) {
-  let query = supabase.from('portofolios').select('id, title, description, image, service_id');
+const PORTFOLIO_SELECT = 'id, title, description, project_date, service_id';
+
+export async function handleGetPortfolios(args: { searchQuery?: string }) {
+  let query = supabase.from('portfolios').select(PORTFOLIO_SELECT);
 
   if (args.searchQuery) {
     query = query.ilike('title', `%${args.searchQuery}%`);
@@ -29,13 +31,17 @@ export async function handleGetPortofolios(args: { searchQuery?: string }) {
   if (error) return { success: false, error: error.message };
 
   if (!data || data.length === 0) {
-    const { data: fallbackPortofolios } = await supabase.from('portofolios').select('id, title, description').limit(3);
+    const { data: fallbackPortfolios } = await supabase
+      .from('portfolios')
+      .select(PORTFOLIO_SELECT)
+      .limit(3);
+
     return {
       success: true,
       message: `Portofolio spesifik tidak ditemukan. Berikut beberapa contoh dokumentasi pengerjaan kami:`,
-      portofolios: fallbackPortofolios || [],
+      portfolios: fallbackPortfolios || [],
     };
   }
 
-  return { success: true, portofolios: data };
+  return { success: true, portfolios: data };
 }

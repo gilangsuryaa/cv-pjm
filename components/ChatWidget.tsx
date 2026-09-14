@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -11,6 +12,7 @@ interface Message {
 }
 
 export default function ChatWidget() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
@@ -67,6 +69,9 @@ export default function ChatWidget() {
       setLoading(false);
     }
   };
+
+  // Chatbot hanya untuk halaman publik, bukan panel admin.
+  if (pathname?.startsWith('/admin')) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
