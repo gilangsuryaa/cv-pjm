@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import DeleteFaqButton from './delete-faq-button'
 
 export default async function FaqsPage() {
+  await requireAdmin()
+
   const supabase = await createClient()
 
   const { data: faqs, error } = await supabase

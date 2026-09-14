@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import DeleteProductButton from './delete-product-button'
 
 export default async function ProductsPage() {
+  await requireAdmin()
+
   const supabase = await createClient()
 
   const { data: products, error } = await supabase
