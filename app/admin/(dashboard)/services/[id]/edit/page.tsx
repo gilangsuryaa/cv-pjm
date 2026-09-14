@@ -74,35 +74,16 @@ export default function EditServicePage() {
     }
 
     getService()
-  }, [id])
+  }, [id, supabase])
 
   async function handleSubmit(
     e: FormEvent<HTMLFormElement>
   ) {
     e.preventDefault()
 
-    console.log('HANDLE SUBMIT JALAN')
-    console.log('CURRENT IMAGE STATE:', image)
 
     setSaving(true)
     setError('')
-
-    // Simpan path gambar lama sebelum update
-    const { data: currentService, error: fetchError } =
-      await supabase
-        .from('services')
-        .select('image')
-        .eq('id', id)
-        .single()
-
-    if (fetchError) {
-      setError(fetchError.message)
-      setSaving(false)
-      return
-    }
-
-    const oldImage = currentService?.image ?? null
-    const newImage = image || null
 
     // Update data service
     const { error } = await supabase

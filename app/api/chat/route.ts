@@ -9,6 +9,11 @@ import { productsToolDefinition, handleGetProducts } from '@/tools/products.tool
 import { albumsToolDefinition, handleGetAlbums } from '@/tools/albums.tool';
 
 // Inisialisasi Google Gen AI Client
+// Satu pertanyaan bisa memicu dua panggilan ke Gemini (satu untuk memilih
+// tool, satu lagi membawa hasil query database), jadi wajar menembus 10 detik.
+// Tanpa ini, batas default function di Vercel memutus respons di tengah jalan.
+export const maxDuration = 60;
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY || '',
 });

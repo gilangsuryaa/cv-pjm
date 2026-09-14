@@ -84,7 +84,7 @@ export default function EditProductPage() {
     }
 
     getProduct()
-  }, [id])
+  }, [id, supabase])
 
   async function handleImageRemoved(image: UploadedImage) {
     if (!image.id) return
