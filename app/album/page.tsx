@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import AlbumGallery from "../components/Home/AlbumGallery";
 import { getAlbumCategories } from "@/lib/data/albums";
 
@@ -19,6 +20,23 @@ export default async function AlbumPage({ searchParams }: AlbumPageProps) {
 
   return (
     <main className="min-h-screen bg-[#F8FCFE]">
+      {/* NAVIGASI KEMBALI */}
+      <header className="sticky top-0 z-40 border-b border-[#E5EEF3] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-5 py-4 sm:px-8">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-sm font-semibold text-[#0F4C75] transition hover:text-[#2B8CC4]"
+          >
+            <ArrowLeft size={18} className="shrink-0" />
+            Kembali ke Beranda
+          </Link>
+
+          <p className="text-sm font-semibold text-[#64748B]">
+            Semua Album
+          </p>
+        </div>
+      </header>
+
       {/* HEADER HALAMAN */}
       <section className="border-b border-[#E5EEF3] bg-white">
         <div className="mx-auto max-w-[1200px] px-5 py-12 sm:px-8">

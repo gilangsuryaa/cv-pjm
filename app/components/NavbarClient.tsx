@@ -63,6 +63,7 @@ const isContact = pathname === "/contact";
           <Image
             src={logoUrl}
             alt={`Logo ${companyName}`}
+            unoptimized={logoUrl.startsWith("http")}
             width={56}
             height={56}
             className="h-12 w-12 object-contain sm:h-14 sm:w-14"

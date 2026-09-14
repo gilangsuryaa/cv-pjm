@@ -48,6 +48,7 @@ export default async function Pricing() {
                       src={service.imageUrl}
                       alt={service.name}
                       fill
+                      unoptimized
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover"
                     />

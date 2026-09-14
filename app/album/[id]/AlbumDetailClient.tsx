@@ -81,6 +81,7 @@ export default function AlbumDetailClient({
                   src={photo.url}
                   alt={photo.caption ?? `${title} - foto ${index + 1}`}
                   fill
+                  unoptimized
                   priority={index === 0}
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, 1200px"
@@ -122,6 +123,7 @@ export default function AlbumDetailClient({
                   src={photo.url}
                   alt={photo.caption ?? `${title} - foto ${index + 1}`}
                   fill
+                  unoptimized
                   className="object-cover"
                   sizes="180px"
                 />
@@ -154,6 +156,7 @@ export default function AlbumDetailClient({
               src={selectedPhoto}
               alt={`${title} - foto pilihan`}
               fill
+              unoptimized
               className="object-contain"
               sizes="100vw"
             />

@@ -133,6 +133,7 @@ export default async function CoreServices() {
                 src={featured.imageUrl ?? FALLBACK_IMAGES[0]}
                 alt={`Layanan ${featured.name} ${companyName}`}
                 fill
+                unoptimized={Boolean(featured.imageUrl)}
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
@@ -157,6 +158,7 @@ export default async function CoreServices() {
                     }
                     alt={`Layanan ${service.name} ${companyName}`}
                     fill
+                    unoptimized={Boolean(service.imageUrl)}
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover"
                   />

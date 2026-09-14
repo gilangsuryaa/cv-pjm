@@ -47,6 +47,7 @@ export default async function Footer() {
                 <Image
                   src={logoUrl}
                   alt={`Logo ${companyName}`}
+                  unoptimized={logoUrl.startsWith("http")}
                   width={84}
                   height={84}
                   className="h-[68px] w-[68px] object-contain sm:h-[76px] sm:w-[76px]"

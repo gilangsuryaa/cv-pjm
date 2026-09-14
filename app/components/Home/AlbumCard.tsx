@@ -25,6 +25,7 @@ export default function AlbumCard({ album }: AlbumCardProps) {
             src={album.coverUrl}
             alt={album.title}
             fill
+            unoptimized
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition duration-500 group-hover:scale-105"
           />
@@ -47,6 +48,7 @@ export default function AlbumCard({ album }: AlbumCardProps) {
                 src={photo.url}
                 alt={photo.caption ?? `${album.title} - foto ${index + 2}`}
                 fill
+                unoptimized
                 sizes="160px"
                 className="object-cover"
               />
