@@ -21,11 +21,7 @@ const menuItems = [
     href: '/admin/products',
   },
   {
-    label: 'Portofolio',
-    href: '/admin/portfolios',
-  },
-  {
-    label: 'Album',
+    label: 'Album Pekerjaan',
     href: '/admin/albums',
   },
   {
