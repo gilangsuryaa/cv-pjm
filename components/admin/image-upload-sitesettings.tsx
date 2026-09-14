@@ -2,12 +2,20 @@
 
 import { ChangeEvent, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import {
+  compressImage,
+  formatBytes,
+  MAX_SOURCE_BYTES,
+} from '@/lib/image/compress'
 
 type ImageUploadProps = {
   bucket: string
   value: string
   previewUrl?: string
   filePath?: string
+  // Dimatikan untuk file yang tidak boleh digambar ulang, misalnya favicon.
+  compress?: boolean
+  maxDimension?: number
   onChange: (path: string) => void
 }
 
@@ -16,59 +24,65 @@ export default function ImageUpload({
   value,
   previewUrl,
   filePath,
+  compress = true,
+  maxDimension,
   onChange,
 }: ImageUploadProps) {
   const supabase = createClient()
   const [localPreview, setLocalPreview] = useState('')
 
   const [uploading, setUploading] = useState(false)
+  const [info, setInfo] = useState('')
   const [error, setError] = useState('')
 
   async function handleUpload(
     e: ChangeEvent<HTMLInputElement>
   ) {
-    const file = e.target.files?.[0]
+    const selected = e.target.files?.[0]
 
-    if (!file) return
-    setLocalPreview(URL.createObjectURL(file))
+    if (!selected) return
 
     setError('')
-    setUploading(true)
+    setInfo('')
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Ukuran gambar maksimal 5 MB.')
-      setUploading(false)
+    if (!selected.type.startsWith('image/')) {
+      setError('File harus berupa gambar.')
       return
     }
 
-    if (!file.type.startsWith('image/')) {
-      setError('File harus berupa gambar.')
-      setUploading(false)
+    if (selected.size > MAX_SOURCE_BYTES) {
+      setError(
+        `Ukuran gambar maksimal ${formatBytes(MAX_SOURCE_BYTES)}.`
+      )
       return
+    }
+
+    setUploading(true)
+
+    const result = compress
+      ? await compressImage(selected, { maxDimension })
+      : null
+
+    const file = result?.file ?? selected
+
+    setLocalPreview(URL.createObjectURL(file))
+
+    if (result?.compressed) {
+      setInfo(
+        `Dikompres dari ${formatBytes(result.originalSize)} ke ${formatBytes(
+          result.compressedSize
+        )}.`
+      )
     }
 
     const fileExt = file.name.split('.').pop()
     const fileName = filePath ?? `${crypto.randomUUID()}.${fileExt}`
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    console.log('USER:', user)
-
-    console.log({
-      bucket,
-      fileName,
-      filePath,
-      upsert: !!filePath,
-      userId: user?.id,
-    })
-
     const { error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: !!filePath
+        upsert: !!filePath,
       })
 
     if (uploadError) {
@@ -112,8 +126,17 @@ export default function ImageUpload({
       </label>
 
       <p className="text-xs text-gray-500">
-        Maksimal 5 MB. Format gambar.
+        Maksimal {formatBytes(MAX_SOURCE_BYTES)}.
+        {compress
+          ? ' Gambar otomatis dikecilkan sebelum diupload.'
+          : ' Format gambar.'}
       </p>
+
+      {info && (
+        <p className="text-sm text-green-700">
+          {info}
+        </p>
+      )}
 
       {error && (
         <p className="text-sm text-red-700">

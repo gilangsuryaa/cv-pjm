@@ -246,6 +246,7 @@ export default function SiteSettingsPage() {
                   value={logo}
                   previewUrl={logoPreview}
                   filePath="logo"
+                  maxDimension={512}
                   onChange={(path) => {
                     setLogo(path)
                     setLogoPreview(
@@ -269,6 +270,7 @@ export default function SiteSettingsPage() {
                   value={favicon}
                   previewUrl={faviconPreview}
                   filePath="favicon"
+                  compress={false}
                   onChange={(path) => {
                     setFavicon(path)
                     setFaviconPreview(

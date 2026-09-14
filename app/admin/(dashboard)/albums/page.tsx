@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/auth/require-admin'
 import DeleteAlbumButton from './delete-album-button'
 
 export default async function AlbumsPage() {
+  await requireAdmin()
+
   const supabase = await createClient()
 
   const { data: albums, error } = await supabase

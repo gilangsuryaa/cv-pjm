@@ -99,7 +99,7 @@ export default function EditAlbumPage() {
     }
 
     getAlbum()
-  }, [id])
+  }, [id, supabase])
 
   async function handlePhotoRemoved(photo: AlbumPhoto) {
     if (!photo.id) return

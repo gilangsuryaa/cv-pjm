@@ -2,6 +2,11 @@
 
 import { ChangeEvent, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import {
+  compressImage,
+  formatBytes,
+  MAX_SOURCE_BYTES,
+} from '@/lib/image/compress'
 
 export type AlbumPhoto = {
   id?: string // ada isinya kalau row album_photos sudah tersimpan di DB
@@ -30,6 +35,7 @@ export default function AlbumPhotosUpload({
   const supabase = createClient()
 
   const [uploading, setUploading] = useState(false)
+  const [info, setInfo] = useState('')
   const [error, setError] = useState('')
 
   async function handleUpload(e: ChangeEvent<HTMLInputElement>) {
@@ -38,6 +44,7 @@ export default function AlbumPhotosUpload({
     if (!files || files.length === 0) return
 
     setError('')
+    setInfo('')
 
     if (photos.length + files.length > maxPhotos) {
       setError(`Maksimal ${maxPhotos} foto per album.`)
@@ -49,16 +56,25 @@ export default function AlbumPhotosUpload({
 
     const uploaded: AlbumPhoto[] = []
 
-    for (const file of Array.from(files)) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError(`"${file.name}" melebihi 5 MB, dilewati.`)
+    let savedBytes = 0
+
+    for (const selected of Array.from(files)) {
+      if (!selected.type.startsWith('image/')) {
+        setError(`"${selected.name}" bukan file gambar, dilewati.`)
         continue
       }
 
-      if (!file.type.startsWith('image/')) {
-        setError(`"${file.name}" bukan file gambar, dilewati.`)
+      if (selected.size > MAX_SOURCE_BYTES) {
+        setError(
+          `"${selected.name}" melebihi ${formatBytes(MAX_SOURCE_BYTES)}, dilewati.`
+        )
         continue
       }
+
+      const result = await compressImage(selected)
+      const file = result.file
+
+      savedBytes += result.originalSize - result.compressedSize
 
       const fileExt = file.name.split('.').pop()
       const fileName = `${crypto.randomUUID()}.${fileExt}`
@@ -88,6 +104,10 @@ export default function AlbumPhotosUpload({
 
     if (uploaded.length > 0) {
       onChange([...photos, ...uploaded])
+    }
+
+    if (savedBytes > 0) {
+      setInfo(`Gambar dikompres, hemat ${formatBytes(savedBytes)}.`)
     }
 
     setUploading(false)
@@ -170,8 +190,15 @@ export default function AlbumPhotosUpload({
       )}
 
       <p className="text-xs text-gray-500">
-        Maksimal {maxPhotos} foto, masing-masing maks. 5 MB.
+        Maksimal {maxPhotos} foto, masing-masing maks. {formatBytes(MAX_SOURCE_BYTES)}.
+        Gambar otomatis dikecilkan sebelum diupload.
       </p>
+
+      {info && (
+        <p className="text-sm text-green-700">
+          {info}
+        </p>
+      )}
 
       {error && (
         <p className="text-sm text-red-700">

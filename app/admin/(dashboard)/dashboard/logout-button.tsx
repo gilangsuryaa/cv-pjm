@@ -1,11 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 export function LogoutButton() {
-  const router = useRouter()
   const supabase = createClient()
 
   const [loading, setLoading] = useState(false)
@@ -22,9 +20,11 @@ export function LogoutButton() {
       return
     }
 
-    // Pakai reload penuh (bukan router.push + router.refresh) supaya
-    // cookie session yang dibaca middleware benar-benar sinkron
-    // sebelum halaman login dirender.
+    // Sengaja reload penuh, bukan router.push. Navigasi client menyisakan
+    // RSC cache berisi UI admin, sehingga tombol "back" setelah logout masih
+    // bisa menampilkannya. Reload penuh membuang cache itu sekaligus
+    // memastikan cookie sesi yang dibaca proxy benar-benar sudah bersih.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.href = '/admin/login'
   }
 
