@@ -222,10 +222,10 @@ export default function ProductsClient({
           {visibleProducts.length > 0 ? (
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-8 lg:grid-cols-3 lg:gap-6">
               {visibleProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex h-full flex-col overflow-hidden border border-[#e5bbb4] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-md"
-                >
+              <div
+                key={product.id}
+                className="flex h-full flex-col overflow-hidden border border-[#e5bbb4] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-md"
+              >
 
                   {/* IMAGE */}
                   <div className="relative h-[240px] bg-[#eeeeee] sm:h-[260px] lg:h-[277px]">
@@ -308,6 +308,12 @@ export default function ProductsClient({
                     >
                       <FaWhatsapp size={18} className="shrink-0" />
                       <span>Tanyakan via WhatsApp</span>
+                    </a>
+                    <a
+                      href={`/products/${product.id}`}
+                      className="mt-2 flex min-h-10 w-full items-center justify-center border border-[#a90000] bg-[#a90000] px-3 py-2 text-center text-[12px] font-semibold text-white transition hover:bg-[#7f0000] sm:text-[14px]"
+                    >
+                      Lihat Detail Produk
                     </a>
                   </div>
                 </div>
