@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FaWhatsapp } from "react-icons/fa";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type NavbarClientProps = {
   companyName: string;
@@ -23,25 +23,7 @@ export default function NavbarClient({
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const [hash, setHash] = useState("");
-
-useEffect(() => {
-  const updateHash = () => {
-    setHash(window.location.hash);
-  };
-
-  updateHash();
-
-  window.addEventListener("hashchange", updateHash);
-
-  return () => {
-    window.removeEventListener("hashchange", updateHash);
-  };
-}, []);
-
-const isPortfolio = pathname === "/" && hash === "#portfolio";
-
-const isHome = pathname === "/" && !isPortfolio;
+const isHome = pathname === "/";
 const isAbout = pathname === "/about";
 const isServices = pathname === "/services";
 const isProducts = pathname === "/products";
@@ -97,12 +79,6 @@ const isContact = pathname === "/contact";
 
           <Link href="/products" className={navClass(isProducts)}>
             Produk
-          </Link>
-
-          <Link href="/#portfolio"
-            className={navClass(isPortfolio)}
-          >
-            Portofolio
           </Link>
 
           <Link href="/contact" className={navClass(isContact)}>
@@ -174,15 +150,6 @@ const isContact = pathname === "/contact";
               }`}
             >
               Produk
-            </Link>
-
-            <Link href="/#portfolio"
-              onClick={closeMenu}
-              className={`py-3 ${
-                isPortfolio ? "text-[#d91e05] border-b border-[#d91e05]" : "text-[#222]"
-              }`}
-            >
-              Portofolio
             </Link>
 
             <Link href="/contact"
