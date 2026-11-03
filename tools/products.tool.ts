@@ -19,7 +19,7 @@ export const productsToolDefinition = {
 };
 
 export async function handleGetProducts(args: { searchQuery?: string }) {
-  let query = supabase.from('products').select('*');
+  let query = supabase.from('products').select('id, name, price, stock_status, description, brand, pk, daya, category');
 
   if (args.searchQuery) {
     query = query.ilike('name', `%${args.searchQuery}%`);
@@ -30,7 +30,7 @@ export async function handleGetProducts(args: { searchQuery?: string }) {
 
   // Fallback jika pencarian spesifik tidak ditemukan
   if (!data || data.length === 0) {
-    const { data: fallbackProducts } = await supabase.from('products').select('*').limit(5);
+    const { data: fallbackProducts } = await supabase.from('products').select('id, name, price, stock_status, description, brand, pk, daya, category').limit(5);
     return {
       success: true,
       message: `Produk dengan kata kunci '${args.searchQuery}' tidak ditemukan. Berikut beberapa daftar produk yang tersedia:`,

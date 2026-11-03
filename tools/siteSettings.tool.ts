@@ -10,7 +10,7 @@ export const siteSettingsToolDefinition = {
 };
 
 export async function handleGetSiteSettings() {
-  const { data, error } = await supabase.from('site_settings').select('*').limit(1).single();
+  const { data, error } = await supabase.from('site_settings').select('company_name, phone, whatsapp, email, address, maps_url').limit(1).single();
   if (error) return { success: false, error: error.message };
   return { success: true, site_info: data };
 }
