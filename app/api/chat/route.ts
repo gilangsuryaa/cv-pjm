@@ -141,7 +141,7 @@ export async function POST(req: Request) {
 
     // Pemanggilan awal ke Gemini
     const initialResponse = await ai.models.generateContent({
-      model: 'gemini-3.5-flash-lite',
+      model: 'gemini-3.1-flash-lite',
       contents,
       config: {
         systemInstruction,
@@ -178,7 +178,7 @@ export async function POST(req: Request) {
 
       // Panggil kembali Gemini dengan membawa data hasil tool
       const secondResponse = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
+        model: 'gemini-3.1-flash-lite',
         contents,
         config: {
           systemInstruction,
