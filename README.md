@@ -34,6 +34,8 @@ Buat file `.env.local` di root proyek:
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=xxxxxxxx
 GEMINI_API_KEY=xxxxxxxx
+# Opsional. Default: https://cvprimajayamandiri.com
+NEXT_PUBLIC_SITE_URL=https://cvprimajayamandiri.com
 ```
 
 > `GEMINI_API_KEY` **tidak boleh** diberi prefix `NEXT_PUBLIC_`. Variabel
@@ -52,13 +54,17 @@ npm run lint    # ESLint
 app/
   page.tsx              beranda
   about|services|products|album|contact|terms|privacy-policy/
+  layanan/[area]/       halaman SEO per wilayah (cirebon, jogja)
+  sitemap.ts            /sitemap.xml (halaman statis + produk + album)
   components/           komponen situs publik
+  components/seo/       JSON-LD: LocalBusiness, Service, Product, FAQ, Breadcrumb
   admin/                panel admin (butuh login)
   api/chat/route.ts     endpoint chatbot
 components/
   ChatWidget.tsx        widget chat di situs publik
   admin/                komponen upload gambar
 lib/
+  seo/site.ts           domain kanonik, area layanan, klaim operasional
   data/                 pengambilan data dari Supabase
   supabase/             client, server, dan helper storage
   image/compress.ts     kompresi gambar saat upload
@@ -79,6 +85,29 @@ Identitas situs — nama perusahaan, logo, favicon, alamat, telepon, WhatsApp,
 email, dan tautan Google Maps — dibaca dari `site_settings`. Mengubahnya di
 panel admin langsung mengubah tampilan navbar, footer, halaman kontak, judul
 tab, dan jawaban chatbot.
+
+Agar ditemukan lewat pencarian "service ac cirebon", "service ac jogja", dan
+sejenisnya, situs ini punya beberapa lapis:
+
+- **Halaman wilayah** di `/layanan/cirebon` dan `/layanan/jogja`. Judul, H1,
+  deskripsi, dan teks badan menyebut kota beserta kecamatan sekitarnya.
+- **`/sitemap.xml`** dari [`app/sitemap.ts`](app/sitemap.ts). Halaman statis,
+  produk, dan album ikut terdaftar otomatis. `/robots.txt` merujuk ke sitemap
+  ini, jadi cukup daftarkan sekali di Search Console.
+- **Structured data** dari [`app/components/seo/StructuredData.tsx`](app/components/seo/StructuredData.tsx):
+  `HVACBusiness` (nama, telepon, dua alamat kantor, jam buka, area layanan),
+  `Service` per layanan, `Product` di halaman produk, `FAQPage` di beranda,
+  dan `BreadcrumbList` di halaman dalam.
+- **Canonical + Open Graph** di tiap halaman, dengan `metadataBase` dari
+  `NEXT_PUBLIC_SITE_URL`.
+
+Klaim operasional yang dipakai berulang (jam layanan, garansi, survei gratis)
+ada di satu tempat: [`lib/seo/site.ts`](lib/seo/site.ts). Daftar wilayah juga di
+sana, jadi menambah kota baru cukup menambah satu entri dan halaman
+`/layanan/<slug>` ikut terbuat.
+
+Kalau domain berubah, ubah `NEXT_PUBLIC_SITE_URL` lalu deploy ulang; sitemap,
+canonical, dan robots ikut menyesuaikan.
 
 ## Panel admin
 

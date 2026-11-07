@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ProductsClient, { type ProductCard } from "./ProductsClient";
@@ -7,9 +8,31 @@ import {
   getProductSpecs,
 } from "@/lib/data/products";
 import { buildWhatsappUrl, getSiteSettings } from "@/lib/data/site-settings";
+import { BRAND } from "@/lib/seo/site";
+import { BreadcrumbJsonLd } from "../components/seo/StructuredData";
 
 type ProductsPageProps = {
   searchParams: Promise<{ category?: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Jual AC Cirebon & Jogja — Harga Unit AC",
+  description: `Katalog unit AC yang dijual ${BRAND} untuk wilayah Cirebon dan Jogja. Pilih PK, tipe, dan merek sesuai luas ruangan, lengkap dengan layanan instalasi AC oleh teknisi berpengalaman.`,
+  keywords: [
+    "jual ac cirebon",
+    "jual ac jogja",
+    "harga ac",
+    "ac split",
+    "ac inverter",
+    "instalasi ac",
+    "penjualan ac",
+  ],
+  alternates: { canonical: "/products" },
+  openGraph: {
+    title: "Jual AC Cirebon & Jogja — Harga Unit AC",
+    description: `Katalog unit AC untuk Cirebon dan Jogja, termasuk layanan instalasi.`,
+    url: "/products",
+  },
 };
 
 export default async function ProductsPage({
@@ -70,6 +93,13 @@ export default async function ProductsPage({
       />
 
       <Footer />
+
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Beranda", path: "/" },
+          { name: "Produk", path: "/products" },
+        ]}
+      />
     </main>
   );
 }

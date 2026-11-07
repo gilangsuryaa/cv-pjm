@@ -1,10 +1,24 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import AlbumGallery from "../components/Home/AlbumGallery";
 import { getAlbumCategories } from "@/lib/data/albums";
+import { BRAND } from "@/lib/seo/site";
 
 type AlbumPageProps = {
   searchParams: Promise<{ category?: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Portofolio Proyek Service AC & Instalasi Listrik",
+  description: `Dokumentasi pekerjaan ${BRAND}: instalasi AC baru, cuci AC, bongkar pasang, perbaikan AC, dan instalasi listrik di Cirebon, Jogja, dan sekitarnya.`,
+  alternates: { canonical: "/album" },
+  openGraph: {
+    title: "Portofolio Proyek Service AC & Instalasi Listrik",
+    description:
+      "Dokumentasi pekerjaan service AC dan instalasi listrik di Cirebon dan Jogja.",
+    url: "/album",
+  },
 };
 
 export default async function AlbumPage({ searchParams }: AlbumPageProps) {
@@ -49,8 +63,8 @@ export default async function AlbumPage({ searchParams }: AlbumPageProps) {
           </h1>
 
           <p className="mt-3 max-w-[600px] text-sm leading-6 text-[#64748B]">
-            Lihat dokumentasi pekerjaan instalasi AC, service AC, dan instalasi
-            listrik kami.
+            Lihat dokumentasi pekerjaan instalasi AC, service AC, cuci AC, dan
+            instalasi listrik kami di Cirebon, Jogja, dan sekitarnya.
           </p>
         </div>
       </section>

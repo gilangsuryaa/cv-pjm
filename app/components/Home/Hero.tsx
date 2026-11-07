@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 type HeroProps = {
@@ -29,21 +28,21 @@ export default function Hero({ companyName }: HeroProps) {
       className="animate-fade-in relative min-h-[560px] overflow-hidden sm:min-h-[600px] lg:min-h-[640px]"
     >
       
-      {/* Background Images */}
+      {/* Background Images. Sengaja pakai <img>, bukan next/image: ketiga
+          gambar dimuat serentak oleh slider, dan optimizer akan meng-encode
+          ulang ketiganya saat first paint. */}
       {images.map((image, index) => (
-        <Image
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           key={image}
           src={image}
-          alt={`Layanan ${companyName}`}
-          fill
-          priority={index === 0}
-          sizes="100vw"
-          className={`object-cover object-[center_35%] transition-opacity duration-1000 ${
+          alt={`Teknisi service AC CV Prima Jaya Mandiri ${index + 1}`}
+          fetchPriority={index === 0 ? "high" : "low"}
+          className={`absolute inset-0 h-full w-full object-cover object-[center_35%] transition-opacity duration-1000 ${
             index === current ? "opacity-100" : "opacity-0"
           }`}
         />
       ))}
-
       {/* Overlay */}
       <div className="absolute inset-0 bg-[#0F4C75]/55" />
 
@@ -56,13 +55,13 @@ export default function Hero({ companyName }: HeroProps) {
           </p>
 
           <h1 className="text-4xl font-bold leading-[1.1] text-white sm:text-[48px] md:text-[54px] lg:text-[58px]">
-            Solusi AC, Listrik &amp; Elektronik
+            Service AC Terpercaya di Cirebon &amp; Jogja
           </h1>
 
           <p className="mt-6 max-w-[600px] text-sm leading-7 text-white/90 sm:text-[15px] md:text-base">
-            Melihat kebutuhan Anda, kami menyediakan layanan pembelian unit AC,
-            instalasi, perawatan, dan perbaikan AC, serta instalasi dan
-            perawatan sistem kelistrikan.
+            Jasa service AC, cuci AC, isi freon, bongkar pasang, dan instalasi
+            AC untuk rumah, kantor, dan tempat usaha. Kami juga melayani
+            instalasi kelistrikan dan service elektronik.
           </p>
 
           {/* Buttons */}

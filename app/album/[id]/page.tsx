@@ -1,11 +1,49 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import AlbumDetailClient from "./AlbumDetailClient";
 import { getAlbum } from "@/lib/data/albums";
+import { getAlbumSummary } from "@/lib/data/seo-queries";
+import { BRAND } from "@/lib/seo/site";
+import { BreadcrumbJsonLd } from "../../components/seo/StructuredData";
 
 type AlbumDetailPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: AlbumDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const albumId = Number(id);
+
+  if (!Number.isInteger(albumId)) return {};
+
+  const album = await getAlbumSummary(albumId);
+
+  if (!album) return {};
+
+  const title = `${album.title} — Dokumentasi Proyek`;
+
+  const description = [
+    album.description?.split("\n").find((line) => line.trim()),
+    `Dokumentasi pekerjaan service AC dan instalasi oleh ${BRAND}`,
+    album.location ? `di ${album.location}.` : ".",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/album/${album.id}` },
+    openGraph: {
+      title,
+      description,
+      url: `/album/${album.id}`,
+    },
+  };
+}
 
 function formatProjectDate(value: string | null) {
   if (!value) return null;
@@ -115,6 +153,14 @@ export default async function AlbumDetailPage({
           </Link>
         </div>
       </section>
+
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Beranda", path: "/" },
+          { name: "Portofolio", path: "/album" },
+          { name: album.title, path: `/album/${album.id}` },
+        ]}
+      />
     </main>
   );
 }

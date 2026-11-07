@@ -11,7 +11,7 @@ import {
 } from "@/lib/data/site-settings";
 
 const FALLBACK_DESCRIPTION =
-  "Solusi terpercaya untuk kebutuhan AC, mulai dari pembelian unit, instalasi, perawatan, hingga perbaikan. Kami juga melayani kebutuhan instalasi dan perawatan kelistrikan.";
+  "Jasa service AC, cuci AC, isi freon, instalasi AC, dan perawatan AC untuk rumah, kantor, dan tempat usaha di Cirebon dan Jogja. Kami juga melayani instalasi kelistrikan dan service elektronik.";
 
 export default async function Footer() {
   const [settings, services] = await Promise.all([
@@ -22,7 +22,6 @@ export default async function Footer() {
   const companyName = settings.company_name ?? "CV. Prima Jaya Mandiri";
   const logoUrl = getSiteAssetUrl(settings.logo, settings.updated_at) ?? "/images/Logo.png";
   const phoneHref = formatPhoneHref(settings.phone);
-
   const whatsappUrl = buildWhatsappUrl(
     settings.whatsapp,
     `Halo ${companyName}, Saya Mau Konsultasi`
@@ -38,7 +37,7 @@ export default async function Footer() {
       <div className="mx-auto max-w-[1280px] px-5 py-14 sm:px-8 lg:px-12">
 
         {/* Footer Content */}
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.25fr_1.35fr_0.85fr_0.85fr] lg:gap-16">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_0.9fr_0.9fr] lg:gap-10">
 
           {/* Company */}
           <div className="lg:order-1">
@@ -91,6 +90,31 @@ export default async function Footer() {
                   Lihat semua layanan
                 </Link>
               )}
+            </div>
+          </div>
+
+          {/* Area Layanan */}
+          <div className="lg:order-4">
+            <h3 className="text-[15px] font-bold text-[#0788D1]">
+              Area Layanan
+            </h3>
+
+            <div className="mt-3.5 flex flex-col gap-2 text-[13px] text-[#666]">
+              <Link href="/layanan/cirebon" className="hover:text-[#D91E05]">
+                Service AC Cirebon
+              </Link>
+
+              <Link href="/layanan/jogja" className="hover:text-[#D91E05]">
+                Service AC Jogja
+              </Link>
+
+              <Link href="/services" className="hover:text-[#D91E05]">
+                Service AC &amp; Elektronik
+              </Link>
+
+              <Link href="/services" className="hover:text-[#D91E05]">
+                Instalasi Listrik
+              </Link>
             </div>
           </div>
 

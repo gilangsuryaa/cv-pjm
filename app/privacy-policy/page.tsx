@@ -1,4 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { BRAND } from "@/lib/seo/site";
+
+export const metadata: Metadata = {
+  title: "Kebijakan Privasi",
+  description: `Kebijakan privasi ${BRAND}: bagaimana data pelanggan yang menghubungi kami melalui website dikumpulkan dan digunakan.`,
+  alternates: { canonical: "/privacy-policy" },
+};
 
 export default function PrivacyPolicy() {
   return (

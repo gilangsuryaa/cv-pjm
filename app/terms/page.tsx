@@ -1,4 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+import { BRAND } from "@/lib/seo/site";
+
+export const metadata: Metadata = {
+  title: "Syarat & Ketentuan",
+  description: `Syarat dan ketentuan penggunaan website serta layanan service AC ${BRAND}.`,
+  alternates: { canonical: "/terms" },
+};
+
 export default function TermsOfService() {
   return (
     <main className="min-h-screen bg-white px-6 py-16">

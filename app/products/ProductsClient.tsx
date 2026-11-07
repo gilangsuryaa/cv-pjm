@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ChevronRight, ChevronLeft, ImageOff, Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
@@ -102,7 +103,7 @@ export default function ProductsClient({
             </h2>
 
             <div className="mt-2 pb-3">
-              <a
+              <Link
                 href="/products"
                 className={
                   activeCategory === null
@@ -112,14 +113,14 @@ export default function ProductsClient({
               >
                 <span>SEMUA PRODUK</span>
                 <ChevronRight size={14} />
-              </a>
+              </Link>
 
               {categories.map((category) => {
                 const isActive =
                   activeCategory?.toLowerCase() === category.toLowerCase();
 
                 return (
-                  <a
+                  <Link
                     key={category}
                     href={`/products?category=${encodeURIComponent(category)}`}
                     className={
@@ -130,7 +131,7 @@ export default function ProductsClient({
                   >
                     <span>{category}</span>
                     <ChevronRight size={14} />
-                  </a>
+                  </Link>
                 );
               })}
 

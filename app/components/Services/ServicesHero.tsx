@@ -12,16 +12,16 @@ export default function ServicesHero() {
           </p>
 
           <h1 className="mt-2 max-w-[560px] text-3xl font-bold leading-[1.15] text-[#171717] sm:text-[38px] md:text-[44px] lg:text-[48px]">
-            Solusi AC, Listrik &amp;
+            Service AC, Listrik &amp;
             <br />
             Elektronik Profesional
           </h1>
 
           <p className="mt-5 max-w-[540px] text-sm leading-6 text-[#5f4d49] sm:text-[15px] sm:leading-7">
-            Kami menyediakan berbagai solusi untuk kebutuhan AC, mulai dari
-            pembelian unit, instalasi, perawatan, hingga perbaikan. Kami juga
-            melayani kebutuhan instalasi listrik dan perbaikan elektronik
-            untuk rumah, kantor, maupun kebutuhan usaha.
+            Kami melayani jasa service AC, cuci AC, isi freon, instalasi AC,
+            perawatan AC, dan penjualan unit AC. Kami juga menangani kebutuhan
+            instalasi listrik dan service elektronik
+            untuk rumah, kantor, maupun kebutuhan usaha di Cirebon dan Jogja.
           </p>
 
           <p className="mt-4 max-w-[540px] text-[12px] leading-6 text-[#64748B] sm:text-[13px]">

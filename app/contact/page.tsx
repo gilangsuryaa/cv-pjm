@@ -1,5 +1,6 @@
 import { MapPin, Phone } from "lucide-react";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ContactForm from "./ContactForm";
@@ -9,6 +10,24 @@ import {
   getSiteSettings,
   toWhatsappNumber,
 } from "@/lib/data/site-settings";
+import { BRAND } from "@/lib/seo/site";
+import { BreadcrumbJsonLd } from "../components/seo/StructuredData";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const companyName = settings.company_name ?? BRAND;
+
+  return {
+    title: "Kontak & Konsultasi Service AC",
+    description: `Hubungi ${companyName} untuk konsultasi service AC, cuci AC, isi freon, instalasi AC, dan instalasi listrik di Cirebon dan Jogja. Kantor pusat di Cirebon, cabang di Yogyakarta.`,
+    alternates: { canonical: "/contact" },
+    openGraph: {
+      title: "Kontak & Konsultasi Service AC",
+      description: `Konsultasi service AC dan instalasi listrik bersama ${companyName} di Cirebon dan Jogja.`,
+      url: "/contact",
+    },
+  };
+}
 
 // Google Maps butuh parameter output=embed supaya bisa dipasang di iframe.
 function toEmbedUrl(mapsUrl: string | null) {
@@ -34,7 +53,7 @@ export default async function ContactPage() {
     getServices(),
   ]);
 
-  const companyName = settings.company_name ?? "CV. Prima Jaya Mandiri";
+  const companyName = settings.company_name ?? BRAND;
   const phoneHref = formatPhoneHref(settings.phone);
   const embedUrl = toEmbedUrl(settings.maps_url);
 
@@ -45,13 +64,14 @@ export default async function ContactPage() {
       {/* HERO */}
       <section className="border-b border-[#bfe8f8] bg-white px-5 py-10 text-center sm:px-8 sm:py-14">
         <h1 className="text-[32px] font-bold tracking-tight text-[#0788D1] sm:text-[48px]">
-          Konsultasi Teknis
+          Konsultasi Service AC
         </h1>
 
         <p className="mx-auto mt-3 max-w-[650px] text-[14px] leading-6 text-[#654f4a] sm:text-[18px] sm:leading-7">
-          Dapatkan dukungan teknis profesional untuk perawatan AC, sistem
-          kelistrikan, dan elektronik industri. Hubungi tim kami untuk
-          mendapatkan solusi sesuai kebutuhan Anda.
+          Dapatkan dukungan teknis profesional untuk service AC, instalasi AC,
+          perawatan AC, sistem kelistrikan, dan service elektronik. Hubungi tim
+          kami di Cirebon atau Jogja untuk mendapatkan solusi sesuai kebutuhan
+          Anda.
         </p>
       </section>
 
@@ -183,6 +203,13 @@ export default async function ContactPage() {
       </section>
 
       <Footer />
+
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Beranda", path: "/" },
+          { name: "Kontak", path: "/contact" },
+        ]}
+      />
     </main>
   );
 }
