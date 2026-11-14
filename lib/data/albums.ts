@@ -1,5 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
 import { getSignedUrlMap } from '@/lib/supabase/storage'
+import { CACHE_TAGS, cachedQuery } from '@/lib/data/cached'
+
+type Supabase = Parameters<Parameters<typeof cachedQuery>[2]>[0]
 
 export type Album = {
   id: number
@@ -62,12 +64,10 @@ function collectPaths(rows: AlbumRow[]) {
   ])
 }
 
-export async function getAlbums(options?: {
-  limit?: number
-  category?: string
-}): Promise<Album[]> {
-  const supabase = await createClient()
-
+async function fetchAlbums(
+  supabase: Supabase,
+  options?: { limit?: number; category?: string }
+): Promise<Album[]> {
   let query = supabase
     .from('albums')
     .select(ALBUM_SELECT)
@@ -97,9 +97,27 @@ export async function getAlbums(options?: {
   return rows.map((row) => mapAlbum(row, signedUrls))
 }
 
-export async function getAlbum(id: number): Promise<Album | null> {
-  const supabase = await createClient()
+export const getAlbums = cachedQuery(
+  ['albums'],
+  [CACHE_TAGS.albums],
+  (supabase, options?: { limit?: number; category?: string }) =>
+    fetchAlbums(supabase, options)
+) as (options?: { limit?: number; category?: string }) => Promise<Album[]>
 
+export async function getAlbum(id: number): Promise<Album | null> {
+  const getCachedAlbum = cachedQuery(
+    ['album', String(id)],
+    [CACHE_TAGS.albums],
+    (supabase) => fetchAlbum(supabase, id)
+  )
+
+  return getCachedAlbum()
+}
+
+async function fetchAlbum(
+  supabase: Supabase,
+  id: number
+): Promise<Album | null> {
   const { data, error } = await supabase
     .from('albums')
     .select(ALBUM_SELECT)
@@ -120,9 +138,7 @@ export async function getAlbum(id: number): Promise<Album | null> {
 }
 
 // Daftar kategori unik untuk filter di halaman /album.
-export async function getAlbumCategories(): Promise<string[]> {
-  const supabase = await createClient()
-
+async function fetchAlbumCategories(supabase: Supabase): Promise<string[]> {
   const { data, error } = await supabase
     .from('albums')
     .select('category')
@@ -138,3 +154,9 @@ export async function getAlbumCategories(): Promise<string[]> {
     ),
   ].sort()
 }
+
+export const getAlbumCategories = cachedQuery(
+  ['album-categories'],
+  [CACHE_TAGS.albums],
+  fetchAlbumCategories
+)

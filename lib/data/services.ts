@@ -1,5 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
 import { getSignedUrlMap } from '@/lib/supabase/storage'
+import { CACHE_TAGS, cachedQuery } from '@/lib/data/cached'
+
+type Supabase = Parameters<Parameters<typeof cachedQuery>[2]>[0]
 
 export type Service = {
   id: number
@@ -12,9 +14,7 @@ export type Service = {
   status: boolean | null
 }
 
-export async function getServices(): Promise<Service[]> {
-  const supabase = await createClient()
-
+async function fetchServices(supabase: Supabase): Promise<Service[]> {
   const { data, error } = await supabase
     .from('services')
     .select('*')
@@ -37,9 +37,13 @@ export async function getServices(): Promise<Service[]> {
   }))
 }
 
-export async function getFaqs() {
-  const supabase = await createClient()
+export const getServices = cachedQuery(
+  ['services'],
+  [CACHE_TAGS.services],
+  fetchServices
+)
 
+async function fetchFaqs(supabase: Supabase) {
   const { data, error } = await supabase
     .from('faqs')
     .select('id, question, answer')
@@ -50,3 +54,5 @@ export async function getFaqs() {
 
   return data as { id: number; question: string; answer: string }[]
 }
+
+export const getFaqs = cachedQuery(['faqs'], [CACHE_TAGS.faqs], fetchFaqs)

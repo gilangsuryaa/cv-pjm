@@ -8,9 +8,9 @@ type HeroProps = {
 
 export default function Hero({ companyName }: HeroProps) {
   const images = [
-    "/images/Home/Hero 1.png",
-    "/images/Home/Hero 2.png",
-    "/images/Home/Hero3.jpg",
+    "/images/Home/hero-1.webp",
+    "/images/Home/hero-2.webp",
+    "/images/Home/hero-3.webp",
   ];
 
   const [current, setCurrent] = useState(0);
@@ -38,6 +38,8 @@ export default function Hero({ companyName }: HeroProps) {
           src={image}
           alt={`Teknisi service AC CV Prima Jaya Mandiri ${index + 1}`}
           fetchPriority={index === 0 ? "high" : "low"}
+          loading={index === 0 ? "eager" : "lazy"}
+          decoding="async"
           className={`absolute inset-0 h-full w-full object-cover object-[center_35%] transition-opacity duration-1000 ${
             index === current ? "opacity-100" : "opacity-0"
           }`}

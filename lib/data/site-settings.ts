@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { CACHE_TAGS, cachedQuery } from '@/lib/data/cached'
 
 export type SiteSettings = {
   id: number
@@ -38,9 +38,9 @@ export const SITE_SETTINGS_FALLBACK: SiteSettings = {
   updated_at: null,
 }
 
-export async function getSiteSettings(): Promise<SiteSettings> {
-  const supabase = await createClient()
-
+async function fetchSiteSettings(
+  supabase: Parameters<Parameters<typeof cachedQuery>[2]>[0]
+): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from('site_settings')
     .select('*')
@@ -53,6 +53,14 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 
   return data as SiteSettings
 }
+
+// Dipanggil dari layout, generateMetadata, dan page sekaligus. Cache dua
+// lapis (lihat lib/data/cached.ts) membuat tiga panggilan itu jadi satu query.
+export const getSiteSettings = cachedQuery(
+  ['site-settings'],
+  [CACHE_TAGS.siteSettings],
+  fetchSiteSettings
+)
 
 // "0817 263 597" / "+62 819-4953-2643" -> "6281726359" style nomor wa.me
 export function toWhatsappNumber(value: string | null | undefined) {

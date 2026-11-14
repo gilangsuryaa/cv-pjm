@@ -1,5 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
 import { getSignedUrlMap } from '@/lib/supabase/storage'
+import { CACHE_TAGS, cachedQuery } from '@/lib/data/cached'
+
+type Supabase = Parameters<Parameters<typeof cachedQuery>[2]>[0]
 
 export type Product = {
   id: number
@@ -23,9 +25,7 @@ type ProductRow = Omit<Product, 'images'> & {
   product_images: { id: string; path: string; sort_order: number | null }[] | null
 }
 
-export async function getProducts(): Promise<Product[]> {
-  const supabase = await createClient()
-
+async function fetchProducts(supabase: Supabase): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products')
     .select('*, product_images(id, path, sort_order)')
@@ -53,6 +53,12 @@ export async function getProducts(): Promise<Product[]> {
         .filter((url): url is string => Boolean(url)) ?? [],
   }))
 }
+
+export const getProducts = cachedQuery(
+  ['products'],
+  [CACHE_TAGS.products],
+  fetchProducts
+)
 
 export function formatRupiah(value: number | null | undefined) {
   if (value === null || value === undefined) return null

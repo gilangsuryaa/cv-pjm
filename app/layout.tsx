@@ -75,7 +75,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "/",
       images: [
         {
-          url: "/images/Home/Hero3.jpg",
+          url: "/images/Home/hero-3.webp",
           width: 1600,
           height: 900,
           alt: `Teknisi service AC ${companyName}`,
@@ -84,9 +84,18 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title,
-      description,
-      images: ["/images/Home/Hero3.jpg"],
+      // Title/description sengaja tidak diisi di layout. Metadata halaman
+      // turunan hanya menimpa `openGraph`, jadi kalau nilai di sini diisi,
+      // hasilnya kartu Twitter tiap halaman memakai judul beranda. Silang
+      // isi title/description masing-masing halaman justru ikut ke sini.
+      images: [
+        {
+          url: "/images/Home/hero-3.webp",
+          width: 1600,
+          height: 900,
+          alt: `Teknisi service AC ${companyName}`,
+        },
+      ],
     },
     robots: {
       index: true,

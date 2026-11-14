@@ -86,7 +86,7 @@ export async function generateMetadata({
       url: `/products/${product.id}`,
       images: product.image
         ? [{ url: product.image, alt: product.name }]
-        : [{ url: "/images/Home/Hero3.jpg", alt: `Jual AC ${companyName}` }],
+        : [{ url: "/images/Home/hero-3.webp", alt: `Jual AC ${companyName}` }],
     },
   };
 }
