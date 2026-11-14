@@ -18,11 +18,20 @@ const MAX_TOKENS = 8192;
 
 // maxRetries dimatikan mengikuti anjuran dokumentasi Nutaraline: permintaan yang
 // sudah terkirim tetapi hasilnya belum jelas bisa tercatat dua kali di saldo.
-const ai = new OpenAI({
-  baseURL: 'https://nutaraline.co.uk/v1',
-  apiKey: process.env.NUTARALINE_API_KEY || '',
-  maxRetries: 0,
-});
+// Client dibuat lazy: SDK openai melempar error saat modul dievaluasi bila apiKey
+// kosong, dan `next build` ikut mengevaluasi modul route sebelum env terpasang.
+let cachedClient: OpenAI | null = null;
+
+function getAiClient() {
+  if (!cachedClient) {
+    cachedClient = new OpenAI({
+      baseURL: 'https://nutaraline.co.uk/v1',
+      apiKey: process.env.NUTARALINE_API_KEY as string,
+      maxRetries: 0,
+    });
+  }
+  return cachedClient;
+}
 
 async function executeTool(name: string, args: Record<string, unknown>) {
   try {
@@ -159,6 +168,8 @@ export async function POST(req: Request) {
     ];
 
     // Round-trip pertama: model memutuskan perlu tool atau tidak.
+    const ai = getAiClient();
+
     const initialResponse = await ai.chat.completions.create({
       model: MODEL,
       messages,
