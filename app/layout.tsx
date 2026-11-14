@@ -128,7 +128,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
 
-        {/* Chatbot asli (Gemini + tool Supabase) dari /api/chat */}
+        {/* Chatbot asli (Nutaraline/DeepSeek + tool Supabase) dari /api/chat */}
         <ChatWidget />
 
         <LocalBusinessJsonLd settings={settings} />

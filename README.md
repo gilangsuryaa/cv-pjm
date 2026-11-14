@@ -20,7 +20,7 @@ lewat panel admin.
 | Framework | Next.js 16 (App Router) + React 19 + TypeScript |
 | Styling | Tailwind CSS v4 |
 | Database, Auth, Storage | Supabase |
-| Chatbot | Google Gemini (`@google/genai`) dengan function calling |
+| Chatbot | Nutaraline gateway (`openai` SDK, OpenAI-compatible) -> DeepSeek, dengan function calling |
 
 ## Menjalankan di lokal
 
@@ -33,13 +33,17 @@ Buat file `.env.local` di root proyek:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=xxxxxxxx
-GEMINI_API_KEY=xxxxxxxx
+NUTARALINE_API_KEY=xxxxxxxx
+# Opsional. Override model gateway. Default: deepseek-v4.1-flash
+NUTARALINE_MODEL=
 # Opsional. Default: https://cvprimajayamandiri.com
 NEXT_PUBLIC_SITE_URL=https://cvprimajayamandiri.com
 ```
 
-> `GEMINI_API_KEY` **tidak boleh** diberi prefix `NEXT_PUBLIC_`. Variabel
-> berprefix itu ikut dikirim ke browser, dan kunci Gemini akan bocor ke publik.
+> `NUTARALINE_API_KEY` **tidak boleh** diberi prefix `NEXT_PUBLIC_`. Variabel
+> berprefix itu ikut dikirim ke browser, dan kunci gateway akan bocor ke publik.
+> Jangan taruh kunci di URL: Nutaraline meminta kunci dikirim lewat header
+> `Authorization: Bearer`, bukan query string.
 
 ```bash
 npm run dev     # server pengembangan di http://localhost:3000
@@ -124,14 +128,20 @@ apa adanya.
 
 ## Chatbot
 
-`POST /api/chat` menerima riwayat percakapan dan menjawab memakai Gemini.
+`POST /api/chat` menerima riwayat percakapan dan menjawab lewat gateway
+Nutaraline (`https://nutaraline.co.uk/v1`, OpenAI-compatible) dengan model
+default `deepseek-v4.1-flash`. Ganti model lewat `NUTARALINE_MODEL`; daftar ID
+ada di `GET /v1/models`.
 Model hanya boleh menjawab berdasarkan data yang diambil lewat tool di folder
 [`tools/`](tools): produk, layanan, FAQ, pengaturan situs, album pekerjaan, dan
 kalkulator kapasitas AC berdasarkan luas ruangan.
 
-Satu pertanyaan bisa memicu dua panggilan ke Gemini — satu untuk memilih tool,
-satu lagi membawa hasil query database — sehingga responsnya bisa memakan waktu
-lebih dari 10 detik. Karena itu route-nya menetapkan `maxDuration = 60`.
+Satu pertanyaan bisa memicu dua round-trip — satu untuk memilih tool, satu lagi
+membawa hasil query database — sehingga route-nya menetapkan `maxDuration = 60`.
+Gateway hanya meneruskan permintaan tool; eksekusi ke Supabase tetap di route.
+`maxRetries` sengaja dimatikan: menurut dokumentasi Nutaraline, permintaan yang
+sudah terkirim tetapi hasilnya belum jelas bisa tercatat dua kali di saldo, jadi
+jangan mengulang buta saat dapat 5xx.
 
 ## Deploy ke Vercel
 

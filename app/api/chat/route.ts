@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import OpenAI from 'openai';
 
 import { servicesToolDefinition, handleGetServices } from '@/tools/services.tool';
 import { siteSettingsToolDefinition, handleGetSiteSettings } from '@/tools/siteSettings.tool';
@@ -8,14 +8,20 @@ import { acCalculatorToolDefinition, handleCalculateAcCapacity } from '@/tools/a
 import { productsToolDefinition, handleGetProducts } from '@/tools/products.tool';
 import { albumsToolDefinition, handleGetAlbums } from '@/tools/albums.tool';
 
-// Inisialisasi Google Gen AI Client
-// Satu pertanyaan bisa memicu dua panggilan ke Gemini (satu untuk memilih
-// tool, satu lagi membawa hasil query database), jadi wajar menembus 10 detik.
-// Tanpa ini, batas default function di Vercel memutus respons di tengah jalan.
+// Nutaraline: gateway OpenAI-compatible yang meneruskan permintaan ke DeepSeek.
+// Satu pertanyaan bisa memicu dua round-trip (pilih tool, lalu bawa hasil query
+// database) yang masing-masing memakan waktu, jadi batas default Vercel dinaikkan.
 export const maxDuration = 60;
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY || '',
+const MODEL = process.env.NUTARALINE_MODEL || 'deepseek-v4.1-flash';
+const MAX_TOKENS = 8192;
+
+// maxRetries dimatikan mengikuti anjuran dokumentasi Nutaraline: permintaan yang
+// sudah terkirim tetapi hasilnya belum jelas bisa tercatat dua kali di saldo.
+const ai = new OpenAI({
+  baseURL: 'https://nutaraline.co.uk/v1',
+  apiKey: process.env.NUTARALINE_API_KEY || '',
+  maxRetries: 0,
 });
 
 async function executeTool(name: string, args: Record<string, unknown>) {
@@ -42,41 +48,20 @@ async function executeTool(name: string, args: Record<string, unknown>) {
   }
 }
 
-// Konversi Tool Definitions ke format Function Declarations yang dikenali SDK Gemini
-const functionDeclarations = [
+// Definisi tool di folder tools/ sudah berformat Chat Completions, jadi dipakai apa adanya.
+const tools = [
   servicesToolDefinition,
   siteSettingsToolDefinition,
   faqsToolDefinition,
   acCalculatorToolDefinition,
   productsToolDefinition,
   albumsToolDefinition,
-].map((tool: Record<string, unknown>) => {
-  // Jika definisi tool Anda sudah berformat OpenAPI / JSON Schema bawaan
-  if (tool.function) {
-    const fn = tool.function as { name: string; description: string; parameters: unknown };
-    return {
-      name: fn.name,
-      description: fn.description,
-      parameters: fn.parameters,
-    };
-  }
-  return tool;
-});
+] as OpenAI.Chat.Completions.ChatCompletionTool[];
 
-export async function POST(req: Request) {
-  try {
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('❌ GEMINI_API_KEY belum diset di .env.local');
-      return NextResponse.json(
-        { error: 'GEMINI_API_KEY tidak terdeteksi.' },
-        { status: 500 }
-      );
-    }
+type ChatMessage = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 
-    const body = await req.json();
-    const inputMessages = body.messages || [];
-
-    const systemInstruction = `
+function buildSystemInstruction() {
+  return `
     Anda adalah CS Virtual toko elektronik bernama CV PRIMA JAYA MANDIRI, perusahaan yang bergerak di bidang penjualan dan layanan elektronik khususnya AC.
     Sapa pelanggan yang berkunjung ke toko virtual ini dengan ramah dan informatif. Tanyakan kebutuhan mereka terkait produk elektronik, terutama AC, dan berikan rekomendasi yang sesuai.
 
@@ -132,72 +117,115 @@ export async function POST(req: Request) {
     Tugas kamu fokus pada topik terkait produk elektronik, terutama AC, dan memberikan informasi yang akurat serta relevan.
     Jangan berikan jawaban yang tidak relevan dengan topik ini. Jika pertanyaan pengguna tidak terkait dengan produk elektronik atau AC, arahkan mereka untuk menghubungi layanan pelanggan kami.
     `;
+}
 
-    // Konversi riwayat obrolan dari format OpenAI/Groq (user, assistant, tool) ke format Gemini Contents (user, model)
-    const contents: Record<string, unknown>[] = inputMessages.map((msg: { role: string; content?: string }) => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content || '' }],
-    }));
+function statusForGatewayError(status: number | undefined, message: string) {
+  switch (status) {
+    case 401:
+    case 403:
+      return { httpStatus: 502, error: 'Kunci API penyedia ditolak. Hubungi admin situs.' };
+    case 402:
+      return { httpStatus: 503, error: 'Kuota layanan AI habis. Hubungi admin situs.' };
+    case 413:
+      return { httpStatus: 413, error: 'Percakapan terlalu panjang. Mulai chat baru.' };
+    case 429:
+      return { httpStatus: 429, error: 'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.' };
+    default:
+      return { httpStatus: 502, error: message };
+  }
+}
 
-    // Pemanggilan awal ke Gemini
-    const initialResponse = await ai.models.generateContent({
-      model: 'gemini-3.5-flash-lite',
-      contents,
-      config: {
-        systemInstruction,
-        tools: [{ functionDeclarations }],
-      },
+export async function POST(req: Request) {
+  try {
+    if (!process.env.NUTARALINE_API_KEY) {
+      console.error('❌ NUTARALINE_API_KEY belum diset di .env.local');
+      return NextResponse.json(
+        { error: 'NUTARALINE_API_KEY tidak terdeteksi.' },
+        { status: 500 }
+      );
+    }
+
+    const body = await req.json();
+    const inputMessages: { role: string; content?: string }[] = body.messages || [];
+
+    const messages: ChatMessage[] = [
+      { role: 'system', content: buildSystemInstruction() },
+      ...inputMessages
+        .filter((msg) => msg.content && msg.content.trim().length > 0)
+        .map<ChatMessage>((msg) => ({
+          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          content: msg.content as string,
+        })),
+    ];
+
+    // Round-trip pertama: model memutuskan perlu tool atau tidak.
+    const initialResponse = await ai.chat.completions.create({
+      model: MODEL,
+      messages,
+      tools,
+      tool_choice: 'auto',
+      max_tokens: MAX_TOKENS,
     });
 
-    // Cek apakah Gemini meminta pemanggilan function/tool
-    const functionCalls = initialResponse.functionCalls;
+    const initialMessage = initialResponse.choices[0]?.message;
+    // Hanya tool call bertipe 'function' yang bisa dieksekusi; tipe 'custom' dilewati.
+    const toolCalls = (initialMessage?.tool_calls ?? []).filter(
+      (call): call is OpenAI.Chat.Completions.ChatCompletionMessageFunctionToolCall =>
+        call.type === 'function'
+    );
 
-    if (functionCalls && functionCalls.length > 0) {
-      // Masukkan respon model yang meminta eksekusi tool ke riwayat percakapan
-      contents.push(initialResponse.candidates?.[0]?.content as Record<string, unknown>);
+    if (toolCalls.length > 0) {
+      // Simpan pesan assistant yang meminta tool apa adanya (content bisa null).
+      messages.push({
+        role: 'assistant',
+        content: initialMessage?.content ?? null,
+        tool_calls: toolCalls,
+      });
 
-      const toolResponseParts = [];
+      // Nutaraline hanya meneruskan permintaan tool, eksekusinya tetap di sini.
+      for (const call of toolCalls) {
+        let parsedArgs: Record<string, unknown> = {};
+        try {
+          parsedArgs = call.function.arguments ? JSON.parse(call.function.arguments) : {};
+        } catch {
+          console.error(`❌ Argumen tool tidak valid [${call.function.name}]:`, call.function.arguments);
+        }
 
-      for (const call of functionCalls) {
-        const toolResult = await executeTool(call.name ?? '', call.args as Record<string, unknown>);
+        const toolResult = await executeTool(call.function.name, parsedArgs);
 
-        // Tambahkan hasil eksekusi tool sebagai part 'functionResponse'
-        toolResponseParts.push({
-          functionResponse: {
-            name: call.name,
-            response: { result: toolResult },
-          },
+        messages.push({
+          role: 'tool',
+          tool_call_id: call.id,
+          content: JSON.stringify(toolResult),
         });
       }
 
-      // Masukkan hasil tool balik ke percakapan dengan role 'user'
-      contents.push({
-        role: 'user',
-        parts: toolResponseParts,
-      });
-
-      // Panggil kembali Gemini dengan membawa data hasil tool
-      const secondResponse = await ai.models.generateContent({
-        model: 'gemini-3.5-flash-lite',
-        contents,
-        config: {
-          systemInstruction,
-          tools: [{ functionDeclarations }],
-        },
+      // Round-trip kedua: model menyusun jawaban dari data database.
+      const secondResponse = await ai.chat.completions.create({
+        model: MODEL,
+        messages,
+        tools,
+        max_tokens: MAX_TOKENS,
       });
 
       return NextResponse.json({
         message:
-          secondResponse.text ||
+          secondResponse.choices[0]?.message?.content ||
           'Mohon maaf, terjadi kendala saat memproses jawaban.',
       });
     }
 
     return NextResponse.json({
-      message: initialResponse.text || 'Mohon maaf, tidak ada respon.',
+      message: initialMessage?.content || 'Mohon maaf, tidak ada respon.',
     });
   } catch (error: unknown) {
     console.error('❌ ERROR DETECTED DI ROUTE CHAT:', error);
+
+    if (error instanceof OpenAI.APIError) {
+      const mapped = statusForGatewayError(error.status, error.message);
+      return NextResponse.json({ error: mapped.error }, { status: mapped.httpStatus });
+    }
+
     const errorMessage = error instanceof Error ? error.message : 'Internal Server Error';
     return NextResponse.json(
       { error: errorMessage },

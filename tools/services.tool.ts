@@ -8,9 +8,9 @@ export const servicesToolDefinition = {
     parameters: {
       type: 'object',
       properties: {
-        category: {
+        keyword: {
           type: 'string',
-          description: 'Kategori layanan jika ada (misal: cuci ac, pasang ac, perbaikan, listrik).',
+          description: 'Kata kunci nama layanan (misal: cuci ac, pasang ac, perbaikan, listrik). Opsional.',
         },
       },
       required: [],
@@ -18,12 +18,13 @@ export const servicesToolDefinition = {
   },
 };
 
-export async function handleGetServices(args?: { category?: string }) {
+export async function handleGetServices(args?: { keyword?: string }) {
   try {
     let query = supabase.from('services').select('*');
 
-    if (args?.category) {
-      query = query.ilike('category', `%${args.category}%`);
+    // Tabel services tidak punya kolom category, jadi pencarian memakai nama layanan.
+    if (args?.keyword) {
+      query = query.ilike('name', `%${args.keyword}%`);
     }
 
     const { data, error } = await query;
