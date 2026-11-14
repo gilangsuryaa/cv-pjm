@@ -3,6 +3,16 @@ import { ArrowRight, CheckCircle2, Snowflake, Wrench } from "lucide-react";
 import { getServices } from "@/lib/data/services";
 import { buildWhatsappUrl, getSiteSettings } from "@/lib/data/site-settings";
 
+// Footer menautkan tiap nama layanan ke /services#<anchor>, jadi kartu di
+// halaman ini harus punya id yang cocok. Aturannya sama dengan toAnchor() di
+// app/layanan/[area]/page.tsx.
+function toAnchor(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 // Gambar cadangan kalau layanan di database belum punya gambar sendiri.
 const FALLBACK_IMAGES = [
   "/images/Services/services.jpg",
@@ -77,7 +87,10 @@ export default async function CoreServices() {
                 LAYANAN UNGGULAN
               </span>
 
-              <h3 className="mt-4 text-[20px] font-semibold leading-7 text-[#171717] sm:text-[22px]">
+              <h3
+                id={toAnchor(featured.name)}
+                className="mt-4 scroll-mt-20 text-[20px] font-semibold leading-7 text-[#171717] sm:text-[22px]"
+              >
                 {featured.name}
               </h3>
 
@@ -171,7 +184,10 @@ export default async function CoreServices() {
                     LAYANAN
                   </span>
 
-                  <h3 className="mt-4 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]">
+                  <h3
+                    id={toAnchor(service.name)}
+                    className="mt-4 scroll-mt-20 text-[19px] font-semibold leading-7 text-[#171717] sm:text-[21px]"
+                  >
                     {service.name}
                   </h3>
 

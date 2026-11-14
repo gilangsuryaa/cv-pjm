@@ -9,14 +9,26 @@ import {
   getSiteAssetUrl,
   getSiteSettings,
 } from "@/lib/data/site-settings";
+import { getAlbums } from "@/lib/data/albums";
+import { SERVICE_TYPES } from "@/lib/seo/site";
 
 const FALLBACK_DESCRIPTION =
   "Jasa service AC, cuci AC, isi freon, instalasi AC, dan perawatan AC untuk rumah, kantor, dan tempat usaha di Cirebon dan Jogja. Kami juga melayani instalasi kelistrikan dan service elektronik.";
 
+// Footer menautkan tiap nama layanan ke /services#<anchor>. Anchor-nya harus
+// sama dengan id kartu di app/components/Services/CoreServices.tsx.
+function toAnchor(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export default async function Footer() {
-  const [settings, services] = await Promise.all([
+  const [settings, services, albums] = await Promise.all([
     getSiteSettings(),
     getServices(),
+    getAlbums({ limit: 1 }),
   ]);
 
   const companyName = settings.company_name ?? "CV. Prima Jaya Mandiri";
@@ -31,6 +43,15 @@ export default async function Footer() {
   const description =
     settings.description?.split("\n").find((line) => line.trim().length > 0) ??
     FALLBACK_DESCRIPTION;
+
+  // Layar sempit tidak muat lima kolom, jadi daftar layanan di footer dibatasi
+  // supaya tetap terbaca. Daftar lengkap sudah ada di /services.
+  const footerServices = services.slice(0, 5);
+
+  // Tautan portofolio hanya berguna kalau albumnya ada. Kalau tabel album
+  // kosong, jangan kirim pengunjung ke halaman yang cuma menampilkan
+  // "Belum ada album pekerjaan".
+  const hasPortfolio = albums.length > 0;
 
   return (
     <footer className="animate-fade-in border-t border-[#e5cfc8] bg-white">
@@ -75,20 +96,26 @@ export default async function Footer() {
             </h3>
 
             <div className="mt-3.5 flex flex-col gap-2 text-[13px] text-[#666]">
-              {services.length > 0 ? (
-                services.map((service) => (
+              {footerServices.length > 0 ? (
+                footerServices.map((service) => (
                   <Link
                     key={service.id}
-                    href="/services"
+                    href={`/services#${toAnchor(service.name)}`}
                     className="hover:text-[#D91E05]"
                   >
                     {service.name}
                   </Link>
                 ))
               ) : (
-                <Link href="/services" className="hover:text-[#D91E05]">
-                  Lihat semua layanan
-                </Link>
+                SERVICE_TYPES.slice(0, 5).map((service) => (
+                  <Link
+                    key={service.name}
+                    href={`/services#${toAnchor(service.name)}`}
+                    className="hover:text-[#D91E05]"
+                  >
+                    {service.name}
+                  </Link>
+                ))
               )}
             </div>
           </div>
@@ -109,10 +136,14 @@ export default async function Footer() {
               </Link>
 
               <Link href="/services" className="hover:text-[#D91E05]">
+                Semua Layanan
+              </Link>
+
+              <Link href="/services#service-elektronik" className="hover:text-[#D91E05]">
                 Service AC &amp; Elektronik
               </Link>
 
-              <Link href="/services" className="hover:text-[#D91E05]">
+              <Link href="/services#instalasi-listrik" className="hover:text-[#D91E05]">
                 Instalasi Listrik
               </Link>
             </div>
@@ -130,9 +161,11 @@ export default async function Footer() {
                 Tentang Kami
               </Link>
 
-              <Link href="/#portfolio" className="hover:text-[#D91E05]">
-                Portofolio
-              </Link>
+              {hasPortfolio && (
+                <Link href="/album" className="hover:text-[#D91E05]">
+                  Portofolio
+                </Link>
+              )}
 
               <Link href="/products" className="hover:text-[#D91E05]">
                 Produk

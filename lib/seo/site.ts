@@ -16,6 +16,10 @@ export const BRAND = 'CV. Prima Jaya Mandiri'
 
 // Area layanan. Kantor pusat di Cirebon, cabang di Yogyakarta. Dipakai untuk
 // halaman per wilayah dan `areaServed` di structured data.
+//
+// `intro` dan `localNote` sengaja ditulis berbeda per wilayah: deskripsi
+// layanan di database sama persis untuk Cirebon dan Jogja, jadi tanpa paragraf
+// khas ini kedua halaman wilayah berisiko dianggap konten duplikat.
 export const SERVICE_AREAS = [
   {
     slug: 'cirebon',
@@ -29,11 +33,16 @@ export const SERVICE_AREAS = [
       'Indramayu',
       'Majalengka',
     ],
+    intro:
+      'Cirebon termasuk wilayah berudara panas dan lembap karena berada di pesisir utara Jawa Barat, sehingga AC di rumah maupun tempat usaha nyaris dipakai sepanjang hari. Beban pemakaian yang tinggi itu membuat unit lebih cepat kotor, freon lebih cepat habis, dan kerusakan kompresor lebih sering muncul kalau perawatan ditunda.',
+    localNote:
+      'Kantor pusat kami berada di Losari, Kabupaten Cirebon, jadi teknisi berangkat dari wilayah Cirebon sendiri, bukan dari luar kota. Untuk panggilan di Kota Cirebon, Sumber, Plumbon, atau Losari, teknisi biasanya bisa datang di hari yang sama. Wilayah Kuningan, Indramayu, dan Majalengka dilayani dengan penjadwalan sehari sebelumnya. Kami juga menerima kontrak perawatan bulanan untuk kantor, ruko, hotel, dan restoran di sepanjang jalur pantura Cirebon.',
   },
   {
     slug: 'jogja',
     city: 'Jogja',
-    region: 'Daerah Istimewa Yogyakarta',    office: 'Kantor Cabang',
+    region: 'Daerah Istimewa Yogyakarta',
+    office: 'Kantor Cabang',
     areas: [
       'Kota Yogyakarta',
       'Sleman',
@@ -41,6 +50,10 @@ export const SERVICE_AREAS = [
       'Kulon Progo',
       'Gunungkidul',
     ],
+    intro:
+      'Jogja punya dua watak pelanggan yang sama-sama kami layani: rumah tinggal di kawasan padat seperti Sleman dan Bantul, serta usaha kecil seperti kafe, kos, dan penginapan yang menuntut AC selalu siap dipakai. Unit yang menyala hampir tanpa jeda membuat filter cepat tertutup debu dan aliran udara melemah, sehingga AC terasa kurang dingin meski kompresor masih bekerja.',
+    localNote:
+      'Kantor cabang kami berada di Trihanggo, Gamping, Sleman, sehingga teknisi menjangkau Kota Yogyakarta dan Sleman lebih dulu, lalu Bantul, Kulon Progo, dan Gunungkidul dengan penjadwalan. Banyak pelanggan kami adalah pengelola kos, kafe, dan penginapan yang membutuhkan servis di luar jam operasional supaya tamu tidak terganggu; jadwal seperti itu bisa diatur saat konsultasi.',
   },
 ] as const
 

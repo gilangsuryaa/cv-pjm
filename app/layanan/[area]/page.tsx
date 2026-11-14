@@ -70,6 +70,14 @@ export async function generateMetadata({
       title,
       description,
       url: `/layanan/${area.slug}`,
+      images: [
+        {
+          url: "/images/Home/hero-3.webp",
+          width: 1600,
+          height: 900,
+          alt: `Teknisi service AC ${area.city}`,
+        },
+      ],
     },
   };
 }
@@ -98,6 +106,14 @@ export default async function AreaPage({ params }: AreaPageProps) {
   // halaman wilayah tetap punya isi yang bisa dibaca mesin pencari. Nama
   // berbahasa Inggris tetap memakai kata kunci wilayah, bukan bahasa mesin.
   const isEnglishName = (name: string) => /[A-Za-z]/.test(name);
+
+  // Anchor dipakai tautan langsung dari footer (/services#nama-layanan) supaya
+  // pengunjung mendarat di kartu yang dimaksud, bukan di puncak halaman.
+  const toAnchor = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
   const serviceList =
     services.length > 0
@@ -138,6 +154,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
             siap datang ke rumah, kantor, ruko, maupun tempat usaha Anda.
           </p>
 
+          <p className="mt-3 max-w-[760px] text-sm leading-7 text-[#654f4a] sm:text-[15px]">
+            {area.intro}
+          </p>
+
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             {whatsappUrl && (
               <a
@@ -174,7 +194,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
               key={service.name}
               className="border border-[#DCEAF3] bg-white p-5 sm:p-6"
             >
-              <h3 className="text-[17px] font-bold text-[#0F4C75]">
+              <h3
+                id={toAnchor(service.name)}
+                className="scroll-mt-20 text-[17px] font-bold text-[#0F4C75]"
+              >
                 {service.heading}
               </h3>
 
@@ -196,6 +219,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
 
           <p className="mt-3 max-w-[760px] text-sm leading-6 text-[#64748B]">
             Kami melayani panggilan service AC ke seluruh area berikut:
+          </p>
+
+          <p className="mt-3 max-w-[760px] text-sm leading-7 text-[#654f4a]">
+            {area.localNote}
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2.5">
