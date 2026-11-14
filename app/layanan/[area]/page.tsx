@@ -29,6 +29,43 @@ type AreaPageProps = {
   params: Promise<{ area: string }>;
 };
 
+// Keluhan yang paling sering dilaporkan pelanggan, dipakai halaman wilayah
+// supaya orang yang mencari gejala spesifik (AC bocor, tidak dingin) tetap
+// mendapat jawaban sebelum menghubungi. Penyebab ditulis sebagai kemungkinan,
+// bukan vonis, karena kepastian hanya didapat setelah unit diperiksa.
+const COMMON_ISSUES = [
+  {
+    problem: "AC menyala tapi tidak dingin",
+    cause:
+      "Paling sering karena freon berkurang akibat kebocoran halus di sambungan pipa, atau filter dan evaporator sudah tertutup debu sehingga udara dingin tidak keluar. Kalau kompresor tetap menyala tapi hembusan hanya hangat, pemeriksaan tekanan freon jadi langkah pertama.",
+  },
+  {
+    problem: "Air menetes dari unit indoor",
+    cause:
+      "Biasanya jalur pembuangan tersumbat lendir dan debu, atau pipa drainase miring ke arah yang salah. Kalau dibiarkan, air bisa merembes ke plafon dan merusak cat maupun rangka.",
+  },
+  {
+    problem: "AC berisik atau bergetar",
+    cause:
+      "Bisa berasal dari baut bracket yang longgar, kipas outdoor yang terganjal, atau bearing motor fan yang mulai aus. Suara kasar dari kompresor sendiri perlu diperiksa lebih cepat karena bisa berujung pada penggantian unit.",
+  },
+  {
+    problem: "AC mati sendiri atau sering trip",
+    cause:
+      "Sering dipicu kapasitor kompresor yang melemah, MCB yang terlalu kecil untuk beban unit, atau kabel yang panas karena ukurannya tidak sesuai. Kelistrikan jadi bagian yang ikut diperiksa, bukan hanya unit AC-nya.",
+  },
+  {
+    problem: "Bau apek saat AC dinyalakan",
+    cause:
+      "Jamur dan bakteri tumbuh di evaporator serta saluran udara karena kondensasi yang tertahan. Cuci AC dengan penyemprotan antiseptik biasanya cukup, kecuali lapisan jamurnya sudah tebal sehingga perlu chemical cleaning.",
+  },
+  {
+    problem: "Tagihan listrik naik padahal pemakaian sama",
+    cause:
+      "Evaporator yang kotor memaksa kompresor bekerja lebih lama untuk mencapai suhu yang sama. Setelah dibersihkan dan tekanan freon diperiksa, konsumsi listrik biasanya kembali seperti semula.",
+  },
+];
+
 // Hanya dua wilayah yang punya halaman, jadi tautan lain tidak perlu
 // ditawarkan ke crawler.
 export const dynamicParams = false;
@@ -52,19 +89,28 @@ export async function generateMetadata({
 
   const description = `Jasa service AC ${area.city} dari ${companyName}. Melayani cuci AC, isi freon, perbaikan AC tidak dingin, bongkar pasang, instalasi AC baru, dan perawatan AC di ${area.areas.join(", ")}.`;
 
+  // Varian kata kunci: orang mencari "service ac jogja", dokumen resmi menulis
+  // "yogyakarta". Keduanya dimasukkan supaya halaman tidak bergantung pada
+  // satu bentuk kata saja.
+  const keywordVariants = area.aliases.flatMap((alias) => {
+    const lower = alias.toLowerCase();
+
+    return [
+      `service ac ${lower}`,
+      `servis ac ${lower}`,
+      `cuci ac ${lower}`,
+      `isi freon ac ${lower}`,
+      `instalasi ac ${lower}`,
+      `tukang ac ${lower}`,
+      `jual ac ${lower}`,
+      `service ac panggilan ${lower}`,
+    ];
+  });
+
   return {
     title,
     description,
-    keywords: [
-      `service ac ${area.city.toLowerCase()}`,
-      `service ac ${area.slug}`,
-      `servis ac ${area.city.toLowerCase()}`,
-      `cuci ac ${area.city.toLowerCase()}`,
-      `isi freon ac ${area.city.toLowerCase()}`,
-      `instalasi ac ${area.city.toLowerCase()}`,
-      `tukang ac ${area.city.toLowerCase()}`,
-      `jual ac ${area.city.toLowerCase()}`,
-    ],
+    keywords: [...new Set(keywordVariants)],
     alternates: { canonical: `/layanan/${area.slug}` },
     openGraph: {
       title,
@@ -226,7 +272,7 @@ export default async function AreaPage({ params }: AreaPageProps) {
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2.5">
-            {area.areas.map((item) => (
+            {area.aliases.map((item) => (
               <span
                 key={item}
                 className="inline-flex items-center gap-1.5 rounded-full border border-[#DCEAF3] bg-[#F5FBFE] px-4 py-2 text-[13px] font-semibold text-[#0788D1]"
@@ -237,6 +283,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
             ))}
           </div>
 
+          <p className="mt-3 max-w-[760px] text-sm leading-6 text-[#64748B]">
+            Area yang kami jangkau: {area.areas.join(", ")}.
+          </p>
+
           {street && (
             <p className="mt-6 whitespace-pre-line text-sm leading-6 text-[#654f4a]">
               <span className="font-semibold text-[#0788D1]">
@@ -246,6 +296,70 @@ export default async function AreaPage({ params }: AreaPageProps) {
               {street}
             </p>
           )}
+        </div>
+      </section>
+
+      {/* JANGKAUAN KECAMATAN */}
+      <section className="mx-auto max-w-[1000px] px-5 py-12 sm:px-8">
+        <h2 className="text-2xl font-bold text-[#0F4C75] sm:text-3xl">
+          Wilayah Kecamatan yang Dilayani
+        </h2>
+
+        <p className="mt-3 max-w-[760px] text-sm leading-7 text-[#654f4a]">
+          Panggilan service AC {area.city} kami terima sampai ke kecamatan
+          berikut, bukan hanya pusat kota. Sebutkan kecamatan dan patokan
+          alamatnya saat menghubungi kami supaya teknisi bisa memperkirakan
+          waktu datang.
+        </p>
+
+        <div className="mt-7 flex flex-col gap-6">
+          {area.districts.map((district) => (
+            <div key={district.group}>
+              <h3 className="text-[15px] font-bold text-[#0F4C75]">
+                {district.group}
+              </h3>
+
+              <p className="mt-2 text-sm leading-7 text-[#64748B]">
+                {district.items.join(" \u00b7 ")}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* MASALAH UMUM */}
+      <section className="border-t border-[#e5cfc8] bg-white px-5 py-12 sm:px-8">
+        <div className="mx-auto max-w-[1000px]">
+          <h2 className="text-2xl font-bold text-[#0F4C75] sm:text-3xl">
+            Keluhan AC yang Sering Kami Tangani di {area.city}
+          </h2>
+
+          <p className="mt-3 max-w-[760px] text-sm leading-7 text-[#654f4a]">
+            Sebelum menghubungi teknisi, keluhan di bawah ini bisa dipakai
+            sebagai patokan awal. Penyebab pastinya tetap ditentukan setelah
+            unit diperiksa langsung.
+          </p>
+
+          <div className="mt-7 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {COMMON_ISSUES.map((issue) => (
+              <div key={issue.problem}>
+                <h3 className="text-[15px] font-bold text-[#0F4C75]">
+                  {issue.problem}
+                </h3>
+
+                <p className="mt-1.5 text-sm leading-6 text-[#64748B]">
+                  {issue.cause}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-8 text-sm leading-7 text-[#654f4a]">
+            Untuk masalah yang tidak ada di daftar, tanyakan langsung lewat
+            WhatsApp beserta merek dan PK unitnya. Sebagian besar keluhan bisa
+            diperkirakan sejak percakapan awal, sehingga teknisi datang dengan
+            persiapan yang tepat.
+          </p>
         </div>
       </section>
 
