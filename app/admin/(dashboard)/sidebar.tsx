@@ -29,6 +29,10 @@ const menuItems = [
     label: 'FAQ',
     href: '/admin/faqs',
   },
+  {
+    label: 'Pengaturan AI',
+    href: '/admin/ai-settings',
+  },
 ]
 
 export default function Sidebar() {

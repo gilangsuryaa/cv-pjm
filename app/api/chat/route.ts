@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+import { supabase } from '@/lib/supabase/supabase';
+
 import { servicesToolDefinition, handleGetServices } from '@/tools/services.tool';
 import { siteSettingsToolDefinition, handleGetSiteSettings } from '@/tools/siteSettings.tool';
 import { faqsToolDefinition, handleGetFaqs } from '@/tools/faqs.tool';
@@ -13,14 +15,34 @@ import { albumsToolDefinition, handleGetAlbums } from '@/tools/albums.tool';
 // database) yang masing-masing memakan waktu, jadi batas default Vercel dinaikkan.
 export const maxDuration = 60;
 
-// Rantai model: utama dipakai dulu, sisanya cadangan bila utama gagal
-// (misal model dihapus penyedia seperti yang pernah terjadi pada DeepSeek).
-// Semua model cadangan wajib mendukung function calling — cek GET /v1/models.
-const MODEL_CHAIN = [
-  process.env.NUTARALINE_MODEL || 'deepseek-v4.1-flash-1017',
+// Rantai model cadangan, dipakai bila tabel ai_settings kosong/gagal dibaca.
+// Urutan final: model dari admin (ai_settings) -> env NUTARALINE_MODEL -> ini.
+const DEFAULT_MODEL_CHAIN = [
+  process.env.NUTARALINE_MODEL,
+  'deepseek-v4.1-flash-1017',
   'glm-5.3-flash:flex',
   'glm-5.3-flash',
-];
+].filter((m): m is string => Boolean(m));
+
+// Rantai model aktif: utama dipakai dulu, sisanya cadangan bila utama gagal
+// (misal model dihapus penyedia seperti yang pernah terjadi pada DeepSeek).
+// Semua model wajib mendukung function calling — cek GET /v1/models.
+// Urutan bisa diatur admin lewat panel (tabel ai_settings).
+async function getModelChain(): Promise<string[]> {
+  try {
+    const { data } = await supabase
+      .from('ai_settings')
+      .select('model_chain')
+      .eq('id', 1)
+      .single();
+
+    const chain = (data?.model_chain as string[] | null)?.filter(Boolean) ?? [];
+    if (chain.length > 0) return chain;
+  } catch {
+    // Tabel belum ada atau Supabase bermasalah — pakai default di bawah.
+  }
+  return DEFAULT_MODEL_CHAIN;
+}
 const MAX_TOKENS = 8192;
 
 // Error yang masuk akal untuk dicoba ke model lain: model hilang/tidak ada,
@@ -190,12 +212,13 @@ export async function POST(req: Request) {
     ];
 
     const ai = getAiClient();
+    const modelChain = await getModelChain();
 
     // Coba tiap model di rantai sampai satu berhasil. Tool dieksekusi ulang per
     // percobaan, tapi query Supabase murah dan hasilnya selalu segar.
     let lastModelError: unknown = null;
 
-    for (const model of MODEL_CHAIN) {
+    for (const model of modelChain) {
       try {
         // Round-trip pertama: model memutuskan perlu tool atau tidak.
         const initialResponse = await ai.chat.completions.create({
