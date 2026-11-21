@@ -17,9 +17,9 @@ export const maxDuration = 60;
 // (misal model dihapus penyedia seperti yang pernah terjadi pada DeepSeek).
 // Semua model cadangan wajib mendukung function calling — cek GET /v1/models.
 const MODEL_CHAIN = [
-  process.env.NUTARALINE_MODEL || 'glm-5.3-flash',
-  'nemotron-3-ultra',
-  'dots-3-note-preview',
+  process.env.NUTARALINE_MODEL || 'deepseek-v4.1-flash-1017',
+  'glm-5.3-flash:flex',
+  'glm-5.3-flash',
 ];
 const MAX_TOKENS = 8192;
 
