@@ -13,8 +13,30 @@ import { albumsToolDefinition, handleGetAlbums } from '@/tools/albums.tool';
 // database) yang masing-masing memakan waktu, jadi batas default Vercel dinaikkan.
 export const maxDuration = 60;
 
-const MODEL = process.env.NUTARALINE_MODEL || 'glm-5.3-flash';
+// Rantai model: utama dipakai dulu, sisanya cadangan bila utama gagal
+// (misal model dihapus penyedia seperti yang pernah terjadi pada DeepSeek).
+// Semua model cadangan wajib mendukung function calling — cek GET /v1/models.
+const MODEL_CHAIN = [
+  process.env.NUTARALINE_MODEL || 'glm-5.3-flash',
+  'nemotron-3-ultra',
+  'dots-3-note-preview',
+];
 const MAX_TOKENS = 8192;
+
+// Error yang masuk akal untuk dicoba ke model lain: model hilang/tidak ada,
+// saldo/kuota model itu (402), rate limit (429), atau gangguan penyedia (5xx).
+// Model yang hilang ternyata dilaporkan gateway sebagai 400 "model is not in
+// this gateway catalog", jadi 400 dengan pesan tentang model ikut di-retry.
+// 401 (kunci salah) dan 413 (input kepanjangan) tidak berguna di-retry.
+function isRetryableModelError(err: unknown): boolean {
+  if (err instanceof OpenAI.APIError) {
+    if ([402, 404, 429, 500, 502, 503, 504].includes(err.status ?? 0)) return true;
+    const msg = err.message.toLowerCase();
+    return (err.status ?? 0) === 400 && (msg.includes('model') || msg.includes('catalog'));
+  }
+  // Koneksi ke gateway terputus (DNS, timeout, dll).
+  return err instanceof OpenAI.APIConnectionError;
+}
 
 // maxRetries dimatikan mengikuti anjuran dokumentasi Nutaraline: permintaan yang
 // sudah terkirim tetapi hasilnya belum jelas bisa tercatat dua kali di saldo.
@@ -167,68 +189,86 @@ export async function POST(req: Request) {
         })),
     ];
 
-    // Round-trip pertama: model memutuskan perlu tool atau tidak.
     const ai = getAiClient();
 
-    const initialResponse = await ai.chat.completions.create({
-      model: MODEL,
-      messages,
-      tools,
-      tool_choice: 'auto',
-      max_tokens: MAX_TOKENS,
-    });
+    // Coba tiap model di rantai sampai satu berhasil. Tool dieksekusi ulang per
+    // percobaan, tapi query Supabase murah dan hasilnya selalu segar.
+    let lastModelError: unknown = null;
 
-    const initialMessage = initialResponse.choices[0]?.message;
-    // Hanya tool call bertipe 'function' yang bisa dieksekusi; tipe 'custom' dilewati.
-    const toolCalls = (initialMessage?.tool_calls ?? []).filter(
-      (call): call is OpenAI.Chat.Completions.ChatCompletionMessageFunctionToolCall =>
-        call.type === 'function'
-    );
+    for (const model of MODEL_CHAIN) {
+      try {
+        // Round-trip pertama: model memutuskan perlu tool atau tidak.
+        const initialResponse = await ai.chat.completions.create({
+          model,
+          messages,
+          tools,
+          tool_choice: 'auto',
+          max_tokens: MAX_TOKENS,
+        });
 
-    if (toolCalls.length > 0) {
-      // Simpan pesan assistant yang meminta tool apa adanya (content bisa null).
-      messages.push({
-        role: 'assistant',
-        content: initialMessage?.content ?? null,
-        tool_calls: toolCalls,
-      });
+        const initialMessage = initialResponse.choices[0]?.message;
+        // Hanya tool call bertipe 'function' yang bisa dieksekusi; tipe 'custom' dilewati.
+        const toolCalls = (initialMessage?.tool_calls ?? []).filter(
+          (call): call is OpenAI.Chat.Completions.ChatCompletionMessageFunctionToolCall =>
+            call.type === 'function'
+        );
 
-      // Nutaraline hanya meneruskan permintaan tool, eksekusinya tetap di sini.
-      for (const call of toolCalls) {
-        let parsedArgs: Record<string, unknown> = {};
-        try {
-          parsedArgs = call.function.arguments ? JSON.parse(call.function.arguments) : {};
-        } catch {
-          console.error(`❌ Argumen tool tidak valid [${call.function.name}]:`, call.function.arguments);
+        if (toolCalls.length === 0) {
+          return NextResponse.json({
+            message: initialMessage?.content || 'Mohon maaf, tidak ada respon.',
+          });
         }
 
-        const toolResult = await executeTool(call.function.name, parsedArgs);
-
+        // Simpan pesan assistant yang meminta tool apa adanya (content bisa null).
         messages.push({
-          role: 'tool',
-          tool_call_id: call.id,
-          content: JSON.stringify(toolResult),
+          role: 'assistant',
+          content: initialMessage?.content ?? null,
+          tool_calls: toolCalls,
         });
+
+        // Nutaraline hanya meneruskan permintaan tool, eksekusinya tetap di sini.
+        for (const call of toolCalls) {
+          let parsedArgs: Record<string, unknown> = {};
+          try {
+            parsedArgs = call.function.arguments ? JSON.parse(call.function.arguments) : {};
+          } catch {
+            console.error(`❌ Argumen tool tidak valid [${call.function.name}]:`, call.function.arguments);
+          }
+
+          const toolResult = await executeTool(call.function.name, parsedArgs);
+
+          messages.push({
+            role: 'tool',
+            tool_call_id: call.id,
+            content: JSON.stringify(toolResult),
+          });
+        }
+
+        // Round-trip kedua: model menyusun jawaban dari data database.
+        const secondResponse = await ai.chat.completions.create({
+          model,
+          messages,
+          tools,
+          max_tokens: MAX_TOKENS,
+        });
+
+        return NextResponse.json({
+          message:
+            secondResponse.choices[0]?.message?.content ||
+            'Mohon maaf, terjadi kendala saat memproses jawaban.',
+        });
+      } catch (err: unknown) {
+        lastModelError = err;
+
+        if (!isRetryableModelError(err)) throw err;
+
+        const status = err instanceof OpenAI.APIError ? err.status : '-';
+        console.warn(`⚠️ Model [${model}] gagal (status ${status}), mencoba model cadangan berikutnya...`);
       }
-
-      // Round-trip kedua: model menyusun jawaban dari data database.
-      const secondResponse = await ai.chat.completions.create({
-        model: MODEL,
-        messages,
-        tools,
-        max_tokens: MAX_TOKENS,
-      });
-
-      return NextResponse.json({
-        message:
-          secondResponse.choices[0]?.message?.content ||
-          'Mohon maaf, terjadi kendala saat memproses jawaban.',
-      });
     }
 
-    return NextResponse.json({
-      message: initialMessage?.content || 'Mohon maaf, tidak ada respon.',
-    });
+    // Semua model di rantai gagal — lempar error terakhir agar masuk handler umum.
+    throw lastModelError;
   } catch (error: unknown) {
     console.error('❌ ERROR DETECTED DI ROUTE CHAT:', error);
 

@@ -130,8 +130,10 @@ apa adanya.
 
 `POST /api/chat` menerima riwayat percakapan dan menjawab lewat gateway
 Nutaraline (`https://nutaraline.co.uk/v1`, OpenAI-compatible) dengan model
-default `deepseek-v4.1-flash`. Ganti model lewat `NUTARALINE_MODEL`; daftar ID
-ada di `GET /v1/models`.
+default `glm-5.3-flash` dengan fallback ke `nemotron-3-ultra` lalu
+`dots-3-note-preview` bila model utama gagal (misal dihapus penyedia). Ganti
+model utama lewat `NUTARALINE_MODEL`; daftar ID ada di `GET /v1/models` —
+semua model di rantai wajib mendukung function calling.
 Model hanya boleh menjawab berdasarkan data yang diambil lewat tool di folder
 [`tools/`](tools): produk, layanan, FAQ, pengaturan situs, album pekerjaan, dan
 kalkulator kapasitas AC berdasarkan luas ruangan.
