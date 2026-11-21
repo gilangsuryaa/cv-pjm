@@ -33,6 +33,10 @@ const menuItems = [
     label: 'Pengaturan AI',
     href: '/admin/ai-settings',
   },
+  {
+    label: 'Tes Chatbot',
+    href: '/admin/ai-chat',
+  },
 ]
 
 export default function Sidebar() {
