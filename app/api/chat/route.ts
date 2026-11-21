@@ -13,7 +13,7 @@ import { albumsToolDefinition, handleGetAlbums } from '@/tools/albums.tool';
 // database) yang masing-masing memakan waktu, jadi batas default Vercel dinaikkan.
 export const maxDuration = 60;
 
-const MODEL = process.env.NUTARALINE_MODEL || 'deepseek-v4.1-flash';
+const MODEL = process.env.NUTARALINE_MODEL || 'glm-5.3-flash';
 const MAX_TOKENS = 8192;
 
 // maxRetries dimatikan mengikuti anjuran dokumentasi Nutaraline: permintaan yang
